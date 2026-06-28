@@ -1,4 +1,4 @@
-import DevReviewLandingPage from "./LandingPage/page";
+import DevReviewLandingPage from "./(public)/LandingPage/page";
 
 export default function Home() {
   return (

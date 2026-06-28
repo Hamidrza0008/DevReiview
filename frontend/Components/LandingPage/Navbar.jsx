@@ -2,8 +2,10 @@
 
 import React, { useState } from 'react';
 import { DevReviewLogo, PrimaryButton } from './atoms';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const links = ['Explore Projects', 'Reviews', 'Community', 'About'];
 
@@ -35,11 +37,11 @@ export default function Navbar() {
 
         {/* Right Action Stack - Desktop Only */}
         <div className="hidden md:flex items-center gap-5">
-          <button className="relative text-sm font-medium text-[#6B7280] hover:text-[#111827] transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0">
+          <button onClick={() => router.push("/auth/login")} className="relative text-sm font-medium text-[#6B7280] hover:text-[#111827] transition-all duration-200 hover:-translate-y-[1px] active:translate-y-0">
             Login
           </button>
           
-          <PrimaryButton className="relative overflow-hidden group !px-6 !py-2.5 rounded-xl shadow-sm hover:shadow-md hover:shadow-shadow-blue-500/10 hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200">
+          <PrimaryButton onClick={() => router.push("/auth/signup")} className="relative overflow-hidden group !px-6 !py-2.5 rounded-xl shadow-sm hover:shadow-md hover:shadow-shadow-blue-500/10 hover:-translate-y-[1px] active:translate-y-0 transition-all duration-200">
             <span className="relative z-10 flex items-center gap-1">
               Get Started
               <svg 
@@ -90,7 +92,7 @@ export default function Navbar() {
           {/* Action Row for Mobile: Styled Side-by-Side buttons */}
           <div className="flex items-center gap-3 pt-1">
             {/* Mobile Login Button with User Icon */}
-            <button className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-[#475569] border border-[#E5E7EB] hover:bg-slate-50 hover:text-[#111827] active:bg-slate-100 transition-all duration-200">
+            <button onClick={() => router.push("/auth/login")}  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium text-[#475569] border border-[#E5E7EB] hover:bg-slate-50 hover:text-[#111827] active:bg-slate-100 transition-all duration-200">
               <svg 
                 className="w-4 h-4 text-[#6B7280]" 
                 fill="none" 
@@ -104,7 +106,7 @@ export default function Navbar() {
             </button>
             
             {/* Get Started Button for Mobile */}
-            <PrimaryButton className="flex-1 !justify-center !py-2.5 rounded-xl text-sm shadow-sm">
+            <PrimaryButton onClick={() => router.push("/auth/signup")}  className="flex-1 !justify-center !py-2.5 rounded-xl text-sm shadow-sm">
               Get Started
             </PrimaryButton>
           </div>
