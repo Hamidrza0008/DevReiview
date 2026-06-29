@@ -51,7 +51,8 @@ const signUp = async (req, res) => {
         await OTP.create({
             email,
             otp,
-            expiresAt
+            expiresAt,
+            type: "VERIFY_EMAIL"
         })
 
         await sendEmail(email, otp);
@@ -63,9 +64,12 @@ const signUp = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
-    }
+        console.log(error.message);
 
+        return res.status(500).json({
+            message: error.message
+        });
+    }
 }
 
 const verifyOTP = async (req, res) => {
@@ -105,15 +109,19 @@ const verifyOTP = async (req, res) => {
             success: true
         });
 
-    } catch (error) {
-        console.log(error);
+    }  catch (error) {
+        console.log(error.message);
+
+        return res.status(500).json({
+            message: error.message
+        });
     }
 
 }
 
 
 const login = async (req, res) => {
-    const { email, password } =  req.body;
+    const { email, password } = req.body;
 
     const user = await User.findOne({ email });
 
@@ -141,6 +149,7 @@ const login = async (req, res) => {
 
     return res.status(200).json({
         message: "Login successful",
+        success: true,
         token,
         user: {
             id: user._id,
@@ -150,4 +159,87 @@ const login = async (req, res) => {
     })
 }
 
-module.exports = {signUp , login , verifyOTP}
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findone({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                message: "User not found"
+            })
+        }
+
+        const otp = crypto.randomInt(100000, 999999).toString();
+        const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+        await OTP.create({
+            email,
+            otp,
+            expiresAt,
+            type: "RESET_PASSWORD"
+        })
+
+        await sendEmail(email, otp);
+
+        return res.status(200).json({
+            message: "Password reset OTP sent successfully",
+            success: true,
+        })
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+const resetPassword = async (req, res) => {
+
+    try {
+        const {
+            email,
+            otp,
+            newpassword
+        } = req.body;
+
+        const otpRecord = await OTP.findOne({
+            email,
+            otp,
+            type: "RESET_PASSWORD"
+        })
+
+        if (!otpRecord) {
+            return res.status(400).json({
+                message: "OTP Not Found Or Invalid OTP"
+            })
+        }
+
+        if (otpRecord.expiresAt < new Date()) {
+            return res.status(400).json({
+                message: "OTP expired"
+            })
+        }
+
+        const hashedPassword = await bcrypt.hash(newpassword, 10);
+
+        await User.findOneAndUpdate(
+            { email },
+            { password: hashedPassword }
+        )
+
+        await OTP.findOneAndDelete({
+            email,
+            type: "RESET_PASSWORD"
+        })
+
+        return res.status(200).json({
+            message: "Password reset successfully",
+            success: true
+        })
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+
+module.exports = { signUp, login, verifyOTP, forgotPassword, resetPassword }

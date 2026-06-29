@@ -2,20 +2,48 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { signUp } from '@/services/authApi';
+import { useRouter } from 'next/navigation';
 
 export default function SignUp() {
-  const [fullName, setFullName] = useState("");
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) return;
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+
+    try {
+      console.log({
+        name,
+        username,
+        email,
+        password
+      });
+      const res = await signUp({
+        name,
+        username,
+        email,
+        password,
+      })
+
+      console.log(res)
+
+      if (res.success) {
+        router.push(`verify-otp?email=${email}`)
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const containerVariants = {
@@ -36,7 +64,7 @@ export default function SignUp() {
       {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#2563EB] relative items-center justify-center p-12 overflow-hidden border-r border-[#E5E7EB]/10">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
-        
+
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="relative z-10 max-w-xl w-full text-white space-y-8">
           <motion.div variants={itemVariants} className="flex items-center space-x-3 w-fit">
             <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-md">
@@ -44,7 +72,7 @@ export default function SignUp() {
             </div>
             <span className="text-2xl font-bold tracking-tight">DevReview</span>
           </motion.div>
-          
+
           <motion.div variants={itemVariants} className="space-y-3">
             <h1 className="text-4xl font-extrabold tracking-tight">Build. Share. Grow. 🚀</h1>
             <p className="text-blue-100 text-lg">Join thousands of developers showcasing their projects and improving together.</p>
@@ -77,7 +105,7 @@ export default function SignUp() {
 
       {/* Right Panel */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -88,8 +116,12 @@ export default function SignUp() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#111827] uppercase tracking-wider mb-1.5">Full Handle Name</label>
-              <input type="text" required value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Hamid Rza" className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-shadow duration-150" />
+              <label className="block text-xs font-bold text-[#111827] uppercase tracking-wider mb-1.5">Name</label>
+              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Hamid Rza" className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-shadow duration-150" />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-[#111827] uppercase tracking-wider mb-1.5">Handle Username</label>
+              <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="HamidRza0008" className="w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-shadow duration-150" />
             </div>
 
             <div>

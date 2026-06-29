@@ -2,18 +2,35 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { login } from '@/services/authApi';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+    try {
+      const res = await login({
+        email,
+        password
+      })
+
+      console.log(res);
+      if(res.success){
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setIsLoading(false)
+    }
   };
 
   const containerVariants = {

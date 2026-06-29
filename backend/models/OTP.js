@@ -8,14 +8,18 @@ const otpSchema = new mongoose.Schema({
     otp: {
         type: String,
         required: true,
-        unique:true,
+        unique: true,
     },
     expiresAt: {
         type: Date,
+        required: true
+    },
+    type: {
+        type: String,
         required: true
     }
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model("OTP" , otpSchema , "otpVerifications");
+module.exports = mongoose.model("OTP", otpSchema, "otpVerifications");
