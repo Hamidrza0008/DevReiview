@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { login } from '@/services/authApi';
 import { useRouter } from 'next/navigation';
-
+import { useAuth } from '@/context/AuthContext';
 export default function Login() {
+  const{fetchUser} = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +25,7 @@ export default function Login() {
 
       console.log(res);
       if(res.success){
+        fetchUser();
         router.push("/dashboard");
       }
     } catch (error) {

@@ -1,12 +1,28 @@
-import Sidebar from "@/Components/DevReviewLayout/Sidebar"; // Aapka sidebar component path
+"use client";
+
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+import Sidebar from "@/Components/DevReviewLayout/Sidebar";
 
 export default function DashboardLayout({ children }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth/login");
+    }
+  }, [user, loading]);
+
+  if (loading) return <h1>Loading...</h1>;
+  if (!user) return null;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* 1. Sidebar apni jagah fixed rahega */}
       <Sidebar />
 
-      {/* 2. Content Wrapper: Isme 'md:pl-64' lagaya hai taaki content sidebar ke aage se shuru ho */}
       <div className="md:pl-64 min-h-screen flex flex-col">
         <main className="flex-1">
           {children}

@@ -28,6 +28,7 @@ export const login = async (data) => {
         headers: {
             "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify(data)
     })
 
@@ -52,7 +53,25 @@ export const resetPassword = async (data) => {
         headers: {
             "Content-Type": "application/json"
         },
-        body:JSON.stringify(data)
+        body: JSON.stringify(data)
+    })
+
+    return await response.json();
+}
+
+export const getMe = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        method: "GET",
+        credentials: "include",
+    })
+
+    return await response.json();
+}
+
+export const logOutMe = async () => {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
     })
 
     return await response.json();

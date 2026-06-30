@@ -109,7 +109,7 @@ const verifyOTP = async (req, res) => {
             success: true
         });
 
-    }  catch (error) {
+    } catch (error) {
         console.log(error.message);
 
         return res.status(500).json({
@@ -147,10 +147,20 @@ const login = async (req, res) => {
 
     const token = generateToken(user._id);
 
+    res.cookie(
+        "token",
+        token,
+        {
+            httpOnly: true,
+            secure: false,
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        }
+    )
+
     return res.status(200).json({
         message: "Login successful",
         success: true,
-        token,
         user: {
             id: user._id,
             name: user.name,
@@ -242,4 +252,52 @@ const resetPassword = async (req, res) => {
 
 }
 
-module.exports = { signUp, login, verifyOTP, forgotPassword, resetPassword }
+const getMe = async (req, res) => {
+    try {
+        const userId = req.user.id
+
+        const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(400).json({
+                message: "User not found"
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            user,
+        })
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: "Server error"
+        })
+    }
+}
+
+const logout = async (req, res) => {
+    try {
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: false, // production me true (https)
+            sameSite: "strict",
+        })
+
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully" 
+        });
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            message: "Server error"
+        });
+
+    }
+}
+
+module.exports = { signUp, login, verifyOTP, forgotPassword, resetPassword, getMe , logout }

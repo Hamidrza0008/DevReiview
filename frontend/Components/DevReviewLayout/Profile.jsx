@@ -2,34 +2,33 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, GitCommit, Award, ShieldAlert } from 'lucide-react';
+import { getMe } from '@/services/authApi';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Profile() {
-  const [loading, setLoading] = useState(true);
+  const {user , loading} = useAuth();
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
+  
+  
   if (loading) {
-    return (
-      <div className="p-8 bg-[#F8FAFC] min-h-screen space-y-6 animate-pulse">
-        <div className="h-32 bg-white rounded-xl"></div>
-        <div className="h-48 bg-white rounded-xl"></div>
-      </div>
-    );
+    return <h1>Loading...</h1>;
   }
-
+  
+  if (!user) {
+    return <h1>Please login first</h1>;
+  }
+  
+  console.log(user)
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-[#F8FAFC] min-h-screen text-[#111827]">
       {/* Profile Header Canvas */}
       <div className="bg-white border border-[#E5E7EB] rounded-xl p-6 mb-8 flex flex-col md:flex-row items-center gap-6">
-        <div className="w-24 h-24 rounded-full bg-[#2563EB] text-white font-bold text-3xl flex items-center justify-center shadow-inner">
+        <div className="w-24 h-24 rounded-full bg-[#8c909a] text-white font-bold text-3xl flex items-center justify-center shadow-inner">
           AR
         </div>
         <div className="text-center md:text-left flex-1">
-          <h2 className="text-2xl font-bold">Alex Rivera</h2>
-          <p className="text-sm text-[#6B7280]">@alexrivera • San Francisco, CA</p>
+          <h2 className="text-2xl font-bold">{user?.username}</h2>
+          <p className="text-sm text-[#6B7280]">{user?.email}</p>
           <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
             {["Next.js", "TypeScript", "GraphQL", "Go"].map((skill, i) => (
               <span key={i} className="text-xs bg-[#F1F5F9] border border-[#E5E7EB] text-[#111827] px-2.5 py-1 rounded-md font-medium">{skill}</span>

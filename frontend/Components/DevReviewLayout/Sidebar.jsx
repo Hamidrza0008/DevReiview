@@ -11,15 +11,17 @@ import {
   Users, 
   User, 
   Settings,
-  Terminal
+  Terminal,
+  LogOut // <-- Logout icon import kiya
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar() {
+  const {user , loading , logout} = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
-  // image_41fae5.png ke folders ke anusar routes ko map kiya gaya hai
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { name: "My Projects", icon: FolderGit2, path: "/myprojects" },
@@ -30,6 +32,8 @@ export default function Sidebar() {
     { name: "Profile", icon: User, path: "/profile" },
     { name: "Settings", icon: Settings, path: "/settings" },
   ];
+
+  
 
   return (
     <aside className="w-64 bg-white border-r border-[#E5E7EB] fixed top-0 bottom-0 left-0 z-40 flex flex-col justify-between hidden md:flex">
@@ -50,7 +54,6 @@ export default function Sidebar() {
         <nav className="p-4 space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            // Pathname match hone par automatically active state lag jayegi
             const isActive = pathname === item.path;
 
             return (
@@ -63,7 +66,7 @@ export default function Sidebar() {
                     : "text-[#6B7280] hover:bg-[#F8FAFC] hover:text-[#111827]"
                 }`}
               >
-                {/* Active Sidebar Highlight pill background tracking using framer layoutId */}
+                {/* Active Sidebar Highlight pill */}
                 {isActive && (
                   <motion.div
                     layoutId="sidebarActivePill"
@@ -96,20 +99,31 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Embedded Fixed Mini Profile Summary */}
-      <div className="p-4 border-t border-[#E5E7EB] bg-[#F8FAFC]/50 flex items-center gap-3">
-        <div className="relative">
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
-            alt="Hamid profile avatar"
-            className="w-9 h-9 rounded-full object-cover ring-2 ring-[#E5E7EB]"
-          />
-          <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#22C55E] rounded-full ring-2 ring-white" />
+      {/* Embedded Fixed Mini Profile Summary with Logout Action */}
+      <div className="p-4 border-t border-[#E5E7EB] bg-[#F8FAFC]/50 flex items-center justify-between gap-2 group/profile">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative flex-shrink-0">
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
+              alt="Hamid profile avatar"
+              className="w-9 h-9 rounded-full object-cover ring-2 ring-[#E5E7EB]"
+            />
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#22C55E] rounded-full ring-2 ring-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold text-[#111827] truncate">{user?.username}</p>
+            <p className="text-[11px] text-[#6B7280] truncate">{user?.email}</p>
+          </div>
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-[#111827] truncate">Hamid Raza</p>
-          <p className="text-[11px] text-[#6B7280] truncate">hamid@devreview.io</p>
-        </div>
+
+        {/* Actionable Logout Button */}
+        <button 
+          onClick={() => logout()}
+          className="p-2 text-[#6B7280] hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex-shrink-0"
+          title="Log Out"
+        >
+          <LogOut className="w-4 h-4" />
+        </button>
       </div>
     </aside>
   );
