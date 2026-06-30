@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const authMiddleware = require("../middleware/auth.middleware")
 
-const { signUp, verifyOTP, login, forgotPassword, resetPassword , getMe , logout } = require("../controllers/auth.controller");
+const { signUp, verifyOTP, login, forgotPassword, resetPassword , getMe , logout , updateMe } = require("../controllers/auth.controller");
 
 router.post("/signup", signUp);
 
@@ -15,6 +15,7 @@ router.post("/forgot-password" , forgotPassword);
 router.post("/reset-password" , resetPassword);
 
 router.get("/me" ,authMiddleware , getMe );
+router.patch("/me" ,authMiddleware , updateMe );
 
 router.post("/logout", logout);
 

@@ -287,7 +287,7 @@ const logout = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: "Logged out successfully" 
+            message: "Logged out successfully"
         });
 
     } catch (error) {
@@ -300,4 +300,48 @@ const logout = async (req, res) => {
     }
 }
 
-module.exports = { signUp, login, verifyOTP, forgotPassword, resetPassword, getMe , logout }
+const updateMe = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const allowedFields = [
+            "name",
+            "username",
+            "bio",
+            "skills",
+            "profileImage",
+            "githubUrl",
+            "portfolioUrl"
+        ]
+
+        const updates = {};
+
+        allowedFields.forEach((field) => {
+            if (req.body[field] !== undefined) {
+                updates[field] = req.body[field];
+            }
+        })
+
+        if (updates.skills && !Array.isArray(updates.skills)) {
+            updates.skills = [];
+        }
+
+        const updateUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: updates },
+            { new: true, runValidators: true }
+        ).select("-password");
+
+        return res.status(200).json({
+            message: "User Updated Successfully",
+            success: "true",
+            user: updateUser
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Server error"
+        });
+    }
+}
+
+module.exports = { signUp, login, verifyOTP, forgotPassword, resetPassword, getMe, logout , updateMe }

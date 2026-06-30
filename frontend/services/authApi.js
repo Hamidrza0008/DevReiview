@@ -76,3 +76,21 @@ export const logOutMe = async () => {
 
     return await response.json();
 }
+
+export const updateProfile = async (formData) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me` , {
+            method: "PATCH",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+
+        })
+
+        return await response.json()
+    } catch (error) {
+        console.log("Update Profile Error:", error);
+    }
+}
