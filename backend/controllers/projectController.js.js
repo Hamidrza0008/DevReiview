@@ -1,6 +1,10 @@
 const Projects = require("../models/Projects");
+const User = require("../models/Users")
+const mongoose = require("mongoose");
 
-const createProjects = async(req, res) => {
+
+
+const createProjects = async (req, res) => {
     try {
         const userId = req.user.id;
 
@@ -39,4 +43,63 @@ const createProjects = async(req, res) => {
     }
 }
 
-module.exports = createProjects;
+
+const getMyProjects = async (req, res) => {
+    try {
+        const projects = await Projects.find({
+            owner: req.user.id
+        }).sort({ createdAt: -1 })
+
+        return res.status(200).json({
+            success: true,
+            projects,
+        })
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+const getProjectById = async (req, res) => {
+    try {
+
+
+
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Project ID",
+            });
+        }
+
+        const project = await Projects.findById(id).populate("owner", "username fullname profileImage");
+
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: "Project not found"
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            project
+        })
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+}
+
+module.exports = { createProjects, getMyProjects, getProjectById };

@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const Users = require("../models/Users");
 const OTP = require("../models/OTP");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
@@ -17,7 +17,7 @@ const signUp = async (req, res) => {
         } = req.body;
 
 
-        const existingUser = await User.findOne({
+        const existingUser = await Users.findOne({
             $or: [
                 { email }, { username }
             ]
@@ -31,7 +31,7 @@ const signUp = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.create({
+        const user = await Users.create({
             name,
             username,
             email,
@@ -123,7 +123,7 @@ const verifyOTP = async (req, res) => {
 const login = async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await Users.findOne({ email });
 
     if (!user) {
         return res.status(400).json({
@@ -173,7 +173,7 @@ const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
 
-        const user = await User.findOne({ email });
+        const user = await Users.findOne({ email });
 
         if (!user) {
             return res.status(400).json({
@@ -256,7 +256,7 @@ const getMe = async (req, res) => {
     try {
         const userId = req.user.id
 
-        const user = await User.findById(userId).select("-password");
+        const user = await Users.findById(userId).select("-password");
 
         if (!user) {
             return res.status(400).json({
@@ -325,7 +325,7 @@ const updateMe = async (req, res) => {
             updates.skills = [];
         }
 
-        const updateUser = await User.findByIdAndUpdate(
+        const updateUser = await Users.findByIdAndUpdate(
             userId,
             { $set: updates },
             { new: true, runValidators: true }

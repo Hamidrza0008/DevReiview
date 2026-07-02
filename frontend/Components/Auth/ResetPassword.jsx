@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 "use client";
 
 import React, { useState } from 'react';
@@ -44,6 +45,7 @@ export default function ResetPassword() {
   };
 
   return (
+    
     <div className="min-h-screen bg-[#F8FAFC] flex text-[#111827] font-sans antialiased relative overflow-hidden">
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-3xl" />

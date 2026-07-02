@@ -42,7 +42,7 @@ const projectSchema = new mongoose.Schema({
 
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Users",
         required: true
     },
 
@@ -59,6 +59,6 @@ const projectSchema = new mongoose.Schema({
     },
 } , {timestamps:true})
 
-const project = mongoose.model("projects" , projectSchema);
+const projects = mongoose.model("projects" , projectSchema);
 
-module.exports = project;
+module.exports = projects;
