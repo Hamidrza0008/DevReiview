@@ -122,9 +122,11 @@ const getExploreProjects = async (req, res) => {
 
 const getProjectForEdit = async (req, res) => {
     try {
+        console.log("rpoject")
         const { id } = req.params;
 
         const project = await Projects.findById(id);
+        console.log(project)
 
         if (!project) {
             return res.status(404).json({
@@ -133,7 +135,14 @@ const getProjectForEdit = async (req, res) => {
             })
         }
 
+        console.log({
+            projectOwner: project.owner.toString(),
+            loggedInUser: req.user.id,
+            isEqual: project.owner.toString() === req.user.id,
+        });
+
         if (project.owner.toString() !== req.user.id) {
+            console.log("hamid")
             return res.status(403).json({
                 success: false,
                 message: "You are not authorized to edit this project."
@@ -252,4 +261,4 @@ const deleteProject = async (req, res) => {
         });
     }
 };
-module.exports = { createProjects, getMyProjects, getProjectById, getExploreProjects, updateProject , deleteProject };
+module.exports = { createProjects, getMyProjects, getProjectById, getExploreProjects, updateProject, deleteProject , getProjectForEdit };

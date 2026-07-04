@@ -1,10 +1,13 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { getProjectDetails, updateProject } from "@/services/editProjectApi";
 
 export default function EditProject() {
+  const router = useRouter();
+  const { id } = useParams();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -18,42 +21,39 @@ export default function EditProject() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const { id } = useParams();
 
-  // FIX: Added return statement to send data back to the useEffect hook
-  const getProject = async (projectId) => {
-    try {
-      const res = await getProjectDetails(projectId);
-      console.log("API Response Received:", res);
-      if (res && res.success && res.project) {
-        return res.project;
-      }
-      return null;
-    } catch (error) {
-      console.error("Error in getProject:", error);
-      return null;
-    }
-  };
+  // Authorization, loader and error hook states
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const fetchProjectData = async () => {
       if (!id) return;
       try {
-        const projectData = await getProject(id);
+        setIsLoading(true);
+        setHasError(false);
+        const res = await getProjectDetails(id);
+        console.log("API Response Received:", res);
 
-        if (projectData) {
-          // Pre-filling form data using fetched response
+        if (res && res.success && res.project) {
+          setIsAuthorized(true);
           setFormData({
-            title: projectData.title || "",
-            description: projectData.description || "",
-            thumbnail: projectData.thumbnail || "",
-            githubUrl: projectData.githubUrl || "",
-            liveUrl: projectData.liveUrl || "",
+            title: res.project.title || "",
+            description: res.project.description || "",
+            thumbnail: res.project.thumbnail || "",
+            githubUrl: res.project.githubUrl || "",
+            liveUrl: res.project.liveUrl || "",
           });
-          setTechStack(projectData.techStack || []);
+          setTechStack(res.project.techStack || []);
+        } else {
+          setIsAuthorized(false);
         }
       } catch (error) {
         console.error("Failed to fetch project data:", error);
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -126,12 +126,11 @@ export default function EditProject() {
       liveUrl: formData.liveUrl.trim() || null,
     };
 
-    // Pre-filled data updated logic and console log
     console.log("=== SUBMITTED FORM DATA PAYLOAD ===");
     console.log(updatedProjectPayload);
 
     try {
-      const res = await updateProject(id,updatedProjectPayload);
+      const res = await updateProject(id, updatedProjectPayload);
       console.log(res);
       setSubmitStatus("success");
     } catch (error) {
@@ -142,6 +141,82 @@ export default function EditProject() {
     }
   };
 
+  // 1. Loading Screen View
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center font-sans antialiased">
+        <div className="flex flex-col items-center space-y-4">
+          <svg className="animate-spin h-10 w-10 text-[#2563EB]" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <p className="text-sm font-medium text-[#6B7280]">Checking authorization...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Unexpected Error View
+  if (hasError) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased flex flex-col justify-center items-center">
+        <div className="max-w-md w-full bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl shadow-sm p-6 sm:p-8 text-center space-y-4">
+          <div className="mx-auto w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-[#111827]">An unexpected error occurred</h2>
+          <p className="text-sm text-[#6B7280]">We could not fetch the project details. Please try again later.</p>
+          <button
+            onClick={() => router.back()}
+            className="w-full inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-[#2563EB] border border-transparent rounded-lg shadow-sm hover:bg-[#3882F6] transition-all focus:outline-none"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 3. Beautiful Centered Unauthorized View
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased flex flex-col justify-center items-center">
+        <div className="max-w-md w-full bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl shadow-sm p-6 sm:p-8 text-center space-y-5">
+          <div className="mx-auto w-14 h-14 bg-[#2563EB]/5 rounded-full flex items-center justify-center border border-[#2563EB]/10">
+            <svg className="h-6 w-6 text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold text-[#111827] tracking-tight">
+              You are not authorized to edit this project
+            </h2>
+            <p className="text-sm text-[#6B7280] leading-relaxed">
+              Only the creator or owner has permissions to modify this project's details.
+            </p>
+          </div>
+          <div className="pt-2 grid grid-cols-2 gap-3">
+            <button
+              onClick={() => router.back()}
+              className="px-4 py-2 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-gray-50 hover:text-[#111827] transition-all focus:outline-none"
+            >
+              Go Back
+            </button>
+            <button
+              onClick={() => router.push(`/projects/${id}`)}
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-[#2563EB] border border-transparent rounded-lg shadow-sm hover:bg-[#3882F6] transition-all focus:outline-none"
+            >
+              View Project
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 4. Authorized Edit Form Component
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased flex flex-col justify-center">
       <div className="max-w-4xl mx-auto w-full">

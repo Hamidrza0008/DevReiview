@@ -2,18 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FolderGit2, 
-  MessageSquare, 
-  ThumbsUp, 
-  Eye, 
-  Star, 
-  Plus, 
-  ExternalLink, 
-  ArrowUpRight, 
-  Search, 
-  Bell, 
-  ChevronDown 
+import { getMyProjects } from "@/services/getMyProjectsApi";
+import { useAuth } from "@/context/AuthContext";
+import {
+  FolderGit2,
+  MessageSquare,
+  ThumbsUp,
+  Eye,
+  Star,
+  Plus,
+  ExternalLink,
+  ArrowUpRight,
+  Search,
+  Bell,
+  ChevronDown
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 
@@ -21,9 +23,28 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("My Projects");
   const [activeNav, setActiveNav] = useState("Dashboard");
+  const [projects, setProjects] = useState([]);
+  const { user } = useAuth();
+  // console.log(user)
+
+  const totalNumberOfProjects = projects.length.toString();
+  const totalLikes = projects.reduce((totalLikes, project) => totalLikes = totalLikes + project.likes, 0)
+  const totalReviews = projects.reduce((totalLikes, project) => totalLikes = totalLikes + project.reviews, 0)
+  // console.log(totalNumberOfProjects);
+  // console.log(totalLikes);
+  // console.log(totalReviews);
+
+  const getProjects = async () => {
+    const res = await getMyProjects();
+    // console.log(res.projects);
+    setProjects(res.projects);
+  }
+
+  // console.log(projects);
 
   // Premium loading state sequence trigger
   useEffect(() => {
+    getProjects();
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 1600);
@@ -51,7 +72,7 @@ export default function Dashboard() {
 
       {/* MAIN CONTAINER WORKSPACE LAYOUT */}
       <div className="flex-1 flex flex-col min-h-screen">
-        
+
         {/* DASHBOARD NAVBAR LAYER */}
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] sticky top-0 z-30 px-8 flex items-center justify-between">
           <div className="w-96 relative group hidden sm:block">
@@ -71,11 +92,11 @@ export default function Dashboard() {
             <div className="h-5 w-px bg-[#E5E7EB]" />
             <button className="flex items-center gap-2 p-1.5 hover:bg-[#F8FAFC] rounded-xl transition-all">
               <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
+                src={user.profileImage || "data:image/png;base64,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"}
                 alt="Hamid profile top headshot"
                 className="w-7 h-7 rounded-full object-cover"
               />
-              <span className="text-sm font-medium text-[#111827]">Hamid</span>
+              <span className="text-sm font-medium text-[#111827]">{user.username}</span>
               <ChevronDown className="w-4 h-4 text-[#6B7280]" />
             </button>
           </div>
@@ -146,36 +167,35 @@ export default function Dashboard() {
                 animate="show"
                 className="space-y-8"
               >
-                
+
                 {/* 1. PROFILE SUMMARY SECTION */}
-                <motion.div 
+                <motion.div
                   variants={itemVariants}
                   className="bg-white border border-[#E5E7EB] rounded-2xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm"
                 >
                   <div className="flex items-center gap-5">
                     <div className="relative">
                       <img
-                        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                        alt="Hamid Master Profile Graphic"
+                        src={user.profileImage || "data:image/png;base64,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"} alt="Hamid Master Profile Graphic"
                         className="w-16 h-16 rounded-2xl object-cover ring-4 ring-[#2563EB]/5"
                       />
                       <div className="absolute -bottom-1 -right-1 bg-white border border-[#E5E7EB] text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm text-[#2563EB]">
                         PRO
                       </div>
                     </div>
-                    
+
                     <div>
                       <h1 className="text-xl font-bold tracking-tight text-[#111827]">
-                        Welcome back, Hamid! <span className="inline-block animate-bounce origin-bottom-right">👋</span>
+                        Welcome back, {user.name}<span className="inline-block animate-bounce origin-bottom-right">👋</span>
                       </h1>
                       <p className="text-sm text-[#6B7280] mt-0.5">Here's what's happening with your projects.</p>
                       <p className="text-xs font-medium text-[#3B82F6] mt-2 bg-[#3B82F6]/5 px-2.5 py-1 rounded-lg inline-block">
-                        Senior Full-Stack Architect
+                        {user.bio}
                       </p>
                     </div>
                   </div>
 
-                  <motion.button 
+                  <motion.button
                     whileHover={{ scale: 1.02, y: -1 }}
                     whileTap={{ scale: 0.98 }}
                     className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#3B82F6] text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm shadow-[#2563EB]/10 group self-stretch md:self-auto justify-center"
@@ -186,15 +206,15 @@ export default function Dashboard() {
                 </motion.div>
 
                 {/* 2. ANALYTICS PANEL */}
-                <motion.div 
+                <motion.div
                   variants={itemVariants}
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
                 >
                   {[
-                    { title: "Total Projects", value: "8", change: "+2 this month", icon: FolderGit2, color: "text-[#2563EB] bg-[#2563EB]/5" },
+                    { title: "Total Projects", value: totalNumberOfProjects, change: "+2 this month", icon: FolderGit2, color: "text-[#2563EB] bg-[#2563EB]/5" },
                     { title: "Total Views", value: "152", change: "+24 tracking", icon: Eye, color: "text-[#111827] bg-[#111827]/5" },
-                    { title: "Likes Received", value: "56", change: "+14% velocity", icon: ThumbsUp, color: "text-[#22C55E] bg-[#22C55E]/5" },
-                    { title: "Reviews Received", value: "24", change: "+8 new audits", icon: MessageSquare, color: "text-[#3B82F6] bg-[#3B82F6]/5" },
+                    { title: "Likes Received", value: totalLikes, change: "+14% velocity", icon: ThumbsUp, color: "text-[#22C55E] bg-[#22C55E]/5" },
+                    { title: "Reviews Received", value: totalReviews, change: "+8 new audits", icon: MessageSquare, color: "text-[#3B82F6] bg-[#3B82F6]/5" },
                   ].map((card, i) => {
                     const Icon = card.icon;
                     return (
@@ -226,7 +246,7 @@ export default function Dashboard() {
 
                 {/* 3. PROJECT MANAGEMENT SECTION */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                  
+
                   {/* Left Interactive Flow (Tabs & Lists Content Mapping) */}
                   <motion.div variants={itemVariants} className="lg:col-span-2 space-y-6">
                     <div className="flex items-center gap-6 border-b border-[#E5E7EB] pb-px">
@@ -236,15 +256,14 @@ export default function Dashboard() {
                           <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-3 text-sm font-semibold transition-all relative ${
-                              isActive ? "text-[#2563EB]" : "text-[#6B7280] hover:text-[#111827]"
-                            }`}
+                            className={`pb-3 text-sm font-semibold transition-all relative ${isActive ? "text-[#2563EB]" : "text-[#6B7280] hover:text-[#111827]"
+                              }`}
                           >
                             {tab}
                             {isActive && (
-                              <motion.div 
-                                layoutId="dashboardTabLine" 
-                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]" 
+                              <motion.div
+                                layoutId="dashboardTabLine"
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#2563EB]"
                               />
                             )}
                           </button>
@@ -262,32 +281,7 @@ export default function Dashboard() {
                           exit={{ opacity: 0, y: -10 }}
                           className="grid grid-cols-1 md:grid-cols-2 gap-6"
                         >
-                          {[
-                            {
-                              name: "Finance Tracker",
-                              image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=600&q=80",
-                              stack: ["Next.js", "Tailwind CSS", "Prisma"],
-                              likes: 24,
-                              reviews: 9,
-                              status: "Reviewed"
-                            },
-                            {
-                              name: "Task Management App",
-                              image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
-                              stack: ["React", "TypeScript", "Tailwind CSS"],
-                              likes: 18,
-                              reviews: 5,
-                              status: "In Review"
-                            },
-                            {
-                              name: "E-Commerce Platform",
-                              image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80",
-                              stack: ["Next.js", "GraphQL", "Tailwind CSS"],
-                              likes: 14,
-                              reviews: 10,
-                              status: "Reviewed"
-                            }
-                          ].map((project, idx) => (
+                          {projects?.map((project, idx) => (
                             <motion.div
                               key={idx}
                               whileHover={{ y: -6, shadow: "0 12px 20px -3px rgba(0,0,0,0.05)" }}
@@ -295,29 +289,28 @@ export default function Dashboard() {
                             >
                               <div className="relative aspect-video w-full overflow-hidden bg-slate-50">
                                 <img
-                                  src={project.image}
-                                  alt={project.name}
+                                  src={project.thumbnail || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6hhir7Gdui8eEMOrKdZ7sKmvwWo1EstAWj2WOXfYBYw&s=10"}
+                                  alt={project.title}
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />
-                                <div className="absolute top-3 right-3">
-                                  <span className={`text-[11px] font-bold tracking-wide px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${
-                                    project.status === "Reviewed" 
-                                      ? "bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]" 
+                                {/* <div className="absolute top-3 right-3">
+                                  <span className={`text-[11px] font-bold tracking-wide px-2.5 py-1 rounded-full shadow-sm backdrop-blur-md ${project.status === "Reviewed"
+                                      ? "bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]"
                                       : "bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]"
-                                  }`}>
+                                    }`}>
                                     {project.status}
                                   </span>
-                                </div>
+                                </div> */}
                               </div>
 
                               <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                                 <div>
                                   <h3 className="font-bold text-base text-[#111827] group-hover:text-[#2563EB] transition-colors flex items-center gap-1.5">
-                                    {project.name}
+                                    {project.title}
                                     <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </h3>
                                   <div className="flex flex-wrap gap-1.5 mt-2">
-                                    {project.stack.map((tech, i) => (
+                                    {project.techStack.map((tech, i) => (
                                       <span key={i} className="text-xs bg-[#F8FAFC] border border-[#E5E7EB] text-[#6B7280] font-medium px-2 py-0.5 rounded-lg">
                                         {tech}
                                       </span>

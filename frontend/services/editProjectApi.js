@@ -1,7 +1,7 @@
 export const getProjectDetails = async (id) => {
 
     try {
-        const respone = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}`, {
+        const respone = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${id}/edit`, {
             method: "GET",
             credentials: "include",
         })
