@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Plus, Heart, MessageSquare, ExternalLink, GitBranch, Layers, FolderGit2, Search, SlidersHorizontal, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getMyProjects } from '@/services/getMyProjectsApi';
+import { toggleLikes } from '@/services/toggleLikesApi';
 
 // Fallback gradient filters using your design palette variations
 const getFallbackGradient = (title) => {
@@ -23,6 +24,11 @@ export default function MyProjects() {
   const router = useRouter();
   // const [isLiked , setLiked] = useState();
   // const [likesCount , setLikesCount] = useState();
+
+  const handleLike = async (id) => {
+    const res = await toggleLikes(id);
+    getProjects();
+  }
 
   const getProjects = async () => {
     try {
@@ -64,9 +70,9 @@ export default function MyProjects() {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="p-6 md:p-8 bg-[#F8FAFC] min-h-screen text-[#111827] max-w-7xl mx-auto space-y-6 antialiased relative selection:bg-[#2563EB]/10 selection:text-[#2563EB]"
     >
       {/* BACKGROUND EFFECTS */}
@@ -81,13 +87,13 @@ export default function MyProjects() {
           </h1>
           <p className="text-xs text-[#6B7280]">Manage, deploy, and inspect your creative submissions metrics logs.</p>
         </div>
-        <motion.button 
-          onClick={() => router.push("/projects/create")}  
+        <motion.button
+          onClick={() => router.push("/projects/create")}
           whileHover={{ scale: 1.01, y: -0.5 }}
           whileTap={{ scale: 0.99 }}
           className="bg-[#2563EB] hover:bg-[#3B82F6] text-[#FFFFFF] px-4 py-2.5 rounded-xl font-semibold flex items-center space-x-1.5 shadow-2xs transition-all text-xs w-full sm:w-auto justify-center shrink-0"
         >
-          <Plus className="w-3.5 h-3.5" /> 
+          <Plus className="w-3.5 h-3.5" />
           <span>Upload Project</span>
         </motion.button>
       </div>
@@ -96,9 +102,9 @@ export default function MyProjects() {
       <div className="flex flex-col sm:flex-row gap-3 items-center z-10 relative max-w-xl">
         <div className="relative flex-1 w-full group">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B7280]" />
-          <input 
-            type="text" 
-            placeholder="Search matching projects..." 
+          <input
+            type="text"
+            placeholder="Search matching projects..."
             disabled
             className="w-full text-xs pl-10 pr-4 py-2 bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl text-[#6B7280] opacity-80 cursor-not-allowed shadow-2xs"
           />
@@ -111,7 +117,7 @@ export default function MyProjects() {
 
       {/* NO PROJECTS STATE */}
       {projects.length === 0 && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col items-center justify-center py-20 border border-dashed border-[#E5E7EB] rounded-2xl bg-[#FFFFFF] shadow-2xs max-w-xl mx-auto p-6 text-center space-y-3 z-10 relative"
@@ -135,7 +141,7 @@ export default function MyProjects() {
           const hasThumbnail = project.thumbnail && project.thumbnail.trim() !== "";
           const fallbackGradient = getFallbackGradient(project.title);
           console.log(project)
-          
+
 
           return (
             <motion.div
@@ -165,8 +171,8 @@ export default function MyProjects() {
                   {/* Body Canvas Wrapper */}
                   <div onClick={() => router.push(`/projects/${project._id}`)} className="flex-1 w-full relative overflow-hidden bg-[#F8FAFC] cursor-pointer flex items-center justify-center">
                     {hasThumbnail ? (
-                      <img 
-                        src={project.thumbnail} 
+                      <img
+                        src={project.thumbnail}
                         alt={project.title}
                         className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
                         onError={(e) => {
@@ -183,11 +189,10 @@ export default function MyProjects() {
                   </div>
 
                   {/* Status Badge */}
-                  <span className={`absolute bottom-2 right-2 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider ${
-                    project.status === 'Published' 
-                      ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20' 
+                  <span className={`absolute bottom-2 right-2 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border uppercase tracking-wider ${project.status === 'Published'
+                      ? 'bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/20'
                       : 'bg-[#6B7280]/10 text-[#6B7280] border-[#E5E7EB]'
-                  }`}>
+                    }`}>
                     {project.status || 'Active'}
                   </span>
                 </div>
@@ -199,7 +204,7 @@ export default function MyProjects() {
                       <h3 onClick={() => router.push(`/projects/${project._id}`)} className="font-bold text-sm text-[#111827] tracking-tight line-clamp-1 group-hover:text-[#2563EB] cursor-pointer transition-colors flex items-center gap-1">
                         {project.title}
                       </h3>
-                      
+
                       {/* Anchor Links Blocks */}
                       <div className="flex items-center space-x-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
                         {project.githubUrl && (
@@ -223,8 +228,8 @@ export default function MyProjects() {
                   {/* TECH STACK CHIPS */}
                   <div className="flex flex-wrap gap-1 pt-0.5">
                     {project.techStack && project.techStack.map((tech, idx) => (
-                      <span 
-                        key={idx} 
+                      <span
+                        key={idx}
                         className="text-[9px] font-semibold bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 px-2 py-0.5 rounded-md shadow-2xs"
                       >
                         {tech}
@@ -237,20 +242,25 @@ export default function MyProjects() {
               {/* MOCK CARD METRICS FOOTER */}
               <div className="px-4 py-2.5 border-t border-[#E5E7EB] bg-[#F8FAFC]/50 flex justify-between items-center text-[11px] text-[#6B7280] font-medium rounded-b-2xl">
                 <div className="flex space-x-3">
-                  <span className="flex items-center space-x-1 cursor-pointer group/heart transition-colors">
-                    <Heart className="w-3.5 h-3.5 text-[#6B7280] group-hover/heart:text-rose-500 group-hover/heart:fill-rose-500/10 transition-colors" /> 
-                    <span className="text-[#111827] font-semibold">{project.likes.length}</span>
+                  <span onClick={() => handleLike(project._id)} className="flex items-center text-[11px] font-bold hover:text-red-500 cursor-pointer transition-colors group/like select-none">
+                    <Heart
+                      className={`w-3.5 h-3.5 mr-1 stroke-[2] transition-all ${project.isLiked
+                        ? "fill-red-500 text-red-500"
+                        : "fill-none text-current group-hover/like:fill-red-500 group-hover/like:text-red-500"
+                        }`}
+                    />
+                    {project.likes.length || 0}
                   </span>
                   <span className="flex items-center space-x-1 cursor-pointer group/msg transition-colors">
-                    <MessageSquare className="w-3.5 h-3.5 text-[#6B7280] group-hover/msg:text-[#2563EB] transition-colors" /> 
+                    <MessageSquare className="w-3.5 h-3.5 text-[#6B7280] group-hover/msg:text-[#2563EB] transition-colors" />
                     <span className="text-[#111827] font-semibold">{project.reviews || 0}</span>
                   </span>
                   <span className="flex items-center space-x-1 text-[#6B7280]/60 select-none">
                     <Eye className="w-3.5 h-3.5" />
-                    <span>{Math.floor(((project.likes || 0) * 4) + ((project.reviews || 0) * 3) + 12)}</span>
+                    <span>{Math.floor(((project.likes.length || 0) * 4) + ((project.reviews || 0) * 3) + 12)}</span>
                   </span>
                 </div>
-                
+
                 <span className="text-[10px] text-[#6B7280]/70 font-normal font-sans">
                   {project.createdAt ? new Date(project.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Active'}
                 </span>

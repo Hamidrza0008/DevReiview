@@ -1,25 +1,26 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Search, 
-  SlidersHorizontal, 
-  Flame, 
-  Code, 
-  Heart, 
-  MessageSquare, 
-  ExternalLink, 
-  GitBranch, 
-  ArrowUpRight, 
-  Layers, 
-  Users, 
-  Star, 
-  Bookmark, 
-  CheckCircle, 
-  Eye 
+import {
+  Search,
+  SlidersHorizontal,
+  Flame,
+  Code,
+  Heart,
+  MessageSquare,
+  ExternalLink,
+  GitBranch,
+  ArrowUpRight,
+  Layers,
+  Users,
+  Star,
+  Bookmark,
+  CheckCircle,
+  Eye
 } from 'lucide-react';
 import { getExploreProjects } from '@/services/getExploreProjectsApi';
 import { useRouter } from 'next/navigation';
+import { toggleLikes } from '@/services/toggleLikesApi';
 
 export default function ExploreProjects() {
   const [projects, setProjects] = useState([]);
@@ -38,10 +39,19 @@ export default function ExploreProjects() {
     }
   };
 
+  const handleLike = async(id) => {
+    try {
+      const res = await toggleLikes(id);
+      console.log(res);
+      getProjects();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     getProjects();
 
-    // स्क्रॉल डिटेक्शन लॉजिक जो बिना CSS नियमों पर निर्भर रहे सर्च बार को स्टिकी बनाएगा
     const handleScroll = () => {
       if (window.scrollY > 420) {
         setIsPinned(true);
@@ -59,7 +69,7 @@ export default function ExploreProjects() {
     return (
       <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden p-8 lg:p-12 space-y-12 animate-pulse">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] pointer-events-none" />
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 pt-8">
           <div className="lg:col-span-7 space-y-6">
             <div className="h-14 bg-gray-200 rounded-2xl w-3/4"></div>
@@ -99,28 +109,28 @@ export default function ExploreProjects() {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="relative min-h-screen bg-[#F8FAFC] text-[#111827] font-sans selection:bg-blue-500 selection:text-white pb-24"
     >
       {/* Premium Background Artifacts */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-blue-200/30 to-indigo-100/20 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-[400px] left-[-200px] w-[500px] h-[500px] bg-sky-100/40 rounded-full blur-[120px] pointer-events-none" />
-      
+
       {/* Subtle Grid Pattern Overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: `radial-gradient(#2563EB 1px, transparent 1px)`, 
-          backgroundSize: '24px 24px' 
-        }} 
+      <div
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(#2563EB 1px, transparent 1px)`,
+          backgroundSize: '24px 24px'
+        }}
       />
 
       {/* Dynamic Smart Pinned Top Navigation Search Bar */}
       <AnimatePresence>
         {isPinned && (
-          <motion.div 
+          <motion.div
             initial={{ y: -80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -80, opacity: 0 }}
@@ -131,9 +141,9 @@ export default function ExploreProjects() {
               <div className="pl-3 pr-2 text-[#6B7280]">
                 <Search className="w-4 h-4 stroke-[2]" />
               </div>
-              <input 
-                type="text" 
-                placeholder="Search projects, frameworks, tech stack..." 
+              <input
+                type="text"
+                placeholder="Search projects, frameworks, tech stack..."
                 className="flex-1 bg-transparent pl-2 pr-4 py-2 focus:outline-none text-sm text-[#111827] placeholder-[#6B7280]"
               />
               <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-xl text-xs font-semibold text-[#111827] flex items-center space-x-1.5 shadow-sm">
@@ -146,7 +156,7 @@ export default function ExploreProjects() {
       </AnimatePresence>
 
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 py-12 relative z-10">
-        
+
         {/* ================= SECTION 1 — HERO ================= */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center pt-4 mb-16">
           <div className="lg:col-span-7 space-y-6 text-left">
@@ -178,8 +188,8 @@ export default function ExploreProjects() {
                 { label: 'Reviews', value: '45.1k', icon: MessageSquare },
                 { label: 'Avg Rating', value: '4.92', icon: Star, isRating: true },
               ].map((stat, idx) => (
-                <div 
-                  key={idx} 
+                <div
+                  key={idx}
                   className="bg-white border border-[#E5E7EB]/80 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0,02)] backdrop-blur-md hover:border-blue-200 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-1.5">
@@ -195,8 +205,8 @@ export default function ExploreProjects() {
           {/* Right Column: Floating Dashboard Illustration */}
           <div className="lg:col-span-5 relative hidden lg:flex items-center justify-center">
             <div className="absolute w-[380px] h-[380px] bg-gradient-to-tr from-blue-400/20 to-indigo-300/10 rounded-full blur-3xl -z-10" />
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, x: 30, rotate: 1 }}
               animate={{ opacity: 1, x: 0, rotate: -2 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
@@ -252,9 +262,9 @@ export default function ExploreProjects() {
             <div className="pl-4 pr-2 text-[#6B7280]">
               <Search className="w-5 h-5 stroke-[1.8]" />
             </div>
-            <input 
-              type="text" 
-              placeholder="Search projects, frameworks, tech stack..." 
+            <input
+              type="text"
+              placeholder="Search projects, frameworks, tech stack..."
               className="flex-1 bg-transparent pl-2 pr-4 py-3 focus:outline-none text-base text-[#111827] placeholder-[#6B7280] font-normal"
             />
             <button className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-xl text-sm font-semibold text-[#111827] flex items-center space-x-2 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm active:scale-98">
@@ -267,13 +277,12 @@ export default function ExploreProjects() {
         {/* ================= SECTION 3 — CATEGORY FILTERS ================= */}
         <section className="flex flex-wrap items-center justify-center gap-2.5 max-w-3xl mx-auto mb-16">
           {["All", "Trending", "React", "Next.js", "Node", "TypeScript", "MERN", "Tailwind"].map((chip, idx) => (
-            <span 
-              key={idx} 
-              className={`cursor-pointer text-xs px-4 py-2 rounded-full font-semibold tracking-wide transition-all duration-200 select-none active:scale-95 ${
-                idx === 0 
-                  ? 'bg-[#2563EB] text-white shadow-md shadow-blue-500/10 hover:bg-blue-700' 
+            <span
+              key={idx}
+              className={`cursor-pointer text-xs px-4 py-2 rounded-full font-semibold tracking-wide transition-all duration-200 select-none active:scale-95 ${idx === 0
+                  ? 'bg-[#2563EB] text-white shadow-md shadow-blue-500/10 hover:bg-blue-700'
                   : 'bg-white border border-[#E5E7EB] text-[#6B7280] hover:border-[#3B82F6] hover:text-[#2563EB] hover:shadow-sm'
-              }`}
+                }`}
             >
               {chip}
             </span>
@@ -284,7 +293,7 @@ export default function ExploreProjects() {
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <h3 className="font-bold text-xl flex items-center text-[#111827] tracking-tight">
-              <Flame className="w-5 h-5 text-orange-500 mr-2 fill-orange-500 animate-pulse" /> 
+              <Flame className="w-5 h-5 text-orange-500 mr-2 fill-orange-500 animate-pulse" />
               Trending Showcases
             </h3>
             <span className="text-xs text-[#6B7280] font-medium">{projects.length} results found</span>
@@ -303,8 +312,8 @@ export default function ExploreProjects() {
                 const cardBadge = badgeTypes[index % badgeTypes.length];
 
                 return (
-                  <motion.div 
-                    key={project._id} 
+                  <motion.div
+                    key={project._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -312,7 +321,7 @@ export default function ExploreProjects() {
                   >
                     <div>
                       {/* Browser Window Wrapper */}
-                      <div 
+                      <div
                         onClick={() => router.push(`/projects/${project._id}`)}
                         className="relative h-48 w-full overflow-hidden cursor-pointer border-b border-[#E5E7EB] bg-slate-50 group/thumb"
                       >
@@ -338,17 +347,16 @@ export default function ExploreProjects() {
 
                         {/* Badges Overlay */}
                         <div className="absolute top-10 left-3 z-20 pointer-events-none">
-                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm tracking-wide text-white ${
-                            cardBadge === 'Trending' ? 'bg-orange-500' : cardBadge === 'New' ? 'bg-[#22C55E]' : 'bg-[#2563EB]'
-                          }`}>
+                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm tracking-wide text-white ${cardBadge === 'Trending' ? 'bg-orange-500' : cardBadge === 'New' ? 'bg-[#22C55E]' : 'bg-[#2563EB]'
+                            }`}>
                             {cardBadge}
                           </span>
                         </div>
 
                         {project.thumbnail ? (
-                          <img 
-                            src={project.thumbnail} 
-                            alt={project.title} 
+                          <img
+                            src={project.thumbnail}
+                            alt={project.title}
                             className="w-full h-full object-cover pt-7 transition-transform duration-700 ease-out group-hover/thumb:scale-105"
                           />
                         ) : (
@@ -367,9 +375,9 @@ export default function ExploreProjects() {
                           <div className="flex items-center space-x-2">
                             <div className="relative">
                               {project.owner.profileImage ? (
-                                <img 
-                                  src={project.owner.profileImage} 
-                                  alt={project.owner.username} 
+                                <img
+                                  src={project.owner.profileImage}
+                                  alt={project.owner.username}
                                   className="w-6 h-6 rounded-full object-cover border border-[#E5E7EB]"
                                 />
                               ) : (
@@ -396,8 +404,8 @@ export default function ExploreProjects() {
 
                         <div className="flex flex-wrap gap-1.5 pt-1">
                           {project.techStack?.map((tech, i) => (
-                            <span 
-                              key={i} 
+                            <span
+                              key={i}
                               className="text-[10px] font-semibold font-mono bg-slate-100 text-[#6B7280] px-2 py-0.5 rounded-md border border-[#E5E7EB]/60 shadow-xs capitalize transition-colors group-hover:bg-blue-50/50 group-hover:text-[#2563EB] group-hover:border-blue-100"
                             >
                               {tech}
@@ -410,25 +418,30 @@ export default function ExploreProjects() {
                     {/* Footer Actions */}
                     <div className="px-5 pb-5 pt-4 border-t border-[#E5E7EB]/60 flex items-center justify-between bg-[#F8FAFC]/40">
                       <div className="flex items-center space-x-3 text-[#6B7280]">
-                        <span className="flex items-center text-[11px] font-bold hover:text-red-500 cursor-pointer transition-colors group/like select-none">
-                          <Heart className="w-3.5 h-3.5 mr-1 stroke-[2] group-hover/like:fill-red-500 group-hover/like:text-red-500 transition-all" /> 
+                        <span onClick={() => handleLike(project._id)} className="flex items-center text-[11px] font-bold hover:text-red-500 cursor-pointer transition-colors group/like select-none">
+                          <Heart
+                            className={`w-3.5 h-3.5 mr-1 stroke-[2] transition-all ${project.isLiked
+                                ? "fill-red-500 text-red-500"
+                                : "fill-none text-current group-hover/like:fill-red-500 group-hover/like:text-red-500"
+                              }`}
+                          />
                           {project.likes.length || 0}
                         </span>
                         <span className="flex items-center text-[11px] font-bold hover:text-[#2563EB] cursor-pointer transition-colors select-none">
-                          <MessageSquare className="w-3.5 h-3.5 mr-1 stroke-[2]" /> 
+                          <MessageSquare className="w-3.5 h-3.5 mr-1 stroke-[2]" />
                           {project.reviews || 0}
                         </span>
                         <span className="hidden sm:flex items-center text-[11px] font-bold opacity-80">
-                          <Eye className="w-3.5 h-3.5 mr-1 stroke-[2]" /> 
+                          <Eye className="w-3.5 h-3.5 mr-1 stroke-[2]" />
                           {((project.likes.length || 0) * 3) + 12}
                         </span>
                       </div>
 
                       <div className="flex items-center space-x-2">
                         {project.GitBranchUrl && (
-                          <a 
-                            href={project.GitBranchUrl} 
-                            target="_blank" 
+                          <a
+                            href={project.GitBranchUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 text-[#6B7280] hover:text-[#111827] bg-white border border-[#E5E7EB] rounded-xl hover:shadow-xs hover:border-gray-300 transition-all active:scale-95"
                           >
@@ -436,13 +449,13 @@ export default function ExploreProjects() {
                           </a>
                         )}
                         {project.liveUrl && (
-                          <a 
-                            href={project.liveUrl} 
-                            target="_blank" 
+                          <a
+                            href={project.liveUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-[11px] font-bold text-[#2563EB] hover:text-white bg-blue-50 hover:bg-[#2563EB] px-3.5 py-2 rounded-xl flex items-center gap-1 shadow-xs group-hover:bg-[#2563EB] group-hover:text-white transition-all duration-300 active:scale-95"
                           >
-                            <span>Live</span> 
+                            <span>Live</span>
                             <ExternalLink className="w-3 h-3 stroke-[2.5]" />
                           </a>
                         )}

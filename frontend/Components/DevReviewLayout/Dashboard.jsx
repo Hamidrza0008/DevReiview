@@ -27,8 +27,10 @@ import {
   FileCode
 } from "lucide-react";
 import Sidebar from "./Sidebar";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("My Projects");
   const [activeNav, setActiveNav] = useState("Dashboard");
@@ -36,7 +38,7 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   const totalNumberOfProjects = projects.length.toString();
-  const totalLikes = projects.reduce((total, project) => total + (project.likes || 0), 0);
+  const totalLikes = projects.reduce((total, project) => total + (project.likes.length || 0), 0);
   const totalReviews = projects.reduce((total, project) => total + (project.reviews || 0), 0);
 
   // Premium Custom Mock Data Elements (Inside Constants for Safety)
@@ -302,6 +304,7 @@ export default function Dashboard() {
                                   {/* Thumbnail Layout Browser Mockup Area */}
                                   <div className="relative aspect-video w-full bg-[#F8FAFC] border-b border-[#E5E7EB] overflow-hidden">
                                     <img
+                                      onClick={()=>router.push(`/projects/${project._id}`)}
                                       src={project.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80"}
                                       alt={project.title}
                                       className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
@@ -327,7 +330,7 @@ export default function Dashboard() {
                                     <div className="flex items-center justify-between pt-2.5 border-t border-[#F1F5F9] text-[11px] font-semibold text-[#6B7280]">
                                       <div className="flex items-center gap-3">
                                         <span className="flex items-center gap-1 hover:text-rose-500 transition-colors">
-                                          <ThumbsUp className="w-3.5 h-3.5 text-rose-500/80 fill-rose-500/5" /> {project.likes || 0}
+                                          <ThumbsUp className="w-3.5 h-3.5 text-rose-500/80 fill-rose-500/5" /> {project.likes.length || 0}
                                         </span>
                                         <span className="flex items-center gap-1 hover:text-[#2563EB] transition-colors">
                                           <MessageSquare className="w-3.5 h-3.5 text-[#2563EB]/80" /> {project.reviews || 0}

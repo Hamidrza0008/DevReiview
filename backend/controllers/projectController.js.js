@@ -51,9 +51,25 @@ const getMyProjects = async (req, res) => {
             owner: req.user.id
         }).sort({ createdAt: -1 })
 
+        const userId = req.user.id;
+
+        const updatedProjects = projects.map((project) => {
+
+            const likesCount = project.likes.length;
+
+            const isLiked = project.likes.some(
+                (id) => id.toString() === userId
+            );
+
+            return {
+                ...project.toObject(),
+                likesCount,
+                isLiked,
+            };
+        });
         return res.status(200).json({
             success: true,
-            projects,
+            projects: updatedProjects,
         })
     } catch (error) {
         console.error(error);
@@ -107,13 +123,27 @@ const getProjectById = async (req, res) => {
 
 const getExploreProjects = async (req, res) => {
     try {
+        const userId = req.user.id;
+
         const projects = await Projects.find({})
             .populate("owner", "username fullName profileImage")
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 }
+            );
+
+        const updatedProject = projects.map((proj) => {
+            const likesCount = proj.likes.length;
+            const isLiked = proj.likes.some((id) => id.toString() === userId);
+
+            return {
+                ...proj.toObject(),
+                likesCount,
+                isLiked,
+            }
+        })
 
         return res.status(200).json({
             success: true,
-            projects,
+            projects: updatedProject,
         });
     } catch (error) {
         return res.status(500).json({
@@ -266,10 +296,10 @@ const deleteProject = async (req, res) => {
 };
 
 const toggleLikes = async (req, res) => {
-        
+
     try {
-        const {id} = req.params;
-        
+        const { id } = req.params;
+
         const userId = req.user.id;
 
         const project = await Projects.findById(id);
@@ -280,9 +310,9 @@ const toggleLikes = async (req, res) => {
             })
         }
 
-const alreadyLiked = project.likes.some(
-    (id) => id.toString() === userId
-);
+        const alreadyLiked = project.likes.some(
+            (id) => id.toString() === userId
+        );
         if (alreadyLiked) {
             project.likes = project.likes.filter((id) => id.toString() !== userId);
         }

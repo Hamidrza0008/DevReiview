@@ -8,7 +8,7 @@ router.post("/", authMiddleware, createProjects);
 
 router.get("/my", authMiddleware, getMyProjects);
 
-router.get("/explore", getExploreProjects);
+router.get("/explore",authMiddleware, getExploreProjects);
 
 router.get("/:id/edit", authMiddleware, getProjectForEdit);
 
