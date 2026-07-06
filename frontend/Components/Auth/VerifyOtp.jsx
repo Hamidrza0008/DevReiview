@@ -4,7 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useSearchParams, useRouter } from "next/navigation";
-import { verifyOTP } from '@/services/authApi';
+import { verifyOTP } from '@/services/authApis';
 
 export default function VerifyOtp() {
 

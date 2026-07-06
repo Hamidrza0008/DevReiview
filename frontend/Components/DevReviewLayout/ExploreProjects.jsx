@@ -27,6 +27,11 @@ export default function ExploreProjects() {
   const [loading, setLoading] = useState(true);
   const [isPinned, setIsPinned] = useState(false);
   const router = useRouter();
+  const[reviews , setReviews] = useState([]);
+
+  // const getReviews = async() =>{
+  //   const res = await getReviews(id)
+  // }
 
   const getProjects = async () => {
     try {

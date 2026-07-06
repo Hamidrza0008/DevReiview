@@ -1,0 +1,110 @@
+const Reviews = require("../models/Review");
+const Projects = require("../models/Projects");
+
+const addReviews = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { rating, review } = req.body;
+        const { id } = req.params;
+
+        const project = await Projects.findById(id);
+
+        if (!project) {
+            return res.status(404).json({
+                "success": false,
+                "message": "Project not found"
+            })
+        }
+
+        if (userId === project.owner.toString()) {
+            return res.status(403).json({
+                "success": false,
+                "message": "You cannot review your own project."
+            })
+        }
+        if (rating < 1 || rating > 5) {
+            return res.status(403).json({
+                success: false,
+                message: "Invalid Rating",
+            })
+        }
+
+        if (!review || !review.trim()) {
+            return res.status(403).json({
+                success: false,
+                message: "Invalid Reivew",
+            })
+        }
+
+        const isExists = await Reviews.findOne({
+            project: id,
+            user: userId,
+        })
+
+        if (isExists) {
+            return res.status(403).json({
+                success: false,
+                "message": "You have already reviewed this project."
+            })
+        }
+
+        const newReview = await Reviews.create({
+            project: id,
+            user: userId,
+            rating,
+            review
+        })
+
+        return res.status(201).json({
+            success: true,
+            message: "Review added successfully",
+            review: newReview,
+        });
+
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+const getReviews = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        const project = await Projects.findById(id);
+
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: "Project Not Found",
+            })
+        }
+
+        const reviews = await Reviews.find({
+            project: id,
+        }).populate("user", "username name profileImage").sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            success: true,
+            reviews,
+            reviewsCount: reviews.length,
+
+        });
+
+    } catch (error) {
+          console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+}
+
+module.exports = { addReviews , getReviews }

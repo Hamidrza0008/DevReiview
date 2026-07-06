@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { forgotPassword } from '@/services/authApi';
+import { forgotPassword } from '@/services/authApis';
 import { useRouter } from 'next/navigation';
 
 

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { resetPassword } from '@/services/authApi';
+import { resetPassword } from '@/services/authApis';
 
 export default function ResetPassword() {
   const router = useRouter();

@@ -1,5 +1,5 @@
-const projects = require("../models/Projects");
 const Projects = require("../models/Projects");
+const Reviews = require("../models/Review");
 const User = require("../models/Users")
 const mongoose = require("mongoose");
 
@@ -103,12 +103,20 @@ const getProjectById = async (req, res) => {
 
         const isLiked = project.likes.some((id) => id.toString() === userId);
 
+        const reviews = await Reviews.find({project:id});
+        const reviewsCount = reviews.length
+        const totalRating = reviews.reduce((acc , curr) => acc+curr.rating , 0);
+        const avgRating = reviewsCount > 0? Number(totalRating/reviewsCount).toFixed(1) : 0;
+
 
         return res.status(200).json({
             success: true,
             isLiked,
             likesCount: project.likes.length,
-            project
+            project,
+            averageRating:avgRating,
+            reviewsCount : reviewsCount
+
         })
     } catch (error) {
         console.error(error);

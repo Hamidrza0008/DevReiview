@@ -24,6 +24,7 @@ import {
 import { getProjectById } from '@/services/getProjectByIdApi';
 import { deleteProject } from '@/services/editProjectApi';
 import { toggleLikes } from '@/services/toggleLikesApi';
+import { addReviews, getReviews } from '@/services/reviewApis';
 
 // SKELETON LOADING COMPONENT FOR BETTER UX
 function ProjectSkeleton() {
@@ -70,6 +71,12 @@ export default function SingleProject() {
 
   const [currentLoggedInUserId, setCurrentLoggedInUserId] = useState(user?._id);
 
+  // NEW STATES FOR REVIEW FORM
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const[reviews , setReviews] = useState([]);
+ 
   const { id } = useParams();
   const router = useRouter();
   // console.log(id);
@@ -77,9 +84,17 @@ export default function SingleProject() {
   useEffect(() => {
     if (id) {
       getProject(id);
+      getAllReviews(id)
     }
   }, [id]);
 
+  const getAllReviews = async() => {
+    const res = await getReviews(id);
+    console.log(res);
+    setReviews(res.reviews || [])
+  } 
+
+  // console.log(reviews)
   const getProject = async (projectId) => {
     try {
       const res = await getProjectById(projectId);
@@ -87,7 +102,7 @@ export default function SingleProject() {
         setProject(res.project);
         setLiked(res.isLiked)
         setLikesCount(res.likesCount)
-        // console.log(res)
+        console.log(res)
         if (res.project.owner?._id) {
           setOwnerId(res.project.owner._id.toString());
         }
@@ -134,21 +149,30 @@ export default function SingleProject() {
     router.push(`/projects/${id}/edit`);
   };
 
+  // NEW HANDLER FOR REVIEW SUBMISSION
+  const handleReviewSubmit = (e) => {
+    e.preventDefault();
+    if (!reviewComment.trim() || reviewRating === 0) {
+      alert("Bhai, rating aur comment dono daal de pehle!");
+      return;
+    }
+
+    addReviews(id , reviewRating , reviewComment)
+
+    console.log("=== NEW REVIEW SUBMITTED ===");
+    console.log("Project ID:", id);
+    console.log("Rating Selected:", reviewRating);
+    console.log("Comment Written:", reviewComment);
+    console.log("============================");
+
+    // Resetting states
+    setReviewComment("");
+    setReviewRating(0);
+  };
+
   const dummyGallery = [
     "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80",
     "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80"
-  ];
-
-  const dummyReviews = [
-    {
-      id: 1,
-      name: "Sarah Jenkins",
-      role: "Senior Full Stack Engineer",
-      avatar: "https://i.pravatar.cc/150?img=47",
-      rating: 5,
-      comment: "The overall user interface architecture is extremely clean. The dynamic component load times feel instantaneous.",
-      time: "2 days ago"
-    }
   ];
 
   const dummySimilar = [
@@ -203,7 +227,6 @@ export default function SingleProject() {
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
                 onClick={handleDelete}
-                disabled={isDeleting}
                 className="inline-flex items-center space-x-1.5 bg-red-50 border border-red-100 text-red-600 font-semibold text-xs py-2 px-3.5 rounded-xl shadow-2xs hover:bg-red-100/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -298,11 +321,11 @@ export default function SingleProject() {
               <div className="flex items-center space-x-4 pt-1 text-[11px] font-semibold text-[#6B7280]">
                 <span className="flex items-center space-x-1">
                   <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-                  <span className="text-[#111827]">{project.likes || 0} Likes</span>
+                  <span className="text-[#111827]">{project.likes.length || 0} Likes</span>
                 </span>
                 <span className="flex items-center space-x-1">
                   <MessageSquare className="w-3.5 h-3.5 text-[#2563EB]" />
-                  <span className="text-[#111827]">{project.reviews || 0} Reviews</span>
+                  <span className="text-[#111827]">{reviews.length || 0} Reviews</span>
                 </span>
               </div>
 
@@ -454,96 +477,125 @@ export default function SingleProject() {
         </div>
 
         {/* FEEDBACK SEGMENT DEEP REVIEW PANELS */}
-        <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl p-5 md:p-6 shadow-2xs">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 mb-5 border-b border-[#E5E7EB] gap-4">
+        <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl p-5 md:p-6 shadow-2xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#E5E7EB] gap-4">
             <div className="space-y-0.5">
               <h3 className="text-sm font-bold uppercase tracking-wider text-[#111827]">Peer Feedback Logs</h3>
               <p className="text-xs text-[#6B7280]">Technical analysis reports submitted by verified workspace developer nodes.</p>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.01, backgroundColor: '#1D4ED8' }}
-              whileTap={{ scale: 0.99 }}
-              className="bg-[#2563EB] text-[#FFFFFF] font-bold text-xs py-2 px-4 rounded-xl shadow-2xs transition-colors self-start sm:self-auto shrink-0"
-            >
-              Write Review
-            </motion.button>
           </div>
 
-          <div className="space-y-4">
-            {dummyReviews.map((review) => (
-              <div key={review.id} className="flex items-start space-x-3.5 p-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl">
-                <img
-                  src={review.avatar}
-                  alt={review.name}
-                  className="w-8 h-8 rounded-full object-cover border border-[#E5E7EB] shrink-0"
-                />
-                <div className="space-y-2 flex-1 min-w-0">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                    <div>
-                      <h5 className="text-xs font-bold text-[#111827] inline-block mr-2 truncate">{review.name}</h5>
-                      <span className="text-[10px] font-semibold text-[#6B7280] font-mono">{review.role}</span>
-                    </div>
-                    <div className="flex items-center space-x-2 shrink-0">
-                      <div className="flex items-center text-amber-500">
-                        {[...Array(review.rating)].map((_, index) => (
-                          <Star key={index} className="w-3 h-3 fill-amber-400 stroke-amber-500" />
-                        ))}
-                      </div>
-                      <span className="text-[10px] font-medium text-[#6B7280]">{review.time}</span>
-                    </div>
-                  </div>
-                  <p className="text-xs text-[#6B7280] leading-relaxed font-normal">
-                    "{review.comment}"
-                  </p>
-                </div>
+          {/* NEW LIVE INTERACTIVE REVIEW FORM AREA */}
+          <form onSubmit={handleReviewSubmit} className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl p-4 md:p-5 space-y-4">
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] block">
+                Assign Metric Score (Rating)
+              </label>
+              <div className="flex items-center space-x-1.5">
+                {[1, 2, 3, 4, 5].map((starValue) => {
+                  const isFilled = hoveredRating ? starValue <= hoveredRating : starValue <= reviewRating;
+                  return (
+                    <button
+                      key={starValue}
+                      type="button"
+                      onClick={() => setReviewRating(starValue)}
+                      onMouseEnter={() => setHoveredRating(starValue)}
+                      onMouseLeave={() => setHoveredRating(0)}
+                      className="focus:outline-none transition-transform active:scale-90"
+                    >
+                      <Star
+                        className={`w-5 h-5 transition-colors cursor-pointer ${
+                          isFilled
+                            ? "fill-amber-400 stroke-amber-500 text-amber-500"
+                            : "text-[#E5E7EB] stroke-[#9CA3AF]"
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+                {reviewRating > 0 && (
+                  <span className="text-xs font-bold text-[#475569] pl-1">{reviewRating} / 5</span>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* RELATED SYSTEM ALIGNMENTS GRID MAP */}
-        <div className="space-y-3.5">
-          <div className="space-y-0.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">Related Core Matrices</h3>
-            <p className="text-xs text-[#6B7280]">Alternative code architectural paths deployed in matching structural vectors.</p>
-          </div>
+            <div className="space-y-1">
+              <label htmlFor="comment" className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280] block">
+                Technical Analysis Report (Comment)
+              </label>
+              <textarea
+                id="comment"
+                rows={3}
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+                placeholder="Write your system analysis review code breakdown..."
+                className="w-full bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl text-xs p-3 focus:outline-none focus:ring-1 focus:ring-[#2563EB] focus:border-[#2563EB] placeholder-[#9CA3AF] transition-all resize-none shadow-3xs"
+              />
+            </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dummySimilar.map((item) => (
-              <motion.div
-                key={item.id}
-                whileHover={{ y: -3, borderColor: '#2563EB/30' }}
-                className="p-4 bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl flex flex-col justify-between shadow-2xs group cursor-pointer transition-all duration-300"
+            <div className="flex justify-end pt-1">
+              <motion.button
+                whileHover={{ scale: 1.01, backgroundColor: '#1D4ED8' }}
+                whileTap={{ scale: 0.99 }}
+                type="submit"
+                className="bg-[#2563EB] text-[#FFFFFF] font-bold text-xs py-2 px-4 rounded-xl shadow-2xs transition-colors"
               >
-                <div className="space-y-1">
-                  <div className="flex justify-between items-start gap-2">
-                    <h4 className="text-xs font-bold text-[#111827] group-hover:text-[#2563EB] transition-colors line-clamp-1">
-                      {item.title}
-                    </h4>
-                    <ArrowUpRight className="w-3 h-3 text-[#6B7280] opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                  <p className="text-[11px] text-[#6B7280] leading-relaxed line-clamp-2">
-                    {item.description}
-                  </p>
-                </div>
+                Submit Review
+              </motion.button>
+            </div>
+          </form>
 
-                <div className="flex items-center justify-between pt-3 mt-3 border-t border-[#F1F5F9] text-[10px] font-semibold">
-                  <div className="flex space-x-1">
-                    {item.techStack.map((tech, i) => (
-                      <span key={i} className="bg-[#F8FAFC] border border-[#E5E7EB] text-[#111827] px-2 py-0.5 rounded-md shadow-3xs">
-                        {tech}
-                      </span>
-                    ))}
+          {/* REVIEWS LIST */}
+          <div className="space-y-4">
+            {reviews && reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review._id} className="flex items-start space-x-3.5 p-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl shadow-3xs">
+                  <img
+                    src={review.user?.profileImage || "https://i.pravatar.cc/150?img=12"}
+                    alt={review.user?.username || "user"}
+                    className="w-9 h-9 rounded-full object-cover border border-[#E5E7EB] shrink-0"
+                  />
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                      <div>
+                        <h5 className="text-xs font-bold text-[#111827] inline-block mr-1.5 truncate">
+                          {review.user?.name || "Anonymous"}
+                        </h5>
+                        <span className="text-[10px] text-[#6B7280] font-medium font-mono bg-[#E5E7EB]/40 px-1.5 py-0.5 rounded">
+                          @{review.user?.username || "username"}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2 shrink-0">
+                        <div className="flex items-center text-amber-500 bg-amber-500/5 border border-amber-500/10 rounded-md px-1.5 py-0.5">
+                          {[...Array(5)].map((_, index) => (
+                            <Star 
+                              key={index} 
+                              className={`w-3 h-3 ${index < review.rating ? 'fill-amber-400 stroke-amber-500' : 'text-slate-200 stroke-slate-300'}`} 
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[10px] font-medium text-[#6B7280]">
+                          {review.createdAt 
+                            ? new Date(review.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) 
+                            : "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-[#475569] leading-relaxed font-normal bg-white p-2.5 rounded-lg border border-[#F1F5F9] shadow-3xs">
+                      {review.review}
+                    </p>
                   </div>
-                  <span className="flex items-center space-x-1 text-[#6B7280]">
-                    <Heart className="w-3 h-3 text-rose-500 fill-rose-500" />
-                    <span className="text-[#111827] tabular-nums">{item.likes}</span>
-                  </span>
                 </div>
-              </motion.div>
-            ))}
+              ))
+            ) : (
+              <div className="text-center py-6 border border-dashed border-[#E5E7EB] rounded-xl text-xs text-[#6B7280]">
+                No technical reviews submitted yet. Be the first node to drop code analysis!
+              </div>
+            )}
           </div>
         </div>
+
+        
 
       </div>
     </div>

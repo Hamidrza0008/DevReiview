@@ -1,6 +1,6 @@
 "use client"
 import { createContext, useContext, useState, useEffect } from "react";
-import { getMe, logOutMe } from "@/services/authApi";
+import { getMe, logOutMe } from "@/services/authApis";
 import { AwardIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 

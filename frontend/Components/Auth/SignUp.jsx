@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { signUp } from '@/services/authApi';
+import { signUp } from '@/services/authApis';
 import { useRouter } from 'next/navigation';
 
 export default function SignUp() {

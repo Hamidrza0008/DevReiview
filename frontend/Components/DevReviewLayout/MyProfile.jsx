@@ -7,7 +7,7 @@ import {
   Calendar, Award, Bookmark, Layers, User, Activity, Zap 
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { updateProfile } from '@/services/authApi';
+import { updateProfile } from '@/services/authApis';
 
 export default function MyProfile() {
   const [loading, setLoading] = useState(true);

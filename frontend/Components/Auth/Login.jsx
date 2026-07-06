@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { login } from '@/services/authApi';
+import { login } from '@/services/authApis';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 export default function Login() {
