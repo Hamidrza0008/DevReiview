@@ -14,10 +14,8 @@ import {
   Code2,
   SlidersHorizontal,
   Layers,
-  Heart,
   MessageSquare,
   Users2,
-  Eye,
   Link2Icon
 } from "lucide-react";
 import { getAllUsers } from "@/services/usersApi";
@@ -121,7 +119,7 @@ export default function ExploreUsers() {
           <motion.div 
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/10 border border-[#2563EB]/10 text-[#2563EB] font-semibold text-xs mx-auto lg:mx-0"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/5 border border-[#2563EB]/10 text-[#2563EB] font-semibold text-xs mx-auto lg:mx-0"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Developer Discovery Engine</span>
@@ -165,16 +163,16 @@ export default function ExploreUsers() {
 
         {/* ABSTRACT PREMIUM RIGHT SIDE SHAPES GRAPHIC */}
         <div className="relative w-full max-w-[320px] h-48 lg:h-60 flex items-center justify-center select-none hidden sm:flex shrink-0">
-          <div className="absolute w-40 h-40 rounded-3xl bg-gradient-to-br from-[#2563EB] to-[#3B82F6] opacity-10 blur-xl animate-pulse" />
+          <div className="absolute w-40 h-40 rounded-3xl bg-gradient-to-br from-[#2563EB] to-[#3B82F6] opacity-10 blur-xl" />
           <motion.div 
             animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl p-4 shadow-md w-48 relative z-10 space-y-3"
           >
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-rose-400" />
-              <div className="w-3 h-3 rounded-full bg-amber-400" />
-              <div className="w-3 h-3 rounded-full bg-emerald-400" />
+            <div className="flex items-center space-x-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#E5E7EB]" />
+              <div className="w-2 h-2 rounded-full bg-[#E5E7EB]" />
+              <div className="w-2 h-2 rounded-full bg-[#E5E7EB]" />
             </div>
             <div className="h-2 w-3/4 bg-[#F8FAFC] border border-[#E5E7EB] rounded" />
             <div className="h-2 w-1/2 bg-[#F8FAFC] border border-[#E5E7EB] rounded" />
@@ -193,7 +191,7 @@ export default function ExploreUsers() {
         </div>
       </div>
 
-      {/* ================= CONTROLS: PREMIUM SEARCH BAR + CONFIG FILTERS ================= */}
+      {/* ================= CONTROLS ================= */}
       <div className="space-y-4 z-10 relative">
         <div className="flex flex-col sm:flex-row gap-3 max-w-4xl mx-auto items-center">
           <div className="relative flex-1 w-full group">
@@ -223,7 +221,7 @@ export default function ExploreUsers() {
         </div>
 
         {/* CATEGORY PILLS FILTER SECTION */}
-        <div className="flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto pb-2 pt-1 no-scrollbar mask-image-edge max-w-5xl mx-auto">
+        <div className="flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto pb-2 pt-1 no-scrollbar max-w-5xl mx-auto">
           {categories.map((category) => {
             const isActive = selectedFilter === category;
             return (
@@ -232,8 +230,8 @@ export default function ExploreUsers() {
                 onClick={() => setSelectedFilter(category)}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border outline-none ${
                   isActive
-                    ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs scale-102"
-                    : "bg-[#FFFFFF] text-[#6B7280] border-[#E5E7EB] hover:bg-[#F8FAFC] hover:text-[#111827] hover:border-[#6B7280]/30"
+                    ? "bg-[#2563EB] text-[#FFFFFF] border-[#2563EB] shadow-xs"
+                    : "bg-[#FFFFFF] text-[#6B7280] border-[#E5E7EB] hover:bg-[#F8FAFC] hover:text-[#111827]"
                 }`}
               >
                 {category}
@@ -243,16 +241,16 @@ export default function ExploreUsers() {
         </div>
       </div>
 
-      {/* ================= MAIN USERS RENDER INTERFACE LAYER ================= */}
+      {/* ================= MAIN USERS RENDER LAYER ================= */}
       <div className="z-10 relative">
         <AnimatePresence mode="wait">
           {loading ? (
-            /* ================= LOADING SKELETON CARDS LAYER ================= */
+            /* ================= HIGH PERFORMANCE SKELETON LAYER ================= */
             <motion.div
               key="skeleton-grid"
               initial={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.25 } }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse"
             >
               {Array.from({ length: 8 }).map((_, idx) => (
                 <div 
@@ -260,31 +258,31 @@ export default function ExploreUsers() {
                   className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl flex flex-col justify-between h-[390px] overflow-hidden relative shadow-2xs"
                 >
                   <div>
-                    <div className="h-20 bg-[#F8FAFC] w-full animate-pulse border-b border-[#E5E7EB]/40" />
+                    <div className="h-20 bg-[#E5E7EB] w-full" />
                     <div className="px-5 pb-2 relative">
-                      <div className="w-16 h-16 rounded-full bg-[#E5E7EB] border-4 border-[#FFFFFF] -mt-8 mb-3 animate-pulse" />
-                      <div className="w-2/3 h-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded animate-pulse mb-1.5" />
-                      <div className="w-1/3 h-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded animate-pulse mb-4" />
-                      <div className="w-full h-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded animate-pulse mb-1" />
-                      <div className="w-4/5 h-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded animate-pulse mb-5" />
+                      <div className="w-16 h-16 rounded-full bg-[#E5E7EB] border-4 border-[#FFFFFF] -mt-8 mb-3" />
+                      <div className="w-2/3 h-5 bg-[#E5E7EB] rounded-lg mb-2" />
+                      <div className="w-1/3 h-3 bg-[#E5E7EB] rounded mb-5" />
+                      <div className="w-full h-3 bg-[#E5E7EB] rounded mb-1.5" />
+                      <div className="w-4/5 h-3 bg-[#E5E7EB] rounded mb-5" />
                       <div className="flex gap-1.5">
-                        <div className="w-12 h-5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-md animate-pulse" />
-                        <div className="w-12 h-5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-md animate-pulse" />
+                        <div className="w-14 h-5 bg-[#E5E7EB] rounded-md" />
+                        <div className="w-14 h-5 bg-[#E5E7EB] rounded-md" />
                       </div>
                     </div>
                   </div>
                   <div className="p-5 pt-0">
                     <div className="h-[1px] bg-[#E5E7EB] mb-4" />
                     <div className="grid grid-cols-2 gap-2">
-                      <div className="h-9 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl animate-pulse" />
-                      <div className="h-9 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl animate-pulse" />
+                      <div className="h-9 bg-[#E5E7EB] rounded-xl" />
+                      <div className="h-9 bg-[#E5E7EB] rounded-xl" />
                     </div>
                   </div>
                 </div>
               ))}
             </motion.div>
           ) : (
-            /* ================= REAL DATA DEVELOPER CARDS GRID ================= */
+            /* ================= REAL DATA GRID LAYER ================= */
             <motion.div
               key="real-grid"
               variants={containerVariants}
@@ -297,7 +295,6 @@ export default function ExploreUsers() {
                 const devSkills = dev.skills || [];
                 const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(dev.name || 'User')}&background=random`;
 
-                // Custom beautifully randomized UI stats mockup array
                 const mockStats = {
                   projects: dev.projects?.length || Math.floor(Math.random() * 12) + 4,
                   reviews: Math.floor(Math.random() * 30) + 12,
@@ -316,14 +313,11 @@ export default function ExploreUsers() {
                     className="group bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl flex flex-col justify-between transition-all duration-300 relative overflow-hidden shadow-2xs h-[390px]"
                   >
                     <div>
-                      {/* Top Gradient Cover Banner */}
                       <div className="h-20 bg-gradient-to-r from-[#2563EB]/5 via-[#3B82F6]/5 to-[#2563EB]/10 border-b border-[#E5E7EB]/40 relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-[#3B82F6]/10 rounded-full blur-xl pointer-events-none" />
                       </div>
 
-                      {/* Content Area */}
                       <div className="px-5 relative">
-                        {/* Profile Image Overlapping Top Banner */}
                         <div className="relative inline-block w-16 h-16 rounded-full overflow-hidden border-4 border-[#FFFFFF] shadow-xs -mt-8 mb-2.5 z-10 bg-[#FFFFFF]">
                           <img
                             src={dev.profileImage || defaultAvatar}
@@ -335,7 +329,6 @@ export default function ExploreUsers() {
                           />
                         </div>
 
-                        {/* Metadata Identifiers */}
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-1">
                             <h3 className="font-bold text-[#111827] text-[14px] sm:text-[15px] tracking-tight truncate max-w-[160px] group-hover:text-[#2563EB] transition-colors">
@@ -348,7 +341,6 @@ export default function ExploreUsers() {
                           <div className="flex items-center justify-between gap-2">
                             <span className="text-[11px] font-mono text-[#6B7280]">@{dev.username || "user"}</span>
                             
-                            {/* Network Social Links Context */}
                             <div className="flex items-center gap-1.5 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
                               <a 
                                 href={dev.githubUrl || "#"} 
@@ -373,12 +365,10 @@ export default function ExploreUsers() {
                           </div>
                         </div>
                         
-                        {/* Short Abstract Bio */}
                         <p className="text-xs text-[#6B7280] leading-relaxed line-clamp-2 min-h-[36px] mt-2.5">
                           {dev.bio || "No custom log bio published yet. Passionate software architecture engineering architect."}
                         </p>
 
-                        {/* Dynamic Interactive Stats Rows Mockup */}
                         <div className="grid grid-cols-3 gap-1 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl p-2 mt-3 text-center">
                           <div>
                             <span className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider block">Repos</span>
@@ -394,7 +384,6 @@ export default function ExploreUsers() {
                           </div>
                         </div>
 
-                        {/* Skills Badges Render Showcase */}
                         <div className="flex flex-wrap gap-1 mt-3.5 min-h-[24px] content-start overflow-hidden">
                           {devSkills.length > 0 ? (
                             <>
@@ -419,11 +408,11 @@ export default function ExploreUsers() {
                       </div>
                     </div>
 
-                    {/* Operational Action Footer Buttons */}
                     <div className="p-5 pt-0">
                       <div className="h-[1px] bg-[#E5E7EB]/70 w-full mb-3.5" />
                       <div className="grid grid-cols-2 gap-2">
-                        <button
+                        <motion.button
+                          whileTap={{ scale: 0.95 }}
                           onClick={() => toggleFollow(dev._id)}
                           className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 border transition-all ${
                             isFollowing
@@ -433,7 +422,7 @@ export default function ExploreUsers() {
                         >
                           {isFollowing ? (
                             <>
-                              <UserCheck className="w-3.5 h-3.5" />
+                              <UserCheck className="w-3.5 h-3.5 animate-[scaleUp_0.2s_ease-out]" />
                               <span>Following</span>
                             </>
                           ) : (
@@ -442,7 +431,7 @@ export default function ExploreUsers() {
                               <span>Follow</span>
                             </>
                           )}
-                        </button>
+                        </motion.button>
 
                         <button 
                           onClick={() => router.push(`/users/${dev.username}`)} 
@@ -461,7 +450,7 @@ export default function ExploreUsers() {
         </AnimatePresence>
       </div>
 
-      {/* ================= REDESIGNED EMPTY STATE PLATFORM VIEW ================= */}
+      {/* ================= REDESIGNED EMPTY STATE ================= */}
       {!loading && filteredDevelopers.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}

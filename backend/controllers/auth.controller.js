@@ -97,7 +97,7 @@ const verifyOTP = async (req, res) => {
             })
         }
 
-        await User.findOneAndUpdate(
+        await Users.findOneAndUpdate(
             { email },
             { isVerified: true }
         )

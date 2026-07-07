@@ -24,11 +24,11 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+    { name: "Explore Projects", icon: Compass, path: "/projects/explore" },
+    { name: "Users", icon: Users, path: "/users/explore" },
     { name: "My Projects", icon: FolderGit2, path: "/projects/my" },
     { name: "Reviews Received", icon: MessageSquare, path: "/review", badge: "3" },
-    { name: "Explore Projects", icon: Compass, path: "/projects/explore" },
     { name: "Saved Projects", icon: Bookmark, path: "/projects/saved" },
-    { name: "Users", icon: Users, path: "/users/explore" },
     { name: "Community", icon: Users, path: "/community" },
     { name: "Profile", icon: User, path: "/profile/my" },
     { name: "Settings", icon: Settings, path: "/settings" },

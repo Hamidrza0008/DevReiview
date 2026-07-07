@@ -13,17 +13,7 @@ import {
   Plus,
   ExternalLink,
   ArrowUpRight,
-  Search,
-  Bell,
-  ChevronDown,
-  Sparkles,
-  GitBranch,
-  ShieldCheck,
   CheckCircle2,
-  TrendingUp,
-  Zap,
-  Activity,
-  Layers,
   FileCode
 } from "lucide-react";
 import Sidebar from "./Sidebar";
@@ -40,18 +30,6 @@ export default function Dashboard() {
   const totalNumberOfProjects = projects.length.toString();
   const totalLikes = projects.reduce((total, project) => total + (project.likes.length || 0), 0);
   const totalReviews = projects.reduce((total, project) => total + (project.reviews || 0), 0);
-
-  // Premium Custom Mock Data Elements (Inside Constants for Safety)
-  const rightSidebarWidgets = {
-    completion: 82,
-    streak: "18 Days",
-    rank: "Top 4%",
-    recentActivity: [
-      { text: "Merged pull request #109 in E-Commerce Core", time: "10m ago", icon: GitBranch },
-      { text: "Sarah Jenkins approved DevReview Dashboard", time: "2h ago", icon: ShieldCheck },
-      { text: "Achieved 'Top Contributor' status tier", time: "1d ago", icon: Zap }
-    ]
-  };
 
   const getProjects = async () => {
     const res = await getMyProjects();
@@ -89,36 +67,6 @@ export default function Dashboard() {
 
       {/* MAIN CONTAINER WORKSPACE */}
       <div className="flex-1 flex flex-col min-h-screen min-w-0 z-10">
-        
-        {/* PREMIUM STICKY NAVBAR */}
-        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] sticky top-0 z-30 px-6 md:px-8 flex items-center justify-between gap-4">
-          <div className="w-96 relative group hidden sm:block">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#6B7280] group-focus-within:text-[#2563EB] transition-colors" />
-            <input
-              type="text"
-              placeholder="Search components, code reviews..."
-              className="w-full text-xs pl-10 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-[#6B7280]/70 focus:outline-none focus:border-[#2563EB] focus:bg-white transition-all duration-200 shadow-2xs"
-            />
-          </div>
-
-          <div className="flex items-center gap-4 ml-auto sm:ml-0">
-            <button className="p-2 text-[#6B7280] hover:text-[#111827] hover:bg-[#F1F5F9] rounded-xl transition-all relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-[#2563EB] rounded-full ring-2 ring-white" />
-            </button>
-            <div className="h-4 w-px bg-[#E5E7EB]" />
-            <button className="flex items-center gap-2 p-1 hover:bg-[#F8FAFC] rounded-xl transition-all border border-transparent hover:border-[#E5E7EB]">
-              <img
-                src={user?.profileImage || "/default-avatar.png"}
-                alt="User Profile Anchor"
-                className="w-6 h-6 rounded-full object-cover border border-[#E5E7EB]"
-                onError={(e) => { e.currentTarget.src = "/default-avatar.png"; }}
-              />
-              <span className="text-xs font-semibold text-[#111827] hidden sm:inline">@{user?.username || "user"}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#6B7280]" />
-            </button>
-          </div>
-        </header>
 
         {/* WORKSPACE VIEWPORTS CONTAINER */}
         <div className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
@@ -129,19 +77,69 @@ export default function Dashboard() {
                 key="skeleton-view"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                className="space-y-6"
+                className="space-y-6 animate-pulse"
               >
-                <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 h-36 shadow-2xs animate-pulse" />
+                {/* 1. Hero Card Skeleton */}
+                <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                  <div className="flex items-center gap-5 w-full">
+                    <div className="w-16 h-16 rounded-2xl bg-[#E5E7EB] shrink-0" />
+                    <div className="space-y-3 w-full max-w-md">
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 bg-[#E5E7EB] rounded-lg w-48" />
+                        <div className="h-4 bg-[#E5E7EB] rounded w-12" />
+                      </div>
+                      <div className="h-4 bg-[#E5E7EB] rounded-lg w-full" />
+                      <div className="h-4 bg-[#E5E7EB] rounded-lg w-2/3" />
+                    </div>
+                  </div>
+                  <div className="h-10 bg-[#E5E7EB] rounded-xl w-full md:w-36 shrink-0 self-stretch md:self-auto" />
+                </div>
+
+                {/* 2. Metric Cards Skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {[...Array(4)].map((_, i) => (
-                    <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 h-28 shadow-2xs animate-pulse" />
+                    <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="h-3 bg-[#E5E7EB] rounded w-20" />
+                        <div className="w-8 h-8 bg-[#E5E7EB] rounded-xl" />
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="h-8 bg-[#E5E7EB] rounded-lg w-16" />
+                        <div className="h-4 bg-[#E5E7EB] rounded w-10" />
+                      </div>
+                      <div className="h-3 bg-[#E5E7EB] rounded w-24" />
+                    </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2 space-y-4">
-                    <div className="h-60 bg-white border border-[#E5E7EB] rounded-2xl animate-pulse" />
+
+                {/* 3. Core Content Hub Skeleton */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                  <div className="lg:col-span-2 space-y-5">
+                    <div className="flex items-center gap-6 border-b border-[#E5E7EB] pb-3">
+                      <div className="h-4 bg-[#E5E7EB] rounded w-24" />
+                      <div className="h-4 bg-[#E5E7EB] rounded w-32" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[...Array(2)].map((_, i) => (
+                        <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden flex flex-col">
+                          <div className="aspect-video bg-[#E5E7EB] w-full" />
+                          <div className="p-4 space-y-4 flex-1 flex flex-col justify-between">
+                            <div className="space-y-2">
+                              <div className="h-4 bg-[#E5E7EB] rounded w-3/4" />
+                              <div className="flex gap-1 pt-1">
+                                <div className="h-5 bg-[#E5E7EB] rounded-md w-12" />
+                                <div className="h-5 bg-[#E5E7EB] rounded-md w-16" />
+                              </div>
+                            </div>
+                            <div className="pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
+                              <div className="h-4 bg-[#E5E7EB] rounded w-20" />
+                              <div className="h-4 bg-[#E5E7EB] rounded w-14" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="h-60 bg-white border border-[#E5E7EB] rounded-2xl animate-pulse" />
                 </div>
               </motion.div>
             ) : (
@@ -153,13 +151,13 @@ export default function Dashboard() {
                 animate="show"
                 className="space-y-6"
               >
-                {/* 1. REDESIGNED HERO COMPONENT */}
+                {/* 1. HERO COMPONENT */}
                 <motion.div
                   variants={itemVariants}
                   className="bg-white border border-[#E5E7EB] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-2xs relative overflow-hidden group"
                 >
                   <div className="absolute top-0 right-0 w-64 h-64 bg-[#2563EB]/5 rounded-full blur-[80px] pointer-events-none" />
-                  
+
                   <div className="flex items-center gap-5 z-10">
                     <div className="relative shrink-0">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300" />
@@ -180,7 +178,7 @@ export default function Dashboard() {
                           Welcome back, {user?.name || "Developer"}
                         </h1>
                         <CheckCircle2 className="w-4 h-4 text-[#22C55E] fill-[#22C55E]/10" />
-                        <span className="text-[10px] bg-[#F1F5F9] border border-[#E5E7EB] font-mono text-[#6B7280] px-1.5 py-0.2 rounded">
+                        <span className="text-[10px] bg-[#F8FAFC] border border-[#E5E7EB] font-mono text-[#6B7280] px-1.5 py-0.2 rounded">
                           @{user?.username || "user"}
                         </span>
                       </div>
@@ -200,7 +198,7 @@ export default function Dashboard() {
                   </motion.button>
                 </motion.div>
 
-                {/* 2. REDESIGNED METRIC ANALYTICS CARDS */}
+                {/* 2. METRIC ANALYTICS CARDS */}
                 <motion.div
                   variants={itemVariants}
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
@@ -241,10 +239,9 @@ export default function Dashboard() {
 
                 {/* 3. CORE MANAGEMENT GRID HUB */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                  
                   {/* LEFT COMPONENT COLUMN */}
                   <motion.div variants={itemVariants} className="lg:col-span-2 space-y-5">
-                    
+
                     {/* NAV TABS SELECTORS */}
                     <div className="flex items-center gap-6 border-b border-[#E5E7EB] pb-px">
                       {["My Projects", "Feedback Received"].map((tab) => {
@@ -253,9 +250,8 @@ export default function Dashboard() {
                           <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all relative outline-none ${
-                              isActive ? "text-[#2563EB]" : "text-[#6B7280] hover:text-[#111827]"
-                            }`}
+                            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all relative outline-none ${isActive ? "text-[#2563EB]" : "text-[#6B7280] hover:text-[#111827]"
+                              }`}
                           >
                             <span>{tab}</span>
                             {isActive && (
@@ -301,10 +297,10 @@ export default function Dashboard() {
                                   whileHover={{ y: -3 }}
                                   className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-2xs hover:border-[#2563EB]/40 flex flex-col justify-between group cursor-pointer transition-all duration-300"
                                 >
-                                  {/* Thumbnail Layout Browser Mockup Area */}
+                                  {/* Thumbnail Area */}
                                   <div className="relative aspect-video w-full bg-[#F8FAFC] border-b border-[#E5E7EB] overflow-hidden">
                                     <img
-                                      onClick={()=>router.push(`/projects/${project._id}`)}
+                                      onClick={() => router.push(`/projects/${project._id}`)}
                                       src={project.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80"}
                                       alt={project.title}
                                       className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
@@ -348,7 +344,7 @@ export default function Dashboard() {
                           )}
                         </motion.div>
                       ) : (
-                        /* ================= REDESIGNED FEEDBACK TAB ================= */
+                        /* ================= FEEDBACK TAB ================= */
                         <motion.div
                           key="feedback-view"
                           initial={{ opacity: 0, y: 8 }}
@@ -373,7 +369,7 @@ export default function Dashboard() {
                                 </div>
                                 <span className="text-[10px] font-semibold text-[#6B7280] bg-[#F8FAFC] border border-[#E5E7EB] px-2 py-0.5 rounded-md">{feedback.date}</span>
                               </div>
-                              
+
                               <div className="flex gap-0.5">
                                 {[...Array(5)].map((_, sIdx) => (
                                   <Star key={sIdx} className={`w-3 h-3 ${sIdx < feedback.rating ? "text-amber-400 fill-current" : "text-[#E5E7EB]"}`} />
@@ -386,60 +382,6 @@ export default function Dashboard() {
                       )}
                     </AnimatePresence>
                   </motion.div>
-
-                  {/* 4. REDESIGNED PREMIUM RIGHT SIDEBAR WIDGETS */}
-                  <motion.div variants={itemVariants} className="space-y-5 w-full">
-                    <div>
-                      <h2 className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">Ecosystem Metrics</h2>
-                    </div>
-
-                    {/* Profile Setup Widget Card */}
-                    <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-2xs space-y-3">
-                      <div className="flex items-center justify-between text-xs font-bold">
-                        <span className="text-[#111827]">Profile Integrity Index</span>
-                        <span className="text-[#2563EB] font-mono">{rightSidebarWidgets.completion}%</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-[#F1F5F9] rounded-full overflow-hidden">
-                        <div className="h-full bg-[#2563EB] rounded-full" style={{ width: `${rightSidebarWidgets.completion}%` }} />
-                      </div>
-                      <div className="flex justify-between text-[10px] text-[#6B7280] pt-1 font-semibold">
-                        <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3 text-[#22C55E]" /> {rightSidebarWidgets.rank} Global</span>
-                        <span>Streak: {rightSidebarWidgets.streak}</span>
-                      </div>
-                    </div>
-
-                    {/* Live Contribution Feed Widget */}
-                    <div className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-2xs space-y-4">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#111827]">
-                        <Activity className="w-3.5 h-3.5 text-[#2563EB]" />
-                        <span>Recent Architecture Stream</span>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {rightSidebarWidgets.recentActivity.map((act, aIdx) => {
-                          const ActIcon = act.icon;
-                          return (
-                            <div key={aIdx} className="flex gap-3 text-[11px] items-start">
-                              <div className="p-1.5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg shrink-0 mt-0.5 text-[#6B7280]">
-                                <ActIcon className="w-3 h-3" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-[#111827] font-medium leading-normal line-clamp-2">{act.text}</p>
-                                <span className="text-[9px] font-mono text-[#6B7280] block mt-0.5">{act.time}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      <div className="h-px bg-[#F1F5F9] w-full" />
-                      <div className="flex items-center gap-2 text-[10px] font-bold text-[#22C55E] bg-[#22C55E]/5 border border-[#22C55E]/10 px-3 py-2 rounded-xl justify-center">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-ping" />
-                        <span>All verification metrics synchronized operational</span>
-                      </div>
-                    </div>
-                  </motion.div>
-
                 </div>
               </motion.div>
             )}

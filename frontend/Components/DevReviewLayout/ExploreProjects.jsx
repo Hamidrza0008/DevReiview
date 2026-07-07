@@ -69,41 +69,49 @@ export default function ExploreProjects() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Premium Skeleton Loader Redesign
+  // Premium Skeleton Loader Redesign (Matching requested explicit color tokens)
   if (loading) {
     return (
-      <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden p-8 lg:p-12 space-y-12 animate-pulse">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] pointer-events-none" />
+      <div className="relative min-h-screen bg-[#F8FAFC] overflow-hidden p-6 sm:p-8 lg:p-12 space-y-12 animate-pulse">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#2563EB]/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 pt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 pt-8 max-w-[1400px] mx-auto w-full">
           <div className="lg:col-span-7 space-y-6">
-            <div className="h-14 bg-gray-200 rounded-2xl w-3/4"></div>
-            <div className="h-5 bg-gray-200 rounded-lg w-5/6"></div>
+            <div className="h-14 bg-[#E5E7EB] rounded-2xl w-3/4"></div>
+            <div className="h-5 bg-[#E5E7EB] rounded-lg w-5/6"></div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-20 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm"></div>
+                <div key={i} className="h-20 bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-2xs"></div>
               ))}
             </div>
           </div>
-          <div className="lg:col-span-5 hidden lg:block h-[320px] bg-white/60 border border-gray-100 rounded-2xl shadow-sm"></div>
+          <div className="lg:col-span-5 hidden lg:block h-[260px] bg-white border border-[#E5E7EB] rounded-2xl shadow-2xs"></div>
         </div>
 
-        <div className="h-16 bg-white border border-gray-100 rounded-2xl w-full max-w-4xl shadow-sm"></div>
+        <div className="h-16 bg-white border border-[#E5E7EB] rounded-2xl w-full max-w-4xl mx-auto shadow-2xs"></div>
 
-        <div className="space-y-6">
-          <div className="h-6 bg-gray-200 rounded w-48"></div>
+        <div className="space-y-6 max-w-[1400px] mx-auto w-full">
+          <div className="h-6 bg-[#E5E7EB] rounded w-48"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white border border-gray-100 rounded-[24px] h-[450px] p-4 space-y-4 shadow-sm">
-                <div className="h-48 bg-gray-200 rounded-2xl w-full"></div>
-                <div className="space-y-2">
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div key={i} className="bg-white border border-[#E5E7EB] rounded-[24px] h-[460px] flex flex-col justify-between overflow-hidden shadow-2xs">
+                <div>
+                  <div className="h-48 bg-[#E5E7EB] w-full"></div>
+                  <div className="p-5 space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-6 h-6 rounded-full bg-[#E5E7EB]" />
+                      <div className="h-3 bg-[#E5E7EB] rounded w-20" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="h-5 bg-[#E5E7EB] rounded w-2/3" />
+                      <div className="h-3 bg-[#E5E7EB] rounded w-full" />
+                      <div className="h-3 bg-[#E5E7EB] rounded w-5/6" />
+                    </div>
+                  </div>
                 </div>
-                <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                  <div className="h-6 bg-gray-200 rounded w-16"></div>
-                  <div className="h-8 bg-gray-200 rounded-lg w-24"></div>
+                <div className="px-5 pb-5 pt-4 border-t border-[#E5E7EB]/60 flex justify-between items-center bg-[#F8FAFC]/40">
+                  <div className="h-4 bg-[#E5E7EB] rounded w-24"></div>
+                  <div className="h-8 bg-[#E5E7EB] rounded-xl w-16"></div>
                 </div>
               </div>
             ))}
@@ -117,17 +125,17 @@ export default function ExploreProjects() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative min-h-screen bg-[#F8FAFC] text-[#111827] font-sans selection:bg-blue-500 selection:text-white pb-24"
+      className="relative min-h-screen bg-[#F8FAFC] text-[#111827] font-sans selection:bg-[#2563EB]/10 selection:text-[#2563EB] pb-24"
     >
       {/* Premium Background Artifacts */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-blue-200/30 to-indigo-100/20 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-[400px] left-[-200px] w-[500px] h-[500px] bg-sky-100/40 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-[400px] left-[-200px] w-[500px] h-[500px] bg-[#3B82F6]/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Subtle Grid Pattern Overlay */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        className="absolute inset-0 opacity-40 pointer-events-none z-0"
         style={{
-          backgroundImage: `radial-gradient(#2563EB 1px, transparent 1px)`,
+          backgroundImage: `radial-gradient(#E5E7EB 1px, transparent 1px)`,
           backgroundSize: '24px 24px'
         }}
       />
@@ -140,9 +148,9 @@ export default function ExploreProjects() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -80, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] z-50 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.03)] px-6"
+            className="fixed top-0 inset-x-0 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB] z-50 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.02)] px-6"
           >
-            <div className="max-w-4xl mx-auto w-full flex items-center bg-gray-50 border border-[#E5E7EB] rounded-2xl p-1.5 shadow-inner">
+            <div className="max-w-4xl mx-auto w-full flex items-center bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-1.5 shadow-xs">
               <div className="pl-3 pr-2 text-[#6B7280]">
                 <Search className="w-4 h-4 stroke-[2]" />
               </div>
@@ -151,7 +159,7 @@ export default function ExploreProjects() {
                 placeholder="Search projects, frameworks, tech stack..."
                 className="flex-1 bg-transparent pl-2 pr-4 py-2 focus:outline-none text-sm text-[#111827] placeholder-[#6B7280]"
               />
-              <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-xl text-xs font-semibold text-[#111827] flex items-center space-x-1.5 shadow-sm">
+              <button className="bg-white border border-[#E5E7EB] px-3 py-2 rounded-xl text-xs font-semibold text-[#111827] flex items-center space-x-1.5 shadow-xs">
                 <SlidersHorizontal className="w-3.5 h-3.5 text-[#6B7280]" />
                 <span>Filters</span>
               </button>
@@ -170,12 +178,12 @@ export default function ExploreProjects() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-[#2563EB] border border-blue-100/60 mb-4 shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#2563EB]/5 text-[#2563EB] border border-[#2563EB]/10 mb-4 shadow-2xs">
                 <Layers className="w-3.5 h-3.5" /> Built for Creators
               </span>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-[#111827] leading-[1.1]">
                 Explore Open Source <br className="hidden sm:block" />
-                <span className="bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-indigo-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-[#2563EB] bg-clip-text text-transparent">
                   Projects
                 </span>
               </h1>
@@ -195,7 +203,7 @@ export default function ExploreProjects() {
               ].map((stat, idx) => (
                 <div
                   key={idx}
-                  className="bg-white border border-[#E5E7EB]/80 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(0,0,0,0,02)] backdrop-blur-md hover:border-blue-200 transition-colors"
+                  className="bg-white border border-[#E5E7EB] rounded-2xl p-4 shadow-2xs backdrop-blur-md hover:border-[#3B82F6]/30 transition-colors"
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs font-medium text-[#6B7280]">{stat.label}</span>
@@ -209,19 +217,19 @@ export default function ExploreProjects() {
 
           {/* Right Column: Floating Dashboard Illustration */}
           <div className="lg:col-span-5 relative hidden lg:flex items-center justify-center">
-            <div className="absolute w-[380px] h-[380px] bg-gradient-to-tr from-blue-400/20 to-indigo-300/10 rounded-full blur-3xl -z-10" />
+            <div className="absolute w-[380px] h-[380px] bg-gradient-to-tr from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-3xl -z-10" />
 
             <motion.div
               initial={{ opacity: 0, x: 30, rotate: 1 }}
               animate={{ opacity: 1, x: 0, rotate: -2 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
-              className="w-full max-w-[440px] bg-white border border-[#E5E7EB] rounded-2xl shadow-[0_25px_60px_-15px_rgba(37,99,235,0.08)] p-5 space-y-4 backdrop-blur-md relative transform hover:rotate-0 transition-transform duration-500"
+              className="w-full max-w-[440px] bg-white border border-[#E5E7EB] rounded-2xl shadow-2xs p-5 space-y-4 backdrop-blur-md transform hover:rotate-0 transition-transform duration-500"
             >
               <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB]">
                 <div className="flex items-center space-x-1.5">
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#E5E7EB]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#E5E7EB]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#E5E7EB]" />
                 </div>
                 <div className="h-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded-md px-6 text-[9px] text-[#6B7280] flex items-center justify-center font-mono">
                   vercel.app/analytics
@@ -230,17 +238,16 @@ export default function ExploreProjects() {
               </div>
 
               <div className="space-y-3">
-                <div className="h-32 bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl border border-dashed border-[#E5E7EB] flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-50/30 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+                <div className="h-32 bg-gradient-to-br from-[#F8FAFC] to-white rounded-xl border border-dashed border-[#E5E7EB] flex items-center justify-center relative overflow-hidden">
                   <div className="w-full px-4 space-y-3">
                     <div className="flex justify-between items-baseline">
-                      <div className="h-3 bg-gray-200 rounded w-1/3" />
+                      <div className="h-3 bg-[#E5E7EB] rounded w-1/3" />
                       <div className="h-5 bg-[#22C55E]/10 text-[#22C55E] text-[9px] font-bold px-1.5 py-0.5 rounded">+24.5%</div>
                     </div>
-                    <div className="h-6 bg-gray-300 rounded-md w-1/2" />
+                    <div className="h-6 bg-[#E5E7EB] rounded-md w-1/2" />
                     <div className="flex items-end space-x-1 h-8 pt-2">
                       {[40, 65, 35, 80, 55, 95, 70, 85].map((h, idx) => (
-                        <div key={idx} className="bg-blue-500/80 rounded-t-sm flex-1 transition-all" style={{ height: `${h}%` }} />
+                        <div key={idx} className="bg-[#2563EB]/80 rounded-t-sm flex-1 transition-all" style={{ height: `${h}%` }} />
                       ))}
                     </div>
                   </div>
@@ -248,12 +255,12 @@ export default function ExploreProjects() {
 
                 <div className="grid grid-cols-2 gap-2">
                   <div className="p-2 border border-[#E5E7EB] rounded-xl space-y-1.5">
-                    <div className="h-2 bg-gray-200 rounded w-2/3" />
-                    <div className="h-4 bg-gray-300 rounded w-1/2" />
+                    <div className="h-2 bg-[#E5E7EB] rounded w-2/3" />
+                    <div className="h-4 bg-[#E5E7EB] rounded w-1/2" />
                   </div>
                   <div className="p-2 border border-[#E5E7EB] rounded-xl space-y-1.5">
-                    <div className="h-2 bg-gray-200 rounded w-1/2" />
-                    <div className="h-4 bg-gray-300 rounded w-3/4" />
+                    <div className="h-2 bg-[#E5E7EB] rounded w-1/2" />
+                    <div className="h-4 bg-[#E5E7EB] rounded w-3/4" />
                   </div>
                 </div>
               </div>
@@ -263,7 +270,7 @@ export default function ExploreProjects() {
 
         {/* ================= SECTION 2 — BASE SEARCH BAR ================= */}
         <section className="max-w-4xl mx-auto w-full mb-10">
-          <div className="relative bg-white border border-[#E5E7EB] rounded-2xl p-2 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_40px_-8px_rgba(37,99,235,0.06)] hover:border-blue-300/60 transition-all duration-300 flex items-center">
+          <div className="relative bg-white border border-[#E5E7EB] rounded-2xl p-2 shadow-2xs hover:border-[#3B82F6]/50 transition-all duration-300 flex items-center">
             <div className="pl-4 pr-2 text-[#6B7280]">
               <Search className="w-5 h-5 stroke-[1.8]" />
             </div>
@@ -272,7 +279,7 @@ export default function ExploreProjects() {
               placeholder="Search projects, frameworks, tech stack..."
               className="flex-1 bg-transparent pl-2 pr-4 py-3 focus:outline-none text-base text-[#111827] placeholder-[#6B7280] font-normal"
             />
-            <button className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-xl text-sm font-semibold text-[#111827] flex items-center space-x-2 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm active:scale-98">
+            <button className="bg-white border border-[#E5E7EB] px-4 py-2.5 rounded-xl text-sm font-semibold text-[#111827] flex items-center space-x-2 hover:bg-[#F8FAFC] transition-all shadow-xs active:scale-98">
               <SlidersHorizontal className="w-4 h-4 text-[#6B7280]" />
               <span className="hidden sm:inline">Filters</span>
             </button>
@@ -285,8 +292,8 @@ export default function ExploreProjects() {
             <span
               key={idx}
               className={`cursor-pointer text-xs px-4 py-2 rounded-full font-semibold tracking-wide transition-all duration-200 select-none active:scale-95 ${idx === 0
-                ? 'bg-[#2563EB] text-white shadow-md shadow-blue-500/10 hover:bg-blue-700'
-                : 'bg-white border border-[#E5E7EB] text-[#6B7280] hover:border-[#3B82F6] hover:text-[#2563EB] hover:shadow-sm'
+                ? 'bg-[#2563EB] text-white shadow-xs hover:bg-[#3B82F6]'
+                : 'bg-white border border-[#E5E7EB] text-[#6B7280] hover:border-[#3B82F6] hover:text-[#2563EB]'
                 }`}
             >
               {chip}
@@ -305,7 +312,7 @@ export default function ExploreProjects() {
           </div>
 
           {projects.length === 0 ? (
-            <div className="text-center py-24 bg-white rounded-[24px] border border-dashed border-[#E5E7EB] shadow-sm max-w-xl mx-auto">
+            <div className="text-center py-24 bg-white rounded-[24px] border border-dashed border-[#E5E7EB] shadow-2xs max-w-xl mx-auto">
               <Code className="w-12 h-12 text-[#6B7280]/60 mx-auto mb-3 stroke-[1.5]" />
               <p className="text-[#111827] font-bold text-base">No open source blueprints found</p>
               <p className="text-[#6B7280] text-xs mt-1">Check back later or change your search filters.</p>
@@ -321,21 +328,22 @@ export default function ExploreProjects() {
                     key={project._id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ y: -6, borderColor: 'rgba(59, 130, 246, 0.4)' }}
                     transition={{ duration: 0.4, delay: index * 0.05 }}
-                    className="group bg-white border border-[#E5E7EB] rounded-[24px] flex flex-col justify-between overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.06)] hover:border-[#3B82F6]/40 transition-all duration-300 transform hover:-translate-y-1.5 backdrop-blur-md"
+                    className="group bg-white border border-[#E5E7EB] rounded-[24px] flex flex-col justify-between overflow-hidden shadow-2xs transition-all duration-300 backdrop-blur-md"
                   >
                     <div>
                       {/* Browser Window Wrapper */}
                       <div
                         onClick={() => router.push(`/projects/${project._id}`)}
-                        className="relative h-48 w-full overflow-hidden cursor-pointer border-b border-[#E5E7EB] bg-slate-50 group/thumb"
+                        className="relative h-48 w-full overflow-hidden cursor-pointer border-b border-[#E5E7EB] bg-[#F8FAFC] group/thumb"
                       >
                         {/* Browser Header Bar */}
-                        <div className="absolute top-0 inset-x-0 h-7 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB]/60 flex items-center justify-between px-3 z-30 transition-colors group-hover/thumb:bg-slate-50">
+                        <div className="absolute top-0 inset-x-0 h-7 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB]/60 flex items-center justify-between px-3 z-30 transition-colors group-hover/thumb:bg-[#F8FAFC]">
                           <div className="flex items-center space-x-1">
-                            <div className="w-2 h-2 rounded-full bg-gray-300" />
-                            <div className="w-2 h-2 rounded-full bg-gray-300" />
-                            <div className="w-2 h-2 rounded-full bg-gray-300" />
+                            <div className="w-2 h-2 rounded-full bg-[#E5E7EB]" />
+                            <div className="w-2 h-2 rounded-full bg-[#E5E7EB]" />
+                            <div className="w-2 h-2 rounded-full bg-[#E5E7EB]" />
                           </div>
                           <div className="text-[9px] font-mono text-[#6B7280]/80 tracking-tight max-w-[120px] truncate">
                             {project.title}.io
@@ -344,15 +352,15 @@ export default function ExploreProjects() {
                         </div>
 
                         {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover/thumb:opacity-100 backdrop-blur-[2px] transition-all duration-300 ease-out z-20 flex items-center justify-center">
-                          <span className="bg-white text-[#111827] px-4 py-2 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1.5 shadow-xl transform translate-y-3 group-hover/thumb:translate-y-0 transition-all duration-300 ease-out">
+                        <div className="absolute inset-0 bg-[#111827]/40 opacity-0 group-hover/thumb:opacity-100 backdrop-blur-[2px] transition-all duration-300 ease-out z-20 flex items-center justify-center">
+                          <span className="bg-white text-[#111827] px-4 py-2 rounded-xl text-xs font-bold tracking-wide flex items-center gap-1.5 shadow-xs transform translate-y-3 group-hover/thumb:translate-y-0 transition-all duration-300 ease-out">
                             View Blueprint <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5] text-[#2563EB]" />
                           </span>
                         </div>
 
                         {/* Badges Overlay */}
                         <div className="absolute top-10 left-3 z-20 pointer-events-none">
-                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm tracking-wide text-white ${cardBadge === 'Trending' ? 'bg-orange-500' : cardBadge === 'New' ? 'bg-[#22C55E]' : 'bg-[#2563EB]'
+                          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shadow-2xs tracking-wide text-white ${cardBadge === 'Trending' ? 'bg-orange-500' : cardBadge === 'New' ? 'bg-[#22C55E]' : 'bg-[#2563EB]'
                             }`}>
                             {cardBadge}
                           </span>
@@ -386,7 +394,7 @@ export default function ExploreProjects() {
                                   className="w-6 h-6 rounded-full object-cover border border-[#E5E7EB]"
                                 />
                               ) : (
-                                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold uppercase">{project.owner.username?.slice(0, 2)}</div>
+                                <div className="w-6 h-6 rounded-full bg-[#E5E7EB] flex items-center justify-center text-[10px] font-bold uppercase">{project.owner.username?.slice(0, 2)}</div>
                               )}
                               <div className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full p-0.5">
                                 <CheckCircle className="w-2.5 h-2.5 text-[#2563EB] fill-[#2563EB] stroke-white" />
@@ -411,7 +419,7 @@ export default function ExploreProjects() {
                           {project.techStack?.map((tech, i) => (
                             <span
                               key={i}
-                              className="text-[10px] font-semibold font-mono bg-slate-100 text-[#6B7280] px-2 py-0.5 rounded-md border border-[#E5E7EB]/60 shadow-xs capitalize transition-colors group-hover:bg-blue-50/50 group-hover:text-[#2563EB] group-hover:border-blue-100"
+                              className="text-[10px] font-semibold font-mono bg-[#F8FAFC] text-[#6B7280] px-2 py-0.5 rounded-md border border-[#E5E7EB] shadow-2xs capitalize transition-colors group-hover:bg-[#2563EB]/5 group-hover:text-[#2563EB] group-hover:border-[#2563EB]/20"
                             >
                               {tech}
                             </span>
@@ -423,15 +431,19 @@ export default function ExploreProjects() {
                     {/* Footer Actions */}
                     <div className="px-5 pb-5 pt-4 border-t border-[#E5E7EB]/60 flex items-center justify-between bg-[#F8FAFC]/40">
                       <div className="flex items-center space-x-3 text-[#6B7280]">
-                        <span onClick={() => handleLike(project._id)} className="flex items-center text-[11px] font-bold hover:text-red-500 cursor-pointer transition-colors group/like select-none">
+                        <motion.span 
+                          whileTap={{ scale: 1.3 }}
+                          onClick={() => handleLike(project._id)} 
+                          className="flex items-center text-[11px] font-bold hover:text-rose-500 cursor-pointer transition-colors group/like select-none"
+                        >
                           <Heart
                             className={`w-3.5 h-3.5 mr-1 stroke-[2] transition-all ${project.isLiked
-                              ? "fill-red-500 text-red-500"
-                              : "fill-none text-current group-hover/like:fill-red-500 group-hover/like:text-red-500"
+                              ? "fill-rose-500 text-rose-500"
+                              : "fill-none text-current group-hover/like:fill-rose-500 group-hover/like:text-rose-500"
                               }`}
                           />
                           {project.likes.length || 0}
-                        </span>
+                        </motion.span>
                         <span onClick={() => router.push(`/projects/${project._id}`)} className="flex items-center text-[11px] font-bold hover:text-[#2563EB] cursor-pointer transition-colors select-none">
                           <MessageSquare className="w-3.5 h-3.5 mr-1 stroke-[2]" />
                           {project.reviewsCount || 0}
@@ -449,7 +461,6 @@ export default function ExploreProjects() {
                           <Eye className="w-3.5 h-3.5 mr-1 stroke-[2]" />
                           {((project.likes.length || 0) * 3) + 12}
                         </span>
-
                       </div>
 
                       <div className="flex items-center space-x-2">
@@ -458,7 +469,7 @@ export default function ExploreProjects() {
                             href={project.githubUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 text-[#6B7280] hover:text-[#111827] bg-white border border-[#E5E7EB] rounded-xl hover:shadow-xs hover:border-gray-300 transition-all active:scale-95"
+                            className="p-2 text-[#6B7280] hover:text-[#111827] bg-white border border-[#E5E7EB] rounded-xl hover:shadow-2xs transition-all active:scale-95"
                           >
                             <GitBranch className="w-3.5 h-3.5" />
                           </a>
@@ -468,7 +479,7 @@ export default function ExploreProjects() {
                             href={project.liveUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[11px] font-bold text-[#2563EB] hover:text-white bg-blue-50 hover:bg-[#2563EB] px-3.5 py-2 rounded-xl flex items-center gap-1 shadow-xs group-hover:bg-[#2563EB] group-hover:text-white transition-all duration-300 active:scale-95"
+                            className="text-[11px] font-bold text-[#2563EB] hover:text-white bg-[#2563EB]/5 hover:bg-[#2563EB] px-3.5 py-2 rounded-xl flex items-center gap-1 shadow-2xs group-hover:bg-[#2563EB] group-hover:text-white transition-all duration-300 active:scale-95"
                           >
                             <span>Live</span>
                             <ExternalLink className="w-3 h-3 stroke-[2.5]" />

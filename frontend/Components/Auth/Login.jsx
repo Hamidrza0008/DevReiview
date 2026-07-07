@@ -1,39 +1,87 @@
 "use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { login } from '@/services/authApis';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { login } from "@/services/authApis";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+
+// Isolated Premium Skeleton Component to use inside Next.js Suspense Fallback
+export function LoginSkeleton() {
+  return (
+    <div className="h-screen bg-[#F8FAFC] flex text-[#111827] font-sans antialiased relative overflow-hidden animate-pulse">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#2563EB]/90 relative items-center justify-center p-12">
+        <div className="max-w-xl w-full space-y-8">
+          <div className="flex items-center space-x-3">
+            <div className="w-9 h-9 bg-white/20 rounded-xl" />
+            <div className="h-6 bg-white/20 rounded w-32" />
+          </div>
+          <div className="space-y-3">
+            <div className="h-10 bg-white/20 rounded-xl w-3/4" />
+            <div className="h-5 bg-white/20 rounded-lg w-5/6" />
+          </div>
+          <div className="h-40 bg-white/10 rounded-2xl w-full border border-white/10" />
+        </div>
+      </div>
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
+        <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-2xl p-8 sm:p-10 space-y-6">
+          <div className="space-y-2">
+            <div className="h-7 bg-[#E5E7EB] rounded-lg w-1/2" />
+            <div className="h-4 bg-[#E5E7EB] rounded w-3/4" />
+          </div>
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <div className="h-3 bg-[#E5E7EB] rounded w-28" />
+              <div className="h-11 bg-[#E5E7EB] rounded-lg w-full" />
+            </div>
+            <div className="space-y-2">
+              <div className="h-3 bg-[#E5E7EB] rounded w-28" />
+              <div className="h-11 bg-[#E5E7EB] rounded-lg w-full" />
+            </div>
+          </div>
+          <div className="h-11 bg-[#E5E7EB] rounded-lg w-full pt-2" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Login() {
-  const{fetchUser} = useAuth();
+  const { fetchUser } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       const res = await login({
         email,
         password
-      })
+      });
 
       console.log(res);
-      if(res.success){
+      if (res.success) {
         fetchUser();
         router.push("/dashboard");
       }
     } catch (error) {
-      console.log(error)
-    }finally{
-      setIsLoading(false)
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Safe client mount handling for smooth hydration transitions
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,13 +100,17 @@ export default function Login() {
     }
   };
 
+  if (isPageLoading) {
+    return <LoginSkeleton />;
+  }
+
   return (
-    <div className="h-screen bg-[#F8FAFC] flex text-[#111827] font-sans antialiased relative overflow-hidden">
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#2563EB]/5 rounded-full blur-3xl" />
+    <div className="h-screen bg-[#F8FAFC] flex text-[#111827] font-sans antialiased relative overflow-hidden selection:bg-[#2563EB]/10 selection:text-[#2563EB]">
+      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-3xl z-0 pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#2563EB]/5 rounded-full blur-3xl z-0 pointer-events-none" />
 
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#2563EB] relative items-center justify-center p-12 overflow-hidden border-r border-[#E5E7EB]/10">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#2563EB] relative items-center justify-center p-12 overflow-hidden border-r border-[#E5E7EB]/10 z-10">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:24px_24px]"></div>
         
         <motion.div 
@@ -68,7 +120,7 @@ export default function Login() {
           className="relative z-10 max-w-xl w-full text-white space-y-8"
         >
           <motion.div variants={itemVariants} className="flex items-center space-x-3 w-fit">
-            <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-9 h-9 bg-white rounded-xl flex items-center justify-center shadow-xs">
               <span className="text-[#2563EB] font-black text-xl">&lt;/&gt;</span>
             </div>
             <span className="text-2xl font-bold tracking-tight">DevReview</span>
@@ -107,7 +159,7 @@ export default function Login() {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="w-full max-w-md bg-white rounded-2xl border border-[#E5E7EB] p-8 sm:p-10 shadow-sm"
+          className="w-full max-w-md bg-white rounded-2xl border border-[#E5E7EB] p-8 sm:p-10 shadow-2xs"
         >
           <div className="mb-8 lg:hidden flex items-center space-x-2">
             <div className="w-8 h-8 bg-[#2563EB] rounded-lg flex items-center justify-center">
@@ -128,14 +180,14 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm text-[#111827] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-shadow duration-150"
+                className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm text-[#111827] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all"
               />
             </div>
 
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="block text-xs font-bold text-[#111827] uppercase tracking-wider">Access Key / Password</label>
-                <a href="/auth/forgot-password" className="text-xs font-bold text-[#2563EB]">Lost Key?</a>
+                <a href="/auth/forgot-password" className="text-xs font-bold text-[#2563EB] hover:underline">Lost Key?</a>
               </div>
               <div className="relative">
                 <input
@@ -144,14 +196,14 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm text-[#111827] focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition-shadow duration-150 pr-10"
+                  className="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm text-[#111827] focus:outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all pr-12"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center select-none"
                 >
-                  <span className="text-[#6B7280] text-xs font-bold">{showPassword ? "HIDE" : "SHOW"}</span>
+                  <span className="text-[#6B7280] hover:text-[#111827] text-xs font-bold transition-colors">{showPassword ? "HIDE" : "SHOW"}</span>
                 </button>
               </div>
             </div>
@@ -163,16 +215,17 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded text-[#2563EB] border-[#E5E7EB]"
+                  className="w-4 h-4 rounded text-[#2563EB] border-[#E5E7EB] focus:ring-[#2563EB]/20"
                 />
-                <label htmlFor="remember-me" className="ml-2 text-sm text-[#6B7280] select-none cursor-pointer font-medium">Keep identity verified</label>
+                <label htmlFor="remember-me" className="ml-2 text-sm text-[#6B7280] select-none cursor-pointer font-medium hover:text-[#111827] transition-colors">Keep identity verified</label>
               </div>
             </div>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={isLoading}
-              className="relative w-full py-3 px-4 bg-[#2563EB] hover:bg-[#3B82F6] text-white font-bold text-sm rounded-lg transition-colors duration-150 flex items-center justify-center overflow-hidden"
+              className="relative w-full py-3 px-4 bg-[#2563EB] hover:bg-[#3B82F6] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center overflow-hidden shadow-xs"
             >
               <AnimatePresence mode="wait">
                 {isLoading ? (
@@ -199,23 +252,27 @@ export default function Login() {
                   </motion.span>
                 )}
               </AnimatePresence>
-            </button>
+            </motion.button>
           </form>
 
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-[#E5E7EB]"></div></div>
-            <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-3 text-[#6B7280] font-bold">Federated Access</span></div>
+            <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-3 text-[#6B7280] font-bold tracking-wider">Federated Access</span></div>
           </div>
 
-          <button type="button" className="w-full py-2.5 px-4 bg-white border border-[#E5E7EB] hover:bg-[#F8FAFC] text-[#111827] font-semibold text-sm rounded-lg flex items-center justify-center space-x-2 transition-colors duration-150">
-            <svg className="w-4 h-4" viewBox="0 0 24 24">
+          <motion.button 
+            whileTap={{ scale: 0.99 }}
+            type="button" 
+            className="w-full py-2.5 px-4 bg-white border border-[#E5E7EB] hover:bg-[#F8FAFC] text-[#111827] font-semibold text-sm rounded-lg flex items-center justify-center space-x-2 transition-all shadow-2xs"
+          >
+            <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
               <path fill="#EA4335" d="M12 5.04c1.64 0 3.12.56 4.28 1.67l3.2-3.2C17.52 1.57 14.96 1 12 1 7.35 1 3.4 3.65 1.5 7.5l3.6 2.8C6.01 7.11 8.78 5.04 12 5.04z"/>
               <path fill="#4285F4" d="M23.5 12.25c0-.82-.07-1.61-.21-2.38H12v4.5h6.48c-.28 1.48-1.12 2.73-2.38 3.58l3.6 2.8c2.1-1.94 3.3-4.8 3.3-8.5z"/>
               <path fill="#FBBC05" d="M5.1 14.7c-.24-.71-.38-1.47-.38-2.25s.14-1.54.38-2.25L1.5 7.4C.55 9.3 0 11.4 0 13.5s.55 4.2 1.5 6.1l3.6-2.9z"/>
               <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.6-2.8c-1.1.74-2.5 1.18-4.36 1.18-3.22 0-5.99-2.07-6.96-4.96l-3.6 2.8C3.4 20.35 7.35 23 12 23z"/>
             </svg>
             <span>Continue via Google API</span>
-          </button>
+          </motion.button>
 
           <p className="text-center text-sm text-[#6B7280] mt-8">New to the ecosystem? <a href="/auth/signup" className="font-bold text-[#2563EB] hover:underline">Create Account</a></p>
         </motion.div>

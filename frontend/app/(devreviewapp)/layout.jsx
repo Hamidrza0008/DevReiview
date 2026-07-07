@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import Sidebar from "@/Components/DevReviewLayout/Sidebar";
+import AppShellSkeleton from "@/Components/Skeleton/AppShellSkeleton";
 
 export default function DashboardLayout({ children }) {
   const { user, loading } = useAuth();
@@ -16,7 +17,7 @@ export default function DashboardLayout({ children }) {
     }
   }, [user, loading]);
 
-  if (loading) return <h1>Loading...</h1>;
+  if (loading) return <AppShellSkeleton/>;
   if (!user) return null;
 
   return (
