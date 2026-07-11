@@ -42,11 +42,17 @@ const userSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
-    }
+    },
+    savedProjects: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Projects",
+        },
+    ],
 },
-{
-   timestamps: true
-}
+    {
+        timestamps: true
+    }
 )
 
-module.exports = mongoose.model("Users" , userSchema , "users");
+module.exports = mongoose.model("Users", userSchema, "users");

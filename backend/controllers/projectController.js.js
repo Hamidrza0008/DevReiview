@@ -406,4 +406,86 @@ const getProjectByUsername = async(req , res) => {
         });
     }
 }
-module.exports = { createProjects, getMyProjects, getProjectById, getExploreProjects, updateProject, deleteProject, getProjectForEdit, toggleLikes , getProjectByUsername };
+
+const Users = require("../models/Users");
+const Projects = require("../models/Projects");
+
+const toggleSaveProject = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    const userId = req.user.id;
+
+    // Check project exists
+    const project = await Projects.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    const user = await Users.findById(userId);
+
+    const alreadySaved = user.savedProjects.includes(projectId);
+
+    if (alreadySaved) {
+      user.savedProjects = user.savedProjects.filter(
+        (id) => id.toString() !== projectId
+      );
+
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        saved: false,
+        message: "Project removed from saved",
+      });
+    }
+
+    user.savedProjects.push(projectId);
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      saved: true,
+      message: "Project saved successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+const getSavedProjects = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await Users.findById(userId).populate({
+      path: "savedProjects",
+      populate: {
+        path: "createdBy",
+        select: "name username profilePicture",
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      savedProjects: user.savedProjects,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+module.exports = { createProjects, getMyProjects, getProjectById, getExploreProjects, updateProject, deleteProject, getProjectForEdit, toggleLikes , getProjectByUsername , toggleSaveProject , getSavedProjects};

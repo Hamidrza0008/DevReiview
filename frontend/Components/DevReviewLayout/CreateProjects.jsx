@@ -1,14 +1,33 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { createProject } from "@/services/createProjectApi";
+import { useRouter } from "next/navigation";
+import { 
+  Rocket, 
+  Type, 
+  FileText, 
+  Image as ImageIcon, 
+  GitBranch, 
+  Globe, 
+  Code2, 
+  X, 
+  Plus, 
+  AlertCircle, 
+  CheckCircle2, 
+  Loader2,
+  ArrowRight,
+  ArrowLeft
+} from "lucide-react";
 
 export default function CreateProjects() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     thumbnail: "",
-    githubUrl: "",
+    GitBranchUrl: "",
     liveUrl: "",
   });
 
@@ -22,7 +41,7 @@ export default function CreateProjects() {
     if (submitStatus) {
       const timer = setTimeout(() => {
         setSubmitStatus(null);
-      }, 4000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [submitStatus]);
@@ -30,15 +49,11 @@ export default function CreateProjects() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const addTechTag = () => {
     const trimmedValue = techInput.trim().replace(/,$/, "");
-
     if (trimmedValue && !techStack.includes(trimmedValue)) {
       setTechStack([...techStack, trimmedValue]);
       setTechInput("");
@@ -59,17 +74,15 @@ export default function CreateProjects() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.title.trim()) newErrors.title = "Project title is required";
-    if (!formData.description.trim()) newErrors.description = "Project description is required";
-    if (techStack.length === 0) newErrors.techStack = "Please add at least one technology";
-
+    if (!formData.title.trim()) newErrors.title = "Required";
+    if (!formData.description.trim()) newErrors.description = "Required";
+    if (techStack.length === 0) newErrors.techStack = "Add at least one";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -80,21 +93,14 @@ export default function CreateProjects() {
       description: formData.description.trim(),
       thumbnail: formData.thumbnail.trim() || null,
       techStack: techStack,
-      githubUrl: formData.githubUrl.trim() || null,
+      GitBranchUrl: formData.GitBranchUrl.trim() || null,
       liveUrl: formData.liveUrl.trim() || null,
     };
 
     try {
       await createProject(projectPayload);
       setSubmitStatus("success");
-      
-      setFormData({
-        title: "",
-        description: "",
-        thumbnail: "",
-        githubUrl: "",
-        liveUrl: "",
-      });
+      setFormData({ title: "", description: "", thumbnail: "", GitBranchUrl: "", liveUrl: "" });
       setTechStack([]);
     } catch (error) {
       console.error(error);
@@ -105,244 +111,237 @@ export default function CreateProjects() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8 font-sans antialiased flex flex-col justify-center">
-      <div className="max-w-4xl mx-auto w-full">
+    // Fixed 100vh container, no scroll
+    <div className="h-screen w-full bg-[#F8FAFC] flex items-center justify-center p-4 sm:p-6 overflow-hidden relative selection:bg-blue-100">
+      
+      {/* Background Decor */}
+      <div className="absolute inset-0 bg-[radial-gradient(#E5E7EB_1px,transparent_1px)] [background-size:24px_24px] opacity-50 pointer-events-none z-0" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+
+      {/* Floating Notifications (Absolute to avoid pushing layout) */}
+      <AnimatePresence>
+        {submitStatus === "success" && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3 shadow-lg shadow-emerald-500/10"
+          >
+            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <span className="text-sm font-bold text-emerald-900">Project published successfully!</span>
+          </motion.div>
+        )}
+        {submitStatus === "error" && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3 shadow-lg shadow-rose-500/10"
+          >
+            <AlertCircle className="w-5 h-5 text-rose-600" />
+            <span className="text-sm font-bold text-rose-900">Failed to publish project.</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-5xl max-h-[92vh] flex flex-col bg-white border border-[#E5E7EB] rounded-3xl shadow-xl relative z-10 overflow-hidden"
+      >
         
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-[#111827] tracking-tight sm:text-3xl">
-            Showcase Your Project
-          </h1>
-          <p className="mt-1.5 text-sm text-[#6B7280]">
-            Share your work with developers and receive valuable feedback.
-          </p>
+        {/* Compact Header with Go Back Button */}
+        <div className="px-4 sm:px-6 py-4 border-b border-[#E5E7EB] bg-white flex items-center gap-4 shrink-0">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-all focus:outline-none focus:ring-2 focus:ring-slate-200 shrink-0"
+            title="Go Back"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          
+          <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center shrink-0">
+            <Rocket className="w-5 h-5 text-blue-600" />
+          </div>
+          
+          <div>
+            <h1 className="text-xl font-extrabold text-[#111827] tracking-tight">Publish Project</h1>
+            <p className="text-xs text-[#6B7280]">Share your architecture and gather community feedback.</p>
+          </div>
         </div>
 
-        {submitStatus === "success" && (
-          <div className="mb-4 p-3.5 bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-lg flex items-center gap-2.5 text-sm font-medium text-emerald-800 transition-all duration-300">
-            <svg className="h-4 w-4 text-[#22C55E] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Project published successfully! Your work is now live for reviews.
-          </div>
-        )}
-
-        {submitStatus === "error" && (
-          <div className="mb-4 p-3.5 bg-red-50 border border-red-100 rounded-lg flex items-center gap-2.5 text-sm font-medium text-red-800 transition-all duration-300">
-            <svg className="h-4 w-4 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Failed to publish project. Please check your network and try again.
-          </div>
-        )}
-
-        <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-xl shadow-sm overflow-hidden">
-          <form onSubmit={handleSubmit} className="p-5 sm:p-8 space-y-5">
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* 2-Column Form Body */}
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-hidden p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-5 h-full">
               
-              <div className="space-y-4">
+              {/* LEFT COLUMN */}
+              <div className="flex flex-col gap-5 h-full justify-start">
+                
+                {/* Title */}
                 <div>
-                  <label htmlFor="title" className="block text-xs font-semibold text-[#111827] uppercase tracking-wider mb-1">
-                    Project Title <span className="text-red-5xl font-normal">*</span>
+                  <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
+                    Title <span className="text-rose-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleInputChange}
-                    placeholder="e.g., DevReview Dashboard"
-                    className={`w-full px-3 py-2 bg-white border rounded-lg text-sm text-[#111827] placeholder-[#6B7280] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] ${
-                      errors.title ? "border-red-500 focus:ring-red-500/10 focus:border-red-500" : "border-[#E5E7EB]"
-                    }`}
-                  />
-                  {errors.title && (
-                    <p className="mt-1 text-xs font-medium text-red-600">{errors.title}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="thumbnail" className="block text-xs font-semibold text-[#111827] uppercase tracking-wider mb-1">
-                    Thumbnail Image URL
-                  </label>
-                  <div className="relative rounded-lg shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg className="h-4 w-4 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
+                  <div className="relative group">
+                    <Type className={`absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 transition-colors ${errors.title ? 'text-rose-400' : 'text-[#94A3B8] group-focus-within:text-[#2563EB]'}`} />
                     <input
-                      type="url"
-                      id="thumbnail"
-                      name="thumbnail"
-                      value={formData.thumbnail}
+                      type="text"
+                      name="title"
+                      value={formData.title}
                       onChange={handleInputChange}
-                      placeholder="https://example.com/image.png"
-                      className="w-full pl-9 pr-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm text-[#111827] placeholder-[#6B7280] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB]"
+                      placeholder="e.g., E-Commerce Dashboard"
+                      className={`w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border rounded-lg text-sm transition-all focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2563EB]/20 ${errors.title ? "border-rose-300 focus:border-rose-500 bg-rose-50/30" : "border-[#E5E7EB] focus:border-[#2563EB]"}`}
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="flex flex-col">
-                <label htmlFor="techStack" className="block text-xs font-semibold text-[#111827] uppercase tracking-wider mb-1">
-                  Tech Stack <span className="text-red-5xl font-normal">*</span>
-                </label>
-                <div className="space-y-2 flex-grow flex flex-col justify-between">
-                  <div className="flex gap-2">
-                    <div className="relative flex-grow">
+                {/* Description */}
+                <div>
+                  <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
+                    Description <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative group">
+                    <FileText className={`absolute top-2.5 left-3 w-4 h-4 transition-colors ${errors.description ? 'text-rose-400' : 'text-[#94A3B8] group-focus-within:text-[#2563EB]'}`} />
+                    <textarea
+                      name="description"
+                      rows={4}
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      placeholder="Explain features and problem solved..."
+                      className={`w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border rounded-lg text-sm resize-none transition-all focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2563EB]/20 ${errors.description ? "border-rose-300 focus:border-rose-500 bg-rose-50/30" : "border-[#E5E7EB] focus:border-[#2563EB]"}`}
+                    />
+                  </div>
+                </div>
+
+                {/* Tech Stack */}
+                <div className="flex flex-col flex-1">
+                  <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">
+                    Tech Stack <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <div className="relative group flex-grow">
+                      <Code2 className={`absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 transition-colors ${errors.techStack ? 'text-rose-400' : 'text-[#94A3B8] group-focus-within:text-[#2563EB]'}`} />
                       <input
                         type="text"
-                        id="techStack"
                         value={techInput}
                         onChange={(e) => setTechInput(e.target.value)}
                         onKeyDown={handleTechKeyDown}
-                        placeholder="Type and press Add or Enter"
-                        className={`w-full px-3 py-2 bg-white border rounded-lg text-sm text-[#111827] placeholder-[#6B7280] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] ${
-                          errors.techStack ? "border-red-500 focus:ring-red-500/10 focus:border-red-500" : "border-[#E5E7EB]"
-                        }`}
+                        placeholder="e.g., React, Node"
+                        className={`w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border rounded-lg text-sm transition-all focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#2563EB]/20 ${errors.techStack ? "border-rose-300 focus:border-rose-500 bg-rose-50/30" : "border-[#E5E7EB] focus:border-[#2563EB]"}`}
                       />
                     </div>
-                    <button
-                      type="button"
-                      onClick={addTechTag}
-                      className="inline-flex items-center justify-center px-3.5 py-2 text-sm font-medium text-[#2563EB] bg-[#2563EB]/5 border border-[#2563EB]/10 rounded-lg hover:bg-[#2563EB]/10 transition-colors focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30"
-                    >
-                      Add
-                    </button>
+                    <button type="button" onClick={addTechTag} className="px-4 bg-blue-50 text-blue-600 font-semibold text-xs border border-blue-100 rounded-lg hover:bg-blue-100 transition-colors">Add</button>
                   </div>
                   
-                  <div className="flex-grow min-h-[84px] md:h-[84px] p-2 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg flex flex-wrap gap-1.5 content-start overflow-y-auto">
+                  <div className={`flex-1 min-h-[60px] max-h-[100px] overflow-y-auto p-2 border rounded-lg bg-white flex flex-wrap gap-1.5 content-start ${errors.techStack ? 'border-rose-200 bg-rose-50/20' : 'border-[#E5E7EB]'}`}>
                     {techStack.length === 0 ? (
-                      <span className="text-xs text-[#6B7280] italic self-center mx-auto select-none">No technologies added yet.</span>
+                      <span className="text-xs text-[#94A3B8] w-full text-center mt-2">No tech added</span>
                     ) : (
                       techStack.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center gap-1 pl-2 pr-1 py-0.5 rounded bg-white text-[#2563EB] border border-[#2563EB]/10 shadow-sm text-xs font-medium"
-                        >
+                        <span key={index} className="inline-flex items-center gap-1 pl-2 pr-1 py-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded text-[11px] font-bold text-[#334155]">
                           {tech}
-                          <button
-                            type="button"
-                            onClick={() => removeTechTag(index)}
-                            className="w-3.5 h-3.5 inline-flex items-center justify-center rounded text-[#6B7280] hover:bg-gray-100 hover:text-red-600 transition-colors focus:outline-none"
-                          >
-                            <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l18 18" />
-                            </svg>
+                          <button type="button" onClick={() => removeTechTag(index)} className="w-4 h-4 hover:bg-white hover:text-rose-500 rounded flex items-center justify-center transition-colors">
+                            <X className="w-2.5 h-2.5" />
                           </button>
                         </span>
                       ))
                     )}
                   </div>
                 </div>
-                {errors.techStack && (
-                  <p className="mt-1 text-xs font-medium text-red-600">{errors.techStack}</p>
-                )}
               </div>
 
-            </div>
-
-            <div>
-              <label htmlFor="description" className="block text-xs font-semibold text-[#111827] uppercase tracking-wider mb-1">
-                Description <span className="text-red-5xl font-normal">*</span>
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                rows={3}
-                value={formData.description}
-                onChange={handleInputChange}
-                placeholder="What problem does your project solve? Describe features and architecture..."
-                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm text-[#111827] placeholder-[#6B7280] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB] resize-y ${
-                  errors.description ? "border-red-500 focus:ring-red-500/10 focus:border-red-500" : "border-[#E5E7EB]"
-                }`}
-              />
-              {errors.description && (
-                <p className="mt-1 text-xs font-medium text-red-600">{errors.description}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="githubUrl" className="block text-xs font-semibold text-[#111827] uppercase tracking-wider mb-1">
-                  GitHub Repository URL
-                </label>
-                <div className="relative rounded-lg shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-4 w-4 text-[#6B7280]" fill="currentColor" viewBox="0 0 24 24">
-                      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.483 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.162 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
-                    </svg>
+              {/* RIGHT COLUMN */}
+              <div className="flex flex-col gap-5 h-full justify-start">
+                
+                {/* Links */}
+                <div>
+                  <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">GitBranch Repo</label>
+                  <div className="relative group">
+                    <GitBranch className="absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 text-[#94A3B8] group-focus-within:text-[#111827] transition-colors" />
+                    <input
+                      type="url"
+                      name="GitBranchUrl"
+                      value={formData.GitBranchUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://GitBranch.com/..."
+                      className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm transition-all focus:outline-none focus:bg-white focus:border-[#111827] focus:ring-2 focus:ring-slate-200"
+                    />
                   </div>
-                  <input
-                    type="url"
-                    id="githubUrl"
-                    name="githubUrl"
-                    value={formData.githubUrl}
-                    onChange={handleInputChange}
-                    placeholder="https://github.com/..."
-                    className="w-full pl-9 pr-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm text-[#111827] placeholder-[#6B7280] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB]"
-                  />
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="liveUrl" className="block text-xs font-semibold text-[#111827] uppercase tracking-wider mb-1">
-                  Live Demo URL
-                </label>
-                <div className="relative rounded-lg shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-4 w-4 text-[#6B7280]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
+                <div>
+                  <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">Live Demo</label>
+                  <div className="relative group">
+                    <Globe className="absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 text-[#94A3B8] group-focus-within:text-[#22C55E] transition-colors" />
+                    <input
+                      type="url"
+                      name="liveUrl"
+                      value={formData.liveUrl}
+                      onChange={handleInputChange}
+                      placeholder="https://yourproject.com"
+                      className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm transition-all focus:outline-none focus:bg-white focus:border-[#22C55E] focus:ring-2 focus:ring-[#22C55E]/20"
+                    />
                   </div>
-                  <input
-                    type="url"
-                    id="liveUrl"
-                    name="liveUrl"
-                    value={formData.liveUrl}
-                    onChange={handleInputChange}
-                    placeholder="https://yourproject.com"
-                    className="w-full pl-9 pr-3 py-2 bg-white border border-[#E5E7EB] rounded-lg text-sm text-[#111827] placeholder-[#6B7280] transition-all focus:outline-none focus:ring-2 focus:ring-[#2563EB]/10 focus:border-[#2563EB]"
-                  />
                 </div>
+
+                {/* Thumbnail */}
+                <div className="flex-1 flex flex-col">
+                  <label className="block text-xs font-bold text-[#111827] mb-1.5 uppercase tracking-wider">Thumbnail URL (Optional)</label>
+                  <div className="relative group mb-3">
+                    <ImageIcon className="absolute top-1/2 -translate-y-1/2 left-3 w-4 h-4 text-[#94A3B8] group-focus-within:text-purple-500 transition-colors" />
+                    <input
+                      type="url"
+                      name="thumbnail"
+                      value={formData.thumbnail}
+                      onChange={handleInputChange}
+                      placeholder="https://image-url.png"
+                      className="w-full pl-9 pr-3 py-2 bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-sm transition-all focus:outline-none focus:bg-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+                    />
+                  </div>
+                  
+                  {/* Image Preview Box */}
+                  <div className="flex-1 bg-[#F8FAFC] border border-dashed border-[#CBD5E1] rounded-lg overflow-hidden flex items-center justify-center min-h-[100px]">
+                    {formData.thumbnail ? (
+                      <img src={formData.thumbnail} alt="Preview" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    ) : (
+                      <div className="text-center text-[#94A3B8]">
+                        <ImageIcon className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                        <span className="text-[10px] font-medium uppercase tracking-wider">No Preview</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </div>
+          </div>
 
-            <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-end gap-3.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setFormData({ title: "", description: "", thumbnail: "", githubUrl: "", liveUrl: "" });
-                  setTechStack([]);
-                  setErrors({});
-                  setSubmitStatus(null);
-                }}
-                className="px-4 py-2 text-sm font-medium text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-gray-50 hover:text-[#111827] transition-all focus:outline-none"
-              >
-                Cancel
-              </button>
-              
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="inline-flex items-center justify-center px-5 py-2 text-sm font-semibold text-white bg-[#2563EB] border border-transparent rounded-lg shadow-sm hover:bg-[#3882F6] transition-all focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#2563EB] disabled:opacity-75 disabled:cursor-not-allowed min-w-[130px]"
-              >
-                {isSubmitting ? (
-                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                ) : (
-                  "Publish Project"
-                )}
-              </button>
-            </div>
+          {/* Footer Actions */}
+          <div className="px-6 py-4 bg-[#F8FAFC] border-t border-[#E5E7EB] flex items-center justify-end gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setFormData({ title: "", description: "", thumbnail: "", GitBranchUrl: "", liveUrl: "" });
+                setTechStack([]); setErrors({}); setSubmitStatus(null);
+              }}
+              className="px-5 py-2 text-sm font-semibold text-[#6B7280] bg-white border border-[#E5E7EB] rounded-lg hover:bg-slate-50 hover:text-[#111827] transition-all"
+            >
+              Clear
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-6 py-2 text-sm font-semibold text-white bg-[#111827] rounded-lg shadow hover:bg-[#1F2937] hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0 min-w-[140px] justify-center"
+            >
+              {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /> Publishing</> : <>Publish <ArrowRight className="w-4 h-4" /></>}
+            </button>
+          </div>
+        </form>
 
-          </form>
-        </div>
-        
-      </div>
+      </motion.div>
     </div>
   );
 }

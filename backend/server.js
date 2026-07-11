@@ -27,12 +27,15 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 
 app.use("/api/stats", statsRoute);
+
+
 app.get("/", (req, res) => {
     res.send("DevReview Backend Running 🚀");
 })
 
 app.use("/api/projects", projectRoutes);
 app.use("/api/user/projects" , userProjectRoute);
+
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
