@@ -7,7 +7,7 @@ const authMiddleware = async (req, res, next) => {
 
     try {
         const token = req.cookies?.token;
-        console.log(req.cookies)
+        // console.log(req.cookies)
 
       
 
