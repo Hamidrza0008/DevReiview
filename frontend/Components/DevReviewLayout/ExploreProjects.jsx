@@ -24,17 +24,18 @@ import { getExploreProjects } from "@/services/getExploreProjectsApi";
 import { toggleLikes } from "@/services/toggleLikesApi";
 import { getStats } from "@/services/statsApi";
 import { useRouter } from "next/navigation";
+import { toggleSaveProject } from "@/services/savedProjectsApi";
 
 const CATEGORIES = [
   "All",
   "Full Stack",
   "Frontend",
-  "Backend",  
-  "MERN", 
-  "React", 
-  "Next.js", 
-  "Node.js", 
-  "TypeScript", 
+  "Backend",
+  "MERN",
+  "React",
+  "Next.js",
+  "Node.js",
+  "TypeScript",
   "Tailwind"
 ];
 
@@ -43,11 +44,11 @@ export default function ExploreProjects() {
   const [stats, setStats] = useState({ projects: 0, developers: 0, reviews: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [isPinned, setIsPinned] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  
+
   const router = useRouter();
 
   // fetch projects silently if background refresh is needed
@@ -76,9 +77,14 @@ export default function ExploreProjects() {
     }
   };
 
+  const handleSaveButton = async (id) => {
+    const res = await toggleSaveProject(id);
+    console.log(res);
+  }
+
   useEffect(() => {
     let isMounted = true;
-    
+
     if (isMounted) {
       fetchProjects();
       fetchStats();
@@ -99,11 +105,11 @@ export default function ExploreProjects() {
   // optimistic ui update for instant feedback
   const handleLike = async (e, projectId) => {
     e.stopPropagation(); // prevent card click
-    
+
     const previousProjects = [...projects];
-    
+
     // instantly update local state
-    setProjects(currentProjects => 
+    setProjects(currentProjects =>
       currentProjects.map(p => {
         if (p._id === projectId) {
           const isCurrentlyLiked = p.isLiked;
@@ -121,7 +127,7 @@ export default function ExploreProjects() {
     try {
       await toggleLikes(projectId);
       // resync with server in background to ensure data integrity
-      fetchProjects(false); 
+      fetchProjects(false);
     } catch (err) {
       // revert if api fails
       setProjects(previousProjects);
@@ -132,7 +138,7 @@ export default function ExploreProjects() {
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
       const query = searchQuery.toLowerCase().trim();
-      
+
       const matchesSearch = !query ||
         project.title?.toLowerCase().includes(query) ||
         project.description?.toLowerCase().includes(query) ||
@@ -166,11 +172,11 @@ export default function ExploreProjects() {
 
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] text-[#111827] font-sans selection:bg-[#2563EB]/20 selection:text-[#2563EB] pb-24">
-      
+
       {/* premium background artifacts */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute top-[400px] left-[-200px] w-[500px] h-[500px] bg-[#3B82F6]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div 
+      <div
         className="absolute inset-0 opacity-40 pointer-events-none z-0"
         style={{ backgroundImage: `radial-gradient(#E5E7EB 1px, transparent 1px)`, backgroundSize: "24px 24px" }}
       />
@@ -227,7 +233,7 @@ export default function ExploreProjects() {
               </h1>
             </motion.div>
 
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
@@ -236,7 +242,7 @@ export default function ExploreProjects() {
               Discover production-ready projects built by developers around the world. Level up your stack with clean architecture.
             </motion.p>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
@@ -337,11 +343,10 @@ export default function ExploreProjects() {
               <button
                 key={chip}
                 onClick={() => setSelectedCategory(chip)}
-                className={`text-xs px-4 py-2.5 rounded-xl font-semibold tracking-wide transition-all outline-none ${
-                  isActive
+                className={`text-xs px-4 py-2.5 rounded-xl font-semibold tracking-wide transition-all outline-none ${isActive
                     ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/20 border border-[#2563EB]"
                     : "bg-[#FFFFFF] border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#111827]"
-                }`}
+                  }`}
               >
                 {chip}
               </button>
@@ -351,7 +356,7 @@ export default function ExploreProjects() {
 
         {/* main grid area */}
         <section className="space-y-6">
-          
+
           {/* dynamic header */}
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <h3 className="font-bold text-xl flex items-center text-[#111827] tracking-tight">
@@ -366,7 +371,7 @@ export default function ExploreProjects() {
           </div>
 
           <AnimatePresence mode="wait">
-            
+
             {/* global error state */}
             {error && !loading && (
               <motion.div
@@ -379,7 +384,7 @@ export default function ExploreProjects() {
                 <AlertCircle className="w-8 h-8 text-[#EF4444] mb-3" />
                 <h3 className="text-base font-bold text-[#991B1B]">Connection Issue</h3>
                 <p className="text-sm text-[#B91C1C] mt-1 mb-4">{error}</p>
-                <button 
+                <button
                   onClick={() => fetchProjects()}
                   className="px-5 py-2 bg-[#EF4444] text-[#FFFFFF] text-xs font-bold rounded-xl hover:bg-[#DC2626] transition-colors shadow-sm"
                 >
@@ -442,7 +447,7 @@ export default function ExploreProjects() {
                 <p className="text-[#6B7280] text-sm max-w-sm mx-auto mb-6">
                   We couldn't find any projects matching your exact criteria. Try adjusting your search query or filters.
                 </p>
-                <button 
+                <button
                   onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
                   className="px-5 py-2.5 bg-[#F1F5F9] text-[#111827] text-sm font-semibold rounded-xl hover:bg-[#E5E7EB] transition-colors"
                 >
@@ -497,9 +502,8 @@ export default function ExploreProjects() {
                           </div>
 
                           <div className="absolute top-11 left-3 z-20 pointer-events-none">
-                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm tracking-wide text-[#FFFFFF] ${
-                              cardBadge === "Trending" ? "bg-orange-500" : cardBadge === "New" ? "bg-[#22C55E]" : "bg-[#2563EB]"
-                            }`}>
+                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm tracking-wide text-[#FFFFFF] ${cardBadge === "Trending" ? "bg-orange-500" : cardBadge === "New" ? "bg-[#22C55E]" : "bg-[#2563EB]"
+                              }`}>
                               {cardBadge}
                             </span>
                           </div>
@@ -523,7 +527,7 @@ export default function ExploreProjects() {
                         {/* info body */}
                         <div className="p-6 space-y-4">
                           {project.owner && (
-                            <div 
+                            <div
                               onClick={() => router.push(`/users/${project.owner.username}`)}
                               className="flex items-center space-x-2.5 cursor-pointer group/owner w-fit"
                             >
@@ -550,7 +554,7 @@ export default function ExploreProjects() {
                           )}
 
                           <div className="space-y-1.5">
-                            <h4 
+                            <h4
                               onClick={() => router.push(`/projects/${project._id}`)}
                               className="font-bold text-lg text-[#111827] line-clamp-1 capitalize tracking-tight group-hover:text-[#2563EB] cursor-pointer transition-colors"
                             >
@@ -581,33 +585,50 @@ export default function ExploreProjects() {
 
                       {/* card footer */}
                       <div className="px-6 py-4 border-t border-[#F1F5F9] flex items-center justify-between bg-[#FFFFFF] rounded-b-[24px]">
-                        <div className="flex items-center space-x-3.5 text-[#6B7280]">
-                          <motion.button 
+                        <div className="flex items-center space-x-4 text-[#6B7280]">
+                          {/* Like Button */}
+                          <motion.button
                             whileTap={{ scale: 0.85 }}
-                            onClick={(e) => handleLike(e, project._id)} 
+                            onClick={(e) => handleLike(e, project._id)}
                             className="flex items-center text-[11px] font-bold hover:text-rose-500 transition-colors group/like outline-none"
                             aria-label="Like project"
                           >
                             <Heart
-                              className={`w-4 h-4 mr-1.5 transition-all ${
-                                project.isLiked
+                              className={`w-4 h-4 mr-1.5 transition-all ${project.isLiked
                                   ? "fill-rose-500 text-rose-500"
                                   : "stroke-[2] text-[#6B7280] group-hover/like:text-rose-500"
-                              }`}
+                                }`}
                             />
                             {project.likes?.length || 0}
                           </motion.button>
-                          
-                          <button 
-                            onClick={() => router.push(`/projects/${project._id}`)} 
+
+                          {/* Comment/Review Button */}
+                          <button
+                            onClick={() => router.push(`/projects/${project._id}`)}
                             className="flex items-center text-[11px] font-bold hover:text-[#2563EB] transition-colors outline-none"
                           >
                             <MessageSquare className="w-4 h-4 mr-1.5 stroke-[2]" />
                             {project.reviewsCount || 0}
                           </button>
 
+                          {/* Save/Bookmark Button (NEW) */}
+                          <motion.button
+                            whileTap={{ scale: 0.85 }}
+                            onClick={(e) => handleSaveButton(project._id)}
+                            className="flex items-center text-[11px] font-bold hover:text-[#2563EB] transition-colors group/save outline-none"
+                            aria-label="Save project"
+                          >
+                            <Bookmark
+                              className={`w-4 h-4 transition-all ${project.isSaved
+                                  ? "fill-[#2563EB] text-[#2563EB]"
+                                  : "stroke-[2] text-[#6B7280] group-hover/save:text-[#2563EB]"
+                                }`}
+                            />
+                          </motion.button>
+
+                          {/* Rating Badge */}
                           {project.averageRating && (
-                            <div className="hidden sm:flex items-center text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
+                            <div className="hidden sm:flex items-center text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md ml-2">
                               <Star className="w-3 h-3 mr-1 text-amber-500 fill-amber-500" />
                               {project.averageRating}
                             </div>

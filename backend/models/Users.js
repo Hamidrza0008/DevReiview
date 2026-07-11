@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     savedProjects: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Projects",
+            ref: "projects",
         },
     ],
 },

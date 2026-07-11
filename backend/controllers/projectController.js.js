@@ -136,9 +136,9 @@ const getExploreProjects = async (req, res) => {
         const projects = await Projects.find({})
             .populate("owner", "username fullName profileImage")
             .sort({ createdAt: -1 }
-        );
+            );
 
-        
+
 
 
         // const updatedProject = projects.map((proj) => {
@@ -164,8 +164,8 @@ const getExploreProjects = async (req, res) => {
                 const isLiked = proj.likes.some((id) => id.toString() === userId);
 
                 const reviewsCount = reviews.length;
-                const totalRating = reviews.reduce((acc , curr) => acc+curr.rating  , 0);
-                const averageRating = reviewsCount>0?Number((totalRating/reviewsCount).toFixed(1)) : 0;
+                const totalRating = reviews.reduce((acc, curr) => acc + curr.rating, 0);
+                const averageRating = reviewsCount > 0 ? Number((totalRating / reviewsCount).toFixed(1)) : 0;
 
                 return {
                     ...proj.toObject(),
@@ -378,23 +378,23 @@ const toggleLikes = async (req, res) => {
     }
 }
 
-const getProjectByUsername = async(req , res) => {
+const getProjectByUsername = async (req, res) => {
     try {
-        const {username} = req.params;
-        const user = await Users.findOne({username}).select("-password");
-        if(!user){
+        const { username } = req.params;
+        const user = await Users.findOne({ username }).select("-password");
+        if (!user) {
             return res.status(404).json({
-                success:false,
-                message:"User Not Found",
+                success: false,
+                message: "User Not Found",
             })
         }
 
-        const projects = await Projects.find({owner:user._id});
+        const projects = await Projects.find({ owner: user._id });
 
-        
+
         return res.status(200).json({
-            success:true,
-            message:"Projects Recieved",
+            success: true,
+            message: "Projects Recieved",
             projects
         })
     } catch (error) {
@@ -407,85 +407,83 @@ const getProjectByUsername = async(req , res) => {
     }
 }
 
-const Users = require("../models/Users");
-const Projects = require("../models/Projects");
 
 const toggleSaveProject = async (req, res) => {
-  try {
-    const { projectId } = req.params;
-    const userId = req.user.id;
+    try {
+        const { projectId } = req.params;
+        const userId = req.user.id;
 
-    // Check project exists
-    const project = await Projects.findById(projectId);
+        // Check project exists
+        const project = await Projects.findById(projectId);
 
-    if (!project) {
-      return res.status(404).json({
-        success: false,
-        message: "Project not found",
-      });
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: "Project not found",
+            });
+        }
+
+        const user = await Users.findById(userId);
+
+        const alreadySaved = user.savedProjects.includes(projectId);
+
+        if (alreadySaved) {
+            user.savedProjects = user.savedProjects.filter(
+                (id) => id.toString() !== projectId
+            );
+
+            await user.save();
+
+            return res.status(200).json({
+                success: true,
+                saved: false,
+                message: "Project removed from saved",
+            });
+        }
+
+        user.savedProjects.push(projectId);
+
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            saved: true,
+            message: "Project saved successfully",
+        });
+    } catch (error) {
+        console.log(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
     }
-
-    const user = await Users.findById(userId);
-
-    const alreadySaved = user.savedProjects.includes(projectId);
-
-    if (alreadySaved) {
-      user.savedProjects = user.savedProjects.filter(
-        (id) => id.toString() !== projectId
-      );
-
-      await user.save();
-
-      return res.status(200).json({
-        success: true,
-        saved: false,
-        message: "Project removed from saved",
-      });
-    }
-
-    user.savedProjects.push(projectId);
-
-    await user.save();
-
-    return res.status(200).json({
-      success: true,
-      saved: true,
-      message: "Project saved successfully",
-    });
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
 };
 
 const getSavedProjects = async (req, res) => {
-  try {
-    const userId = req.user.id;
+    try {
+        const userId = req.user.id;
 
-    const user = await Users.findById(userId).populate({
-      path: "savedProjects",
-      populate: {
-        path: "createdBy",
-        select: "name username profilePicture",
-      },
-    });
+        const user = await Users.findById(userId).populate({
+            path: "savedProjects",
+            populate: {
+                path: "owner",
+                select: "name username profileImage",
+            },
+        });
 
-    return res.status(200).json({
-      success: true,
-      savedProjects: user.savedProjects,
-    });
-  } catch (error) {
-    console.log(error);
+        return res.status(200).json({
+            success: true,
+            savedProjects: user.savedProjects,
+        });
+    } catch (error) {
+        console.log(error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-    });
-  }
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
 };
 
-module.exports = { createProjects, getMyProjects, getProjectById, getExploreProjects, updateProject, deleteProject, getProjectForEdit, toggleLikes , getProjectByUsername , toggleSaveProject , getSavedProjects};
+module.exports = { createProjects, getMyProjects, getProjectById, getExploreProjects, updateProject, deleteProject, getProjectForEdit, toggleLikes, getProjectByUsername, toggleSaveProject, getSavedProjects };
