@@ -27,11 +27,11 @@ export default function Sidebar() {
     { name: "Explore Projects", icon: Compass, path: "/projects/explore" },
     { name: "Users", icon: Users, path: "/users/explore" },
     { name: "My Projects", icon: FolderGit2, path: "/projects/my" },
-    { name: "Reviews Received", icon: MessageSquare, path: "/review", badge: "3" },
+    { name: "Reviews Received", icon: MessageSquare, path: "/review", badge: "" },
     { name: "Saved Projects", icon: Bookmark, path: "/projects/saved" },
     { name: "Community", icon: Users, path: "/community" },
     { name: "Profile", icon: User, path: "/profile/my" },
-    { name: "Settings", icon: Settings, path: "/settings" },
+    // { name: "Settings", icon: Settings, path: "/settings" },
   ];
 
   

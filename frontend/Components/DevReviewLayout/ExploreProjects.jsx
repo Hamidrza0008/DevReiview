@@ -26,13 +26,15 @@ import { getStats } from "@/services/statsApi";
 import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
-  "All", 
-  "Trending", 
+  "All",
+  "Full Stack",
+  "Frontend",
+  "Backend",  
+  "MERN", 
   "React", 
   "Next.js", 
-  "Node", 
+  "Node.js", 
   "TypeScript", 
-  "MERN", 
   "Tailwind"
 ];
 

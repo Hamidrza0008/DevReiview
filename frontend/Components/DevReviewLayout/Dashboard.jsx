@@ -8,16 +8,17 @@ import {
   FolderGit2,
   MessageSquare,
   ThumbsUp,
-  Eye,
   Star,
   Plus,
   ExternalLink,
   ArrowUpRight,
   CheckCircle2,
-  FileCode
+  FileCode,
+  AlertCircle
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { useRouter } from "next/navigation";
+import { getMyReviews } from "@/services/reviewApis";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -26,21 +27,48 @@ export default function Dashboard() {
   const [activeNav, setActiveNav] = useState("Dashboard");
   const [projects, setProjects] = useState([]);
   const { user } = useAuth();
-
-  const totalNumberOfProjects = projects.length.toString();
-  const totalLikes = projects.reduce((total, project) => total + (project.likes.length || 0), 0);
-  const totalReviews = projects.reduce((total, project) => total + (project.reviews || 0), 0);
+  
+  // State for db data
+  const [data, setData] = useState({
+    stats: { totalProjects: 0, totalLikes: 0, totalGivenReviews: 0, totalReceivedReviews: 0 },
+    projectLikes: [],
+    receivedReviews: [],
+    givenReviews: []
+  });
 
   const getProjects = async () => {
-    const res = await getMyProjects();
-    setProjects(res.projects);
+    try {
+      const res = await getMyProjects();
+      if (res && res.projects) {
+        setProjects(res.projects);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      const res = await getMyReviews();
+      if (res && res.success) {
+        setData({
+          stats: res.stats || data.stats,
+          projectLikes: res.projectLikes || [],
+          receivedReviews: res.receivedReviews || [],
+          givenReviews: res.givenReviews || []
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
   };
 
   useEffect(() => {
+    fetchDashboardData();
     getProjects();
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1600);
+    }, 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -72,30 +100,28 @@ export default function Dashboard() {
         <div className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
           <AnimatePresence mode="wait">
             {isLoading ? (
-              /* ================= SKELETON LOADING FRAMEWORK ================= */
+              /* ================= SKELETON LOADING ================= */
               <motion.div
                 key="skeleton-view"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
                 className="space-y-6 animate-pulse"
               >
-                {/* 1. Hero Card Skeleton */}
+                {/* Hero Skeleton */}
                 <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                   <div className="flex items-center gap-5 w-full">
                     <div className="w-16 h-16 rounded-2xl bg-[#E5E7EB] shrink-0" />
                     <div className="space-y-3 w-full max-w-md">
                       <div className="flex items-center gap-2">
                         <div className="h-6 bg-[#E5E7EB] rounded-lg w-48" />
-                        <div className="h-4 bg-[#E5E7EB] rounded w-12" />
                       </div>
                       <div className="h-4 bg-[#E5E7EB] rounded-lg w-full" />
-                      <div className="h-4 bg-[#E5E7EB] rounded-lg w-2/3" />
                     </div>
                   </div>
-                  <div className="h-10 bg-[#E5E7EB] rounded-xl w-full md:w-36 shrink-0 self-stretch md:self-auto" />
+                  <div className="h-10 bg-[#E5E7EB] rounded-xl w-full md:w-36 shrink-0" />
                 </div>
 
-                {/* 2. Metric Cards Skeleton */}
+                {/* Metric Cards Skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {[...Array(4)].map((_, i) => (
                     <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 space-y-4">
@@ -103,16 +129,12 @@ export default function Dashboard() {
                         <div className="h-3 bg-[#E5E7EB] rounded w-20" />
                         <div className="w-8 h-8 bg-[#E5E7EB] rounded-xl" />
                       </div>
-                      <div className="flex items-baseline gap-2">
-                        <div className="h-8 bg-[#E5E7EB] rounded-lg w-16" />
-                        <div className="h-4 bg-[#E5E7EB] rounded w-10" />
-                      </div>
-                      <div className="h-3 bg-[#E5E7EB] rounded w-24" />
+                      <div className="h-8 bg-[#E5E7EB] rounded-lg w-16" />
                     </div>
                   ))}
                 </div>
 
-                {/* 3. Core Content Hub Skeleton */}
+                {/* Content Hub Skeleton */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                   <div className="lg:col-span-2 space-y-5">
                     <div className="flex items-center gap-6 border-b border-[#E5E7EB] pb-3">
@@ -123,18 +145,8 @@ export default function Dashboard() {
                       {[...Array(2)].map((_, i) => (
                         <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden flex flex-col">
                           <div className="aspect-video bg-[#E5E7EB] w-full" />
-                          <div className="p-4 space-y-4 flex-1 flex flex-col justify-between">
-                            <div className="space-y-2">
-                              <div className="h-4 bg-[#E5E7EB] rounded w-3/4" />
-                              <div className="flex gap-1 pt-1">
-                                <div className="h-5 bg-[#E5E7EB] rounded-md w-12" />
-                                <div className="h-5 bg-[#E5E7EB] rounded-md w-16" />
-                              </div>
-                            </div>
-                            <div className="pt-3 border-t border-[#F1F5F9] flex items-center justify-between">
-                              <div className="h-4 bg-[#E5E7EB] rounded w-20" />
-                              <div className="h-4 bg-[#E5E7EB] rounded w-14" />
-                            </div>
+                          <div className="p-4 space-y-4">
+                            <div className="h-4 bg-[#E5E7EB] rounded w-3/4" />
                           </div>
                         </div>
                       ))}
@@ -163,12 +175,12 @@ export default function Dashboard() {
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300" />
                       <img
                         src={user?.profileImage || "/default-avatar.png"}
-                        alt="Ecosystem Avatar Identity"
+                        alt="Avatar"
                         className="w-16 h-16 rounded-2xl object-cover border-2 border-white relative z-10 shadow-sm"
                         onError={(e) => { e.currentTarget.src = "/default-avatar.png"; }}
                       />
                       <span className="absolute -bottom-1 -right-1 bg-[#2563EB] text-white text-[9px] font-extrabold px-1 py-0.2 rounded-md tracking-wider shadow-sm z-20">
-                        PRO
+                        DEV
                       </span>
                     </div>
 
@@ -179,35 +191,36 @@ export default function Dashboard() {
                         </h1>
                         <CheckCircle2 className="w-4 h-4 text-[#22C55E] fill-[#22C55E]/10" />
                         <span className="text-[10px] bg-[#F8FAFC] border border-[#E5E7EB] font-mono text-[#6B7280] px-1.5 py-0.2 rounded">
-                          @{user?.username || "user"}
+                          @{user?.username || "dev_user"}
                         </span>
                       </div>
                       <p className="text-xs text-[#6B7280] line-clamp-2 max-w-xl font-medium">
-                        {user?.bio || "No system logs written under biography metadata settings panel."}
+                        {user?.bio || "Building modern, scalable applications step by step."}
                       </p>
                     </div>
                   </div>
 
                   <motion.button
-                    whileHover={{ scale: 1.01, y: -1 }}
-                    whileTap={{ scale: 0.99 }}
-                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-[#3B82F6] text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-all shadow-xs shrink-0 self-stretch md:self-auto justify-center"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-2 bg-[#111827] hover:bg-[#1F2937] text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition-all shadow-sm shrink-0 self-stretch md:self-auto justify-center"
+                    onClick={() => router.push('/projects/create')}
                   >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Submit Architecture</span>
+                    <Plus className="w-4 h-4" />
+                    <span>New Project</span>
                   </motion.button>
                 </motion.div>
 
-                {/* 2. METRIC ANALYTICS CARDS */}
+                {/* 2. DYNAMIC METRIC ANALYTICS CARDS (FROM DB STATS) */}
                 <motion.div
                   variants={itemVariants}
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
                 >
                   {[
-                    { title: "Total Repos", value: totalNumberOfProjects, trend: "+2 this cycle", icon: FolderGit2, color: "text-[#2563EB] bg-[#2563EB]/5 border-[#2563EB]/10" },
-                    { title: "Ecosystem Views", value: "2.4K", trend: "+12.4% velocity", icon: Eye, color: "text-[#111827] bg-[#111827]/5 border-[#111827]/5" },
-                    { title: "Likes Tracked", value: totalLikes, trend: "+18 new hits", icon: ThumbsUp, color: "text-[#22C55E] bg-[#22C55E]/5 border-[#22C55E]/10" },
-                    { title: "Audit Reviews", value: totalReviews, trend: "+4 open tasks", icon: MessageSquare, color: "text-[#3B82F6] bg-[#3B82F6]/5 border-[#3B82F6]/10" },
+                    { title: "Total Projects", value: data.stats?.totalProjects || 0, label: "Deployed", icon: FolderGit2, color: "text-[#2563EB] bg-[#2563EB]/5 border-[#2563EB]/10" },
+                    { title: "Project Likes", value: data.stats?.totalLikes || 0, label: "Appreciations", icon: ThumbsUp, color: "text-[#22C55E] bg-[#22C55E]/5 border-[#22C55E]/10" },
+                    { title: "Reviews Received", value: data.stats?.totalReceivedReviews || 0, label: "Feedback", icon: MessageSquare, color: "text-[#8B5CF6] bg-[#8B5CF6]/5 border-[#8B5CF6]/10" },
+                    { title: "Reviews Given", value: data.stats?.totalGivenReviews || 0, label: "Community", icon: Star, color: "text-[#F59E0B] bg-[#F59E0B]/5 border-[#F59E0B]/10" },
                   ].map((card, i) => {
                     const IconComponent = card.icon;
                     return (
@@ -226,12 +239,10 @@ export default function Dashboard() {
                           <span className="text-2xl font-bold tracking-tight text-[#111827] font-sans tabular-nums">
                             {card.value}
                           </span>
-                          <span className="text-[10px] font-semibold text-[#22C55E] flex items-center bg-[#22C55E]/5 px-1.5 py-0.2 rounded">
-                            <ArrowUpRight className="w-3 h-3 mr-0.5" />
-                            {card.trend.split(" ")[0]}
-                          </span>
                         </div>
-                        <p className="text-[11px] text-[#6B7280] mt-1 font-medium">{card.trend.substring(card.trend.indexOf(" ") + 1)}</p>
+                        <p className="text-[11px] text-[#6B7280] mt-1 font-medium flex items-center gap-1">
+                          <ArrowUpRight className="w-3 h-3 text-[#6B7280]" /> {card.label}
+                        </p>
                       </motion.div>
                     );
                   })}
@@ -239,7 +250,8 @@ export default function Dashboard() {
 
                 {/* 3. CORE MANAGEMENT GRID HUB */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                  {/* LEFT COMPONENT COLUMN */}
+                  
+                  {/* LEFT COMPONENT COLUMN (Tabs & Content) */}
                   <motion.div variants={itemVariants} className="lg:col-span-2 space-y-5">
 
                     {/* NAV TABS SELECTORS */}
@@ -267,6 +279,8 @@ export default function Dashboard() {
 
                     {/* DYNAMIC RENDERING BLOCK CONTEXT */}
                     <AnimatePresence mode="wait">
+                      
+                      {/* === PROJECTS TAB === */}
                       {activeTab === "My Projects" ? (
                         <motion.div
                           key="projects-view"
@@ -276,26 +290,28 @@ export default function Dashboard() {
                           className="space-y-4"
                         >
                           {projects.length === 0 ? (
-                            /* REDESIGNED EMPTY STATE CARD */
-                            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-8 text-center space-y-4 shadow-2xs">
-                              <div className="w-12 h-12 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl flex items-center justify-center mx-auto text-[#6B7280]">
-                                <FileCode className="w-5 h-5" />
+                            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-10 text-center space-y-4 shadow-2xs">
+                              <div className="w-14 h-14 bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl flex items-center justify-center mx-auto text-[#6B7280]">
+                                <FileCode className="w-6 h-6" />
                               </div>
                               <div className="space-y-1">
-                                <h3 className="font-bold text-sm text-[#111827]">No projects indexed yet</h3>
-                                <p className="text-xs text-[#6B7280] max-w-xs mx-auto">Get started by linking your primary development repositories directly.</p>
+                                <h3 className="font-bold text-base text-[#111827]">No projects indexed yet</h3>
+                                <p className="text-sm text-[#6B7280] max-w-sm mx-auto">Upload your first project to start tracking likes and receiving reviews from the community.</p>
                               </div>
-                              <button className="bg-[#2563EB] hover:bg-[#3B82F6] text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-xs">
-                                Add Initial Repository
+                              <button 
+                                onClick={() => router.push('/projects/new')}
+                                className="mt-4 bg-[#111827] hover:bg-[#1F2937] text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
+                              >
+                                Upload Project
                               </button>
                             </div>
                           ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                               {projects.map((project, idx) => (
                                 <motion.div
-                                  key={idx}
-                                  whileHover={{ y: -3 }}
-                                  className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-2xs hover:border-[#2563EB]/40 flex flex-col justify-between group cursor-pointer transition-all duration-300"
+                                  key={project._id || idx}
+                                  whileHover={{ y: -4 }}
+                                  className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#2563EB]/40 flex flex-col justify-between group cursor-pointer transition-all duration-300"
                                 >
                                   {/* Thumbnail Area */}
                                   <div className="relative aspect-video w-full bg-[#F8FAFC] border-b border-[#E5E7EB] overflow-hidden">
@@ -303,39 +319,41 @@ export default function Dashboard() {
                                       onClick={() => router.push(`/projects/${project._id}`)}
                                       src={project.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80"}
                                       alt={project.title}
-                                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                   </div>
 
                                   {/* Details Area */}
                                   <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
                                     <div className="space-y-1">
-                                      <h3 className="font-bold text-sm text-[#111827] group-hover:text-[#2563EB] transition-colors flex items-center gap-1.5">
+                                      <h3 
+                                        onClick={() => router.push(`/projects/${project._id}`)}
+                                        className="font-bold text-sm text-[#111827] group-hover:text-[#2563EB] transition-colors flex items-center gap-1.5"
+                                      >
                                         <span>{project.title}</span>
                                         <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-[#6B7280]" />
                                       </h3>
-                                      <div className="flex flex-wrap gap-1 pt-1">
-                                        {project.techStack?.map((tech, tIdx) => (
-                                          <span key={tIdx} className="text-[10px] font-medium bg-[#F8FAFC] border border-[#E5E7EB] text-[#111827] px-2 py-0.5 rounded-md shadow-2xs">
+                                      <div className="flex flex-wrap gap-1.5 pt-1.5">
+                                        {project.techStack?.slice(0,3).map((tech, tIdx) => (
+                                          <span key={tIdx} className="text-[10px] font-medium bg-[#F1F5F9] text-[#475569] px-2 py-0.5 rounded-md">
                                             {tech}
                                           </span>
                                         ))}
+                                        {project.techStack?.length > 3 && (
+                                          <span className="text-[10px] font-medium bg-[#F1F5F9] text-[#475569] px-2 py-0.5 rounded-md">+{project.techStack.length - 3}</span>
+                                        )}
                                       </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-2.5 border-t border-[#F1F5F9] text-[11px] font-semibold text-[#6B7280]">
-                                      <div className="flex items-center gap-3">
-                                        <span className="flex items-center gap-1 hover:text-rose-500 transition-colors">
-                                          <ThumbsUp className="w-3.5 h-3.5 text-rose-500/80 fill-rose-500/5" /> {project.likes.length || 0}
+                                    <div className="flex items-center justify-between pt-3 border-t border-[#F1F5F9] text-[11px] font-semibold text-[#6B7280]">
+                                      <div className="flex items-center gap-4">
+                                        <span className="flex items-center gap-1.5 hover:text-rose-500 transition-colors">
+                                          <ThumbsUp className="w-3.5 h-3.5 text-rose-500/80" /> {project.likes?.length || 0}
                                         </span>
-                                        <span className="flex items-center gap-1 hover:text-[#2563EB] transition-colors">
-                                          <MessageSquare className="w-3.5 h-3.5 text-[#2563EB]/80" /> {project.reviews || 0}
+                                        <span className="flex items-center gap-1.5 hover:text-[#2563EB] transition-colors">
+                                          <MessageSquare className="w-3.5 h-3.5 text-[#2563EB]/80" /> {project.reviews?.length || 0}
                                         </span>
                                       </div>
-                                      <span className="text-[10px] font-bold text-[#2563EB] opacity-0 group-hover:opacity-100 transition-all flex items-center gap-0.5">
-                                        <span>View Code</span>
-                                        <ArrowUpRight className="w-3 h-3" />
-                                      </span>
                                     </div>
                                   </div>
                                 </motion.div>
@@ -344,44 +362,65 @@ export default function Dashboard() {
                           )}
                         </motion.div>
                       ) : (
-                        /* ================= FEEDBACK TAB ================= */
+                        
+                        /* === FEEDBACK RECEIVED TAB === */
                         <motion.div
                           key="feedback-view"
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
-                          className="space-y-3"
+                          className="space-y-4"
                         >
-                          {[
-                            { reviewer: "Sarah Jenkins", role: "Lead Architect", company: "Vercel", message: "The database configuration models layout built across this finance platform looks extremely modular. Production grade performance optimization indices executed cleanly.", rating: 5, date: "2 hours ago" },
-                            { reviewer: "Alex Rivera", role: "Senior Specialist", company: "GitHub Ecosystems", message: "Brilliant UI modular parsing rules implemented. State synchronization bounds look solid, responsive break lines are perfectly crisp.", rating: 4, date: "Yesterday" }
-                          ].map((feedback, fIdx) => (
-                            <div key={fIdx} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-2xs space-y-3 transition-all hover:border-[#E5E7EB]">
-                              <div className="flex justify-between items-start gap-4">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#2563EB]/10 to-[#3B82F6]/10 border border-[#E5E7EB] flex items-center justify-center text-xs font-bold text-[#2563EB]">
-                                    {feedback.reviewer.split(" ").map(n => n[0]).join("")}
-                                  </div>
-                                  <div>
-                                    <h4 className="font-bold text-xs text-[#111827]">{feedback.reviewer}</h4>
-                                    <p className="text-[10px] text-[#6B7280] font-medium">{feedback.role} · <span className="text-[#2563EB]">{feedback.company}</span></p>
+                          {data.receivedReviews && data.receivedReviews.length > 0 ? (
+                            data.receivedReviews.map((feedback, fIdx) => (
+                              <div key={feedback._id || fIdx} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 shadow-2xs space-y-3 transition-all hover:border-[#D1D5DB] hover:shadow-sm">
+                                <div className="flex justify-between items-start gap-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#2563EB]/10 to-[#3B82F6]/10 border border-[#E5E7EB] flex items-center justify-center text-sm font-bold text-[#2563EB]">
+                                      {/* Extract initials from reviewer name or fallback */}
+                                      {feedback.user?.name ? feedback.user.name.substring(0, 2).toUpperCase() : "US"}
+                                    </div>
+                                    <div>
+                                      <h4 className="font-bold text-sm text-[#111827]">{feedback.user?.name || "Community Member"}</h4>
+                                      <p className="text-[11px] text-[#6B7280] font-medium mt-0.5">
+                                        Reviewed <span className="text-[#2563EB] hover:underline cursor-pointer">{feedback.project?.title || "Project"}</span>
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                                <span className="text-[10px] font-semibold text-[#6B7280] bg-[#F8FAFC] border border-[#E5E7EB] px-2 py-0.5 rounded-md">{feedback.date}</span>
-                              </div>
 
-                              <div className="flex gap-0.5">
-                                {[...Array(5)].map((_, sIdx) => (
-                                  <Star key={sIdx} className={`w-3 h-3 ${sIdx < feedback.rating ? "text-amber-400 fill-current" : "text-[#E5E7EB]"}`} />
-                                ))}
+                                <div className="flex gap-1 pt-1">
+                                  {[...Array(5)].map((_, sIdx) => (
+                                    <Star key={sIdx} className={`w-3.5 h-3.5 ${sIdx < feedback.rating ? "text-amber-400 fill-amber-400" : "text-[#E5E7EB]"}`} />
+                                  ))}
+                                </div>
+                                <p className="text-sm text-[#475569] leading-relaxed font-normal bg-[#F8FAFC] p-3 rounded-xl border border-[#F1F5F9]">
+                                  "{feedback.review}"
+                                </p>
                               </div>
-                              <p className="text-xs text-[#6B7280] leading-relaxed font-normal">"{feedback.message}"</p>
+                            ))
+                          ) : (
+                            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-10 text-center space-y-3 shadow-2xs">
+                              <AlertCircle className="w-10 h-10 text-[#94A3B8] mx-auto mb-2" />
+                              <h3 className="font-bold text-[#111827]">No feedback received</h3>
+                              <p className="text-sm text-[#6B7280]">Share your projects to get reviews and ratings from other developers.</p>
                             </div>
-                          ))}
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>
                   </motion.div>
+
+                  {/* RIGHT COLUMN Placeholder (Optional Sidebar Space for later) */}
+                  <div className="hidden lg:block lg:col-span-1 space-y-5">
+                    <div className="bg-gradient-to-b from-white to-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-6 text-center space-y-4 shadow-sm">
+                       <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-2 border border-amber-100">
+                          <Star className="w-6 h-6 fill-amber-500" />
+                       </div>
+                       <h3 className="font-bold text-sm text-slate-900">Community Rank</h3>
+                       <p className="text-xs text-slate-500 leading-relaxed">Give reviews and share projects to increase your visibility on the developer leaderboard.</p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}

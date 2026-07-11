@@ -16,6 +16,7 @@ export default function ReviewsDashboard() {
   const fetchDashboardData = async () => {
     try {
       const res = await getMyReviews();
+      console.log(res)
       // Assuming 'res' is directly the object you provided: { success: true, stats: {...}, givenReviews: [...], ... }
       if (res && res.success) {
         setData({
