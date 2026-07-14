@@ -588,7 +588,7 @@ export default function MyProfile() {
                   <h2 className="text-lg font-bold text-[#111827]">Your Uploads</h2>
                   <motion.button
                     whileTap={{ scale: 0.97 }}
-                    onClick={() => router.push('/upload')}
+                    onClick={() => router.push('/projects/create')}
                     className="bg-[#FFFFFF] border border-[#E5E7EB] hover:border-[#2563EB]/40 text-[#111827] px-4 py-2 rounded-xl font-semibold flex items-center space-x-1.5 shadow-sm text-sm transition-all"
                   >
                     <Plus className="w-4 h-4 text-[#2563EB]" /> <span>New Project</span>
