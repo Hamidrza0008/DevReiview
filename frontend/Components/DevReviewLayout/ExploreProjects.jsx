@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -39,10 +39,48 @@ const CATEGORIES = [
   "Tailwind"
 ];
 
+// small helper: eases a number up from 0 -> value whenever `value` changes.
+// only kicks in once real data has arrived, so nothing "fake" is ever shown.
+function AnimatedNumber({ value, duration = 900 }) {
+  const [display, setDisplay] = useState(0);
+  const fromRef = useRef(0);
+
+  useEffect(() => {
+    const target = typeof value === "number" ? value : parseFloat(value) || 0;
+    const from = fromRef.current;
+    let start = null;
+    let raf;
+
+    const step = (ts) => {
+      if (start === null) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      const current = from + (target - from) * eased;
+      setDisplay(current);
+      if (progress < 1) {
+        raf = requestAnimationFrame(step);
+      } else {
+        fromRef.current = target;
+      }
+    };
+
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+
+  return <>{Math.round(display).toLocaleString()}</>;
+}
+
+// shared shimmer skeleton block
+function Shimmer({ className = "" }) {
+  return <div className={`shimmer rounded-md ${className}`} />;
+}
+
 export default function ExploreProjects() {
   const [projects, setProjects] = useState([]);
-  const [stats, setStats] = useState({ projects: 0, developers: 0, reviews: 0 });
+  const [stats, setStats] = useState(null); // null = not loaded yet (vs. real zeros)
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [isPinned, setIsPinned] = useState(false);
@@ -50,6 +88,7 @@ export default function ExploreProjects() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const router = useRouter();
+  const isMountedRef = useRef(true);
 
   // fetch projects silently if background refresh is needed
   const fetchProjects = async (showLoader = true) => {
@@ -57,38 +96,54 @@ export default function ExploreProjects() {
     setError(null);
     try {
       const res = await getExploreProjects();
+      if (!isMountedRef.current) return;
       if (res?.projects) {
         setProjects(res.projects);
       }
     } catch (err) {
+      if (!isMountedRef.current) return;
       setError("Failed to load projects. Please check your connection or try again.");
     } finally {
-      if (showLoader) setLoading(false);
+      if (isMountedRef.current && showLoader) setLoading(false);
     }
   };
 
   const fetchStats = async () => {
+    setStatsLoading(true);
     try {
       const res = await getStats();
+      if (!isMountedRef.current) return;
       if (res) setStats(res);
     } catch (err) {
       // fail silently for stats to not block main UI
       console.error("Failed to load platform stats:", err);
+    } finally {
+      if (isMountedRef.current) setStatsLoading(false);
     }
   };
 
-  const handleSaveButton = async (id) => {
-    const res = await toggleSaveProject(id);
-    console.log(res);
-  }
+  const handleSaveButton = async (e, projectId) => {
+    e.stopPropagation();
+
+    const previousProjects = [...projects];
+
+    setProjects((current) =>
+      current.map((p) => (p._id === projectId ? { ...p, isSaved: !p.isSaved } : p))
+    );
+
+    try {
+      await toggleSaveProject(projectId);
+    } catch (err) {
+      // revert if api fails
+      setProjects(previousProjects);
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
+    isMountedRef.current = true;
 
-    if (isMounted) {
-      fetchProjects();
-      fetchStats();
-    }
+    fetchProjects();
+    fetchStats();
 
     // handle floating search bar on scroll
     const handleScroll = () => {
@@ -97,7 +152,7 @@ export default function ExploreProjects() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -109,15 +164,15 @@ export default function ExploreProjects() {
     const previousProjects = [...projects];
 
     // instantly update local state
-    setProjects(currentProjects =>
-      currentProjects.map(p => {
+    setProjects((currentProjects) =>
+      currentProjects.map((p) => {
         if (p._id === projectId) {
           const isCurrentlyLiked = p.isLiked;
           return {
             ...p,
             isLiked: !isCurrentlyLiked,
             // visually adjust array length for immediate counter update
-            likes: isCurrentlyLiked ? p.likes.slice(0, -1) : [...(p.likes || []), 'temp-like']
+            likes: isCurrentlyLiked ? p.likes.slice(0, -1) : [...(p.likes || []), "temp-like"]
           };
         }
         return p;
@@ -139,18 +194,20 @@ export default function ExploreProjects() {
     return projects.filter((project) => {
       const query = searchQuery.toLowerCase().trim();
 
-      const matchesSearch = !query ||
+      const matchesSearch =
+        !query ||
         project.title?.toLowerCase().includes(query) ||
         project.description?.toLowerCase().includes(query) ||
-        project.techStack?.some(tech => tech.toLowerCase().includes(query));
+        project.techStack?.some((tech) => tech.toLowerCase().includes(query));
 
       let matchesCategory = true;
       if (selectedCategory !== "All") {
         if (selectedCategory === "Trending") {
-          matchesCategory = (project.likes?.length || 0) > 2 || parseFloat(project.averageRating || 0) >= 4.0;
+          matchesCategory =
+            (project.likes?.length || 0) > 2 || parseFloat(project.averageRating || 0) >= 4.0;
         } else {
           matchesCategory = project.techStack?.some(
-            tech => tech.toLowerCase() === selectedCategory.toLowerCase()
+            (tech) => tech.toLowerCase() === selectedCategory.toLowerCase()
           );
         }
       }
@@ -158,6 +215,44 @@ export default function ExploreProjects() {
       return matchesSearch && matchesCategory;
     });
   }, [projects, searchQuery, selectedCategory]);
+
+  // derive an avg rating client-side as a fallback if the stats endpoint doesn't send one
+  const derivedAvgRating = useMemo(() => {
+    if (stats?.avgRating) return parseFloat(stats.avgRating).toFixed(2);
+    if (!projects.length) return null;
+    const rated = projects.filter((p) => p.averageRating);
+    if (!rated.length) return null;
+    const avg = rated.reduce((sum, p) => sum + parseFloat(p.averageRating), 0) / rated.length;
+    return avg.toFixed(2);
+  }, [stats, projects]);
+
+  const statCards = [
+    {
+      label: "Projects",
+      value: stats?.projects ?? 0,
+      icon: Layers,
+      loading: statsLoading
+    },
+    {
+      label: "Developers",
+      value: stats?.developers ?? 0,
+      icon: Users,
+      loading: statsLoading
+    },
+    {
+      label: "Reviews",
+      value: stats?.reviews ?? 0,
+      icon: MessageSquare,
+      loading: statsLoading
+    },
+    {
+      label: "Avg Rating",
+      value: derivedAvgRating,
+      icon: Star,
+      isRating: true,
+      loading: statsLoading || (derivedAvgRating === null && loading)
+    }
+  ];
 
   // fluid stagger animations for grid
   const containerVariants = {
@@ -172,6 +267,22 @@ export default function ExploreProjects() {
 
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] text-[#111827] font-sans selection:bg-[#2563EB]/20 selection:text-[#2563EB] pb-24">
+      {/* shimmer keyframes, scoped locally */}
+      <style jsx>{`
+        .shimmer {
+          background: linear-gradient(90deg, #f1f5f9 25%, #e5e7eb 37%, #f1f5f9 63%);
+          background-size: 400% 100%;
+          animation: shimmer 1.4s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+          0% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+      `}</style>
 
       {/* premium background artifacts */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-[140px] pointer-events-none" />
@@ -213,7 +324,6 @@ export default function ExploreProjects() {
       </AnimatePresence>
 
       <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 py-12 relative z-10">
-
         {/* hero section */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center pt-4 mb-16">
           <div className="lg:col-span-7 space-y-6 text-left">
@@ -248,18 +358,33 @@ export default function ExploreProjects() {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-[#E5E7EB]/60 mt-6"
             >
-              {[
-                { label: "Projects", value: stats.projects || "1,204", icon: Layers },
-                { label: "Developers", value: stats.developers || "8,430", icon: Users },
-                { label: "Reviews", value: stats.reviews || "24.5K", icon: MessageSquare },
-                { label: "Avg Rating", value: "4.92", icon: Star, isRating: true },
-              ].map((stat, idx) => (
-                <div key={idx} className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl p-4 shadow-sm backdrop-blur-md hover:border-[#3B82F6]/30 hover:shadow-md transition-all">
+              {statCards.map((stat, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-2xl p-4 shadow-sm backdrop-blur-md hover:border-[#3B82F6]/30 hover:shadow-md transition-all"
+                >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">{stat.label}</span>
-                    <stat.icon className={`w-3.5 h-3.5 ${stat.isRating ? "text-amber-500 fill-amber-500" : "text-[#2563EB]"}`} />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6B7280]">
+                      {stat.label}
+                    </span>
+                    <stat.icon
+                      className={`w-3.5 h-3.5 ${stat.isRating ? "text-amber-500 fill-amber-500" : "text-[#2563EB]"}`}
+                    />
                   </div>
-                  <div className="text-xl font-bold tracking-tight text-[#111827]">{stat.value}</div>
+
+                  {stat.loading ? (
+                    <Shimmer className="h-6 w-16" />
+                  ) : (
+                    <motion.div
+                      key={`${idx}-${stat.value}`}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="text-xl font-bold tracking-tight text-[#111827]"
+                    >
+                      {stat.isRating ? stat.value ?? "—" : <AnimatedNumber value={stat.value} />}
+                    </motion.div>
+                  )}
                 </div>
               ))}
             </motion.div>
@@ -289,7 +414,9 @@ export default function ExploreProjects() {
                   <div className="w-full px-5 space-y-3">
                     <div className="flex justify-between items-baseline">
                       <div className="h-3 bg-[#E5E7EB] rounded-full w-1/3" />
-                      <div className="h-5 bg-[#22C55E]/10 text-[#22C55E] text-[10px] font-bold px-2 py-0.5 rounded-md">+24.5%</div>
+                      <div className="h-5 bg-[#22C55E]/10 text-[#22C55E] text-[10px] font-bold px-2 py-0.5 rounded-md">
+                        +24.5%
+                      </div>
                     </div>
                     <div className="h-5 bg-[#E5E7EB] rounded-md w-1/2" />
                     <div className="flex items-end space-x-1.5 h-10 pt-2">
@@ -335,7 +462,7 @@ export default function ExploreProjects() {
           </div>
         </section>
 
-        {/* filter pills */}
+        {/* filter pills, with a sliding active-pill highlight */}
         <section className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto mb-16">
           {CATEGORIES.map((chip) => {
             const isActive = selectedCategory === chip;
@@ -343,11 +470,19 @@ export default function ExploreProjects() {
               <button
                 key={chip}
                 onClick={() => setSelectedCategory(chip)}
-                className={`text-xs px-4 py-2.5 rounded-xl font-semibold tracking-wide transition-all outline-none ${isActive
-                    ? "bg-[#2563EB] text-[#FFFFFF] shadow-md shadow-[#2563EB]/20 border border-[#2563EB]"
-                    : "bg-[#FFFFFF] border border-[#E5E7EB] text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#111827]"
-                  }`}
+                className={`relative text-xs px-4 py-2.5 rounded-xl font-semibold tracking-wide transition-colors outline-none border ${
+                  isActive
+                    ? "text-[#FFFFFF] border-transparent"
+                    : "bg-[#FFFFFF] border-[#E5E7EB] text-[#6B7280] hover:bg-[#F1F5F9] hover:text-[#111827]"
+                }`}
               >
+                {isActive && (
+                  <motion.span
+                    layoutId="categoryPill"
+                    transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                    className="absolute inset-0 bg-[#2563EB] rounded-xl shadow-md shadow-[#2563EB]/20 -z-10"
+                  />
+                )}
                 {chip}
               </button>
             );
@@ -356,7 +491,6 @@ export default function ExploreProjects() {
 
         {/* main grid area */}
         <section className="space-y-6">
-
           {/* dynamic header */}
           <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
             <h3 className="font-bold text-xl flex items-center text-[#111827] tracking-tight">
@@ -364,14 +498,18 @@ export default function ExploreProjects() {
               Project Showcases
             </h3>
             {!loading && !error && (
-              <span className="text-xs text-[#6B7280] font-semibold bg-[#FFFFFF] border border-[#E5E7EB] px-3 py-1 rounded-lg">
+              <motion.span
+                key={filteredProjects.length}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs text-[#6B7280] font-semibold bg-[#FFFFFF] border border-[#E5E7EB] px-3 py-1 rounded-lg"
+              >
                 {filteredProjects.length} results
-              </span>
+              </motion.span>
             )}
           </div>
 
           <AnimatePresence mode="wait">
-
             {/* global error state */}
             {error && !loading && (
               <motion.div
@@ -393,7 +531,7 @@ export default function ExploreProjects() {
               </motion.div>
             )}
 
-            {/* polished skeleton loaders */}
+            {/* skeleton loaders - shown only while the real request is in flight */}
             {loading && !error && (
               <motion.div
                 key="loading"
@@ -403,28 +541,31 @@ export default function ExploreProjects() {
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               >
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[24px] h-[440px] flex flex-col justify-between overflow-hidden shadow-sm animate-pulse">
+                  <div
+                    key={i}
+                    className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[24px] h-[440px] flex flex-col justify-between overflow-hidden shadow-sm"
+                  >
                     <div>
-                      <div className="h-48 bg-[#F1F5F9] w-full" />
+                      <Shimmer className="h-48 w-full rounded-none" />
                       <div className="p-6 space-y-4">
                         <div className="flex items-center space-x-2">
-                          <div className="w-7 h-7 rounded-full bg-[#E5E7EB]" />
-                          <div className="h-3 bg-[#E5E7EB] rounded w-24" />
+                          <Shimmer className="w-7 h-7 rounded-full" />
+                          <Shimmer className="h-3 w-24" />
                         </div>
                         <div className="space-y-2.5">
-                          <div className="h-5 bg-[#F1F5F9] rounded-md w-3/4" />
-                          <div className="h-3 bg-[#F1F5F9] rounded w-full" />
-                          <div className="h-3 bg-[#F1F5F9] rounded w-5/6" />
+                          <Shimmer className="h-5 w-3/4" />
+                          <Shimmer className="h-3 w-full" />
+                          <Shimmer className="h-3 w-5/6" />
                         </div>
                         <div className="flex gap-2 pt-2">
-                          <div className="h-5 w-16 bg-[#F1F5F9] rounded-md" />
-                          <div className="h-5 w-16 bg-[#F1F5F9] rounded-md" />
+                          <Shimmer className="h-5 w-16" />
+                          <Shimmer className="h-5 w-16" />
                         </div>
                       </div>
                     </div>
                     <div className="px-6 py-4 border-t border-[#E5E7EB] flex justify-between items-center bg-[#F8FAFC]">
-                      <div className="h-4 bg-[#E5E7EB] rounded w-24" />
-                      <div className="h-8 bg-[#E5E7EB] rounded-xl w-20" />
+                      <Shimmer className="h-4 w-24" />
+                      <Shimmer className="h-8 w-20 rounded-xl" />
                     </div>
                   </div>
                 ))}
@@ -448,7 +589,10 @@ export default function ExploreProjects() {
                   We couldn't find any projects matching your exact criteria. Try adjusting your search query or filters.
                 </p>
                 <button
-                  onClick={() => { setSearchQuery(""); setSelectedCategory("All"); }}
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("All");
+                  }}
                   className="px-5 py-2.5 bg-[#F1F5F9] text-[#111827] text-sm font-semibold rounded-xl hover:bg-[#E5E7EB] transition-colors"
                 >
                   Clear all filters
@@ -456,7 +600,7 @@ export default function ExploreProjects() {
               </motion.div>
             )}
 
-            {/* dynamic project grid */}
+            {/* dynamic project grid - only rendered once real data has arrived */}
             {!loading && !error && filteredProjects.length > 0 && (
               <motion.div
                 key="grid"
@@ -489,9 +633,12 @@ export default function ExploreProjects() {
                               <div className="w-2.5 h-2.5 rounded-full bg-[#E5E7EB]" />
                             </div>
                             <div className="text-[10px] font-mono text-[#6B7280] tracking-tight max-w-[140px] truncate">
-                              {project.title.toLowerCase().replace(/\s+/g, '-')}.io
+                              {project.title.toLowerCase().replace(/\s+/g, "-")}.io
                             </div>
-                            <Bookmark className="w-3.5 h-3.5 text-[#6B7280] opacity-40 hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()} />
+                            <Bookmark
+                              className="w-3.5 h-3.5 text-[#6B7280] opacity-40 hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            />
                           </div>
 
                           {/* hover overlay */}
@@ -502,8 +649,15 @@ export default function ExploreProjects() {
                           </div>
 
                           <div className="absolute top-11 left-3 z-20 pointer-events-none">
-                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm tracking-wide text-[#FFFFFF] ${cardBadge === "Trending" ? "bg-orange-500" : cardBadge === "New" ? "bg-[#22C55E]" : "bg-[#2563EB]"
-                              }`}>
+                            <span
+                              className={`text-[10px] font-bold px-2.5 py-1 rounded-md shadow-sm tracking-wide text-[#FFFFFF] ${
+                                cardBadge === "Trending"
+                                  ? "bg-orange-500"
+                                  : cardBadge === "New"
+                                  ? "bg-[#22C55E]"
+                                  : "bg-[#2563EB]"
+                              }`}
+                            >
                               {cardBadge}
                             </span>
                           </div>
@@ -512,6 +666,7 @@ export default function ExploreProjects() {
                             <img
                               src={project.thumbnail}
                               alt={project.title}
+                              loading="lazy"
                               className="w-full h-full object-cover pt-8 transition-transform duration-700 ease-out group-hover/thumb:scale-105"
                             />
                           ) : (
@@ -576,7 +731,7 @@ export default function ExploreProjects() {
                             ))}
                             {(project.techStack?.length || 0) > 4 && (
                               <span className="text-[10px] font-semibold font-mono bg-[#F1F5F9] text-[#6B7280] px-2.5 py-1 rounded-lg">
-                                +{(project.techStack.length - 4)}
+                                +{project.techStack.length - 4}
                               </span>
                             )}
                           </div>
@@ -594,10 +749,11 @@ export default function ExploreProjects() {
                             aria-label="Like project"
                           >
                             <Heart
-                              className={`w-4 h-4 mr-1.5 transition-all ${project.isLiked
+                              className={`w-4 h-4 mr-1.5 transition-all ${
+                                project.isLiked
                                   ? "fill-rose-500 text-rose-500"
                                   : "stroke-[2] text-[#6B7280] group-hover/like:text-rose-500"
-                                }`}
+                              }`}
                             />
                             {project.likes?.length || 0}
                           </motion.button>
@@ -611,18 +767,19 @@ export default function ExploreProjects() {
                             {project.reviewsCount || 0}
                           </button>
 
-                          {/* Save/Bookmark Button (NEW) */}
+                          {/* Save/Bookmark Button */}
                           <motion.button
                             whileTap={{ scale: 0.85 }}
-                            onClick={(e) => handleSaveButton(project._id)}
+                            onClick={(e) => handleSaveButton(e, project._id)}
                             className="flex items-center text-[11px] font-bold hover:text-[#2563EB] transition-colors group/save outline-none"
                             aria-label="Save project"
                           >
                             <Bookmark
-                              className={`w-4 h-4 transition-all ${project.isSaved
+                              className={`w-4 h-4 transition-all ${
+                                project.isSaved
                                   ? "fill-[#2563EB] text-[#2563EB]"
                                   : "stroke-[2] text-[#6B7280] group-hover/save:text-[#2563EB]"
-                                }`}
+                              }`}
                             />
                           </motion.button>
 
@@ -670,7 +827,6 @@ export default function ExploreProjects() {
             )}
           </AnimatePresence>
         </section>
-
       </div>
     </div>
   );

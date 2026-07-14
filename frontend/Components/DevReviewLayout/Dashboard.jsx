@@ -28,7 +28,6 @@ export default function Dashboard() {
   const [projects, setProjects] = useState([]);
   const { user } = useAuth();
   
-  // State for db data
   const [data, setData] = useState({
     stats: { totalProjects: 0, totalLikes: 0, totalGivenReviews: 0, totalReceivedReviews: 0 },
     projectLikes: [],
@@ -36,40 +35,43 @@ export default function Dashboard() {
     givenReviews: []
   });
 
-  const getProjects = async () => {
-    try {
-      const res = await getMyProjects();
-      if (res && res.projects) {
-        setProjects(res.projects);
-      }
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-
-  const fetchDashboardData = async () => {
-    try {
-      const res = await getMyReviews();
-      if (res && res.success) {
-        setData({
-          stats: res.stats || data.stats,
-          projectLikes: res.projectLikes || [],
-          receivedReviews: res.receivedReviews || [],
-          givenReviews: res.givenReviews || []
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching reviews:", error);
-    }
-  };
-
   useEffect(() => {
-    fetchDashboardData();
-    getProjects();
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1200);
-    return () => clearTimeout(timer);
+    const loadDashboardData = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Fetching both APIs in parallel to save time
+        const [projectsRes, reviewsRes] = await Promise.all([
+          getMyProjects().catch(err => {
+            console.error("Error fetching projects:", err);
+            return null;
+          }),
+          getMyReviews().catch(err => {
+            console.error("Error fetching reviews:", err);
+            return null;
+          })
+        ]);
+
+        if (projectsRes && projectsRes.projects) {
+          setProjects(projectsRes.projects);
+        }
+
+        if (reviewsRes && reviewsRes.success) {
+          setData({
+            stats: reviewsRes.stats || { totalProjects: 0, totalLikes: 0, totalGivenReviews: 0, totalReceivedReviews: 0 },
+            projectLikes: reviewsRes.projectLikes || [],
+            receivedReviews: reviewsRes.receivedReviews || [],
+            givenReviews: reviewsRes.givenReviews || []
+          });
+        }
+      } catch (error) {
+        console.error("Dashboard loading error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   const containerVariants = {
@@ -87,27 +89,20 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#111827] font-sans antialiased flex relative selection:bg-[#2563EB]/10 selection:text-[#2563EB]">
-      {/* GRID LAYOUT BACKGROUND PATTERN */}
       <div className="absolute inset-0 bg-[radial-gradient(#E5E7EB_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none z-0" />
 
-      {/* 1. SIDEBAR NAVIGATION */}
       <Sidebar activeNav={activeNav} setActiveNav={setActiveNav} />
 
-      {/* MAIN CONTAINER WORKSPACE */}
       <div className="flex-1 flex flex-col min-h-screen min-w-0 z-10">
-
-        {/* WORKSPACE VIEWPORTS CONTAINER */}
         <div className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">
           <AnimatePresence mode="wait">
             {isLoading ? (
-              /* ================= SKELETON LOADING ================= */
               <motion.div
                 key="skeleton-view"
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.2 } }}
                 className="space-y-6 animate-pulse"
               >
-                {/* Hero Skeleton */}
                 <div className="bg-white border border-[#E5E7EB] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                   <div className="flex items-center gap-5 w-full">
                     <div className="w-16 h-16 rounded-2xl bg-[#E5E7EB] shrink-0" />
@@ -121,7 +116,6 @@ export default function Dashboard() {
                   <div className="h-10 bg-[#E5E7EB] rounded-xl w-full md:w-36 shrink-0" />
                 </div>
 
-                {/* Metric Cards Skeleton */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                   {[...Array(4)].map((_, i) => (
                     <div key={i} className="bg-white border border-[#E5E7EB] rounded-2xl p-5 space-y-4">
@@ -134,7 +128,6 @@ export default function Dashboard() {
                   ))}
                 </div>
 
-                {/* Content Hub Skeleton */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
                   <div className="lg:col-span-2 space-y-5">
                     <div className="flex items-center gap-6 border-b border-[#E5E7EB] pb-3">
@@ -155,7 +148,6 @@ export default function Dashboard() {
                 </div>
               </motion.div>
             ) : (
-              /* ================= PRIMARY CONTENT DASHBOARD LAYER ================= */
               <motion.div
                 key="dashboard-content"
                 variants={containerVariants}
@@ -163,7 +155,6 @@ export default function Dashboard() {
                 animate="show"
                 className="space-y-6"
               >
-                {/* 1. HERO COMPONENT */}
                 <motion.div
                   variants={itemVariants}
                   className="bg-white border border-[#E5E7EB] rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-2xs relative overflow-hidden group"
@@ -211,7 +202,6 @@ export default function Dashboard() {
                   </motion.button>
                 </motion.div>
 
-                {/* 2. DYNAMIC METRIC ANALYTICS CARDS (FROM DB STATS) */}
                 <motion.div
                   variants={itemVariants}
                   className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
@@ -248,13 +238,8 @@ export default function Dashboard() {
                   })}
                 </motion.div>
 
-                {/* 3. CORE MANAGEMENT GRID HUB */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                  
-                  {/* LEFT COMPONENT COLUMN (Tabs & Content) */}
                   <motion.div variants={itemVariants} className="lg:col-span-2 space-y-5">
-
-                    {/* NAV TABS SELECTORS */}
                     <div className="flex items-center gap-6 border-b border-[#E5E7EB] pb-px">
                       {["My Projects", "Feedback Received"].map((tab) => {
                         const isActive = activeTab === tab;
@@ -277,10 +262,7 @@ export default function Dashboard() {
                       })}
                     </div>
 
-                    {/* DYNAMIC RENDERING BLOCK CONTEXT */}
                     <AnimatePresence mode="wait">
-                      
-                      {/* === PROJECTS TAB === */}
                       {activeTab === "My Projects" ? (
                         <motion.div
                           key="projects-view"
@@ -313,7 +295,6 @@ export default function Dashboard() {
                                   whileHover={{ y: -4 }}
                                   className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-[#2563EB]/40 flex flex-col justify-between group cursor-pointer transition-all duration-300"
                                 >
-                                  {/* Thumbnail Area */}
                                   <div className="relative aspect-video w-full bg-[#F8FAFC] border-b border-[#E5E7EB] overflow-hidden">
                                     <img
                                       onClick={() => router.push(`/projects/${project._id}`)}
@@ -323,7 +304,6 @@ export default function Dashboard() {
                                     />
                                   </div>
 
-                                  {/* Details Area */}
                                   <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
                                     <div className="space-y-1">
                                       <h3 
@@ -362,8 +342,6 @@ export default function Dashboard() {
                           )}
                         </motion.div>
                       ) : (
-                        
-                        /* === FEEDBACK RECEIVED TAB === */
                         <motion.div
                           key="feedback-view"
                           initial={{ opacity: 0, y: 8 }}
@@ -377,7 +355,6 @@ export default function Dashboard() {
                                 <div className="flex justify-between items-start gap-4">
                                   <div className="flex items-center gap-3">
                                     <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#2563EB]/10 to-[#3B82F6]/10 border border-[#E5E7EB] flex items-center justify-center text-sm font-bold text-[#2563EB]">
-                                      {/* Extract initials from reviewer name or fallback */}
                                       {feedback.user?.name ? feedback.user.name.substring(0, 2).toUpperCase() : "US"}
                                     </div>
                                     <div>
@@ -411,7 +388,6 @@ export default function Dashboard() {
                     </AnimatePresence>
                   </motion.div>
 
-                  {/* RIGHT COLUMN Placeholder (Optional Sidebar Space for later) */}
                   <div className="hidden lg:block lg:col-span-1 space-y-5">
                     <div className="bg-gradient-to-b from-white to-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-6 text-center space-y-4 shadow-sm">
                        <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-2 border border-amber-100">

@@ -42,8 +42,7 @@ const isMenuActive = (item) => {
       return (
         pathname === "/projects" ||
         pathname === "/projects/explore" ||
-        pathname === "/projects/create" ||
-        pathname === "/projects/:id"
+        pathname === "/projects/create" 
       );
 
     case "My Projects":
