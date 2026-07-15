@@ -86,7 +86,7 @@ export default function MyProfile() {
   const stats = {
     projectsCount: myProjects?.length || user?.projects?.length || 0,
     reviews: myProjects.reduce((acc , curr) => acc + (curr.reviewsCount || 0) , 0) || 0,
-    likes: myProjects.reduce((acc, curr) => acc + (curr.likesCount || 0), 0) || 342,
+    likes: myProjects.reduce((acc, curr) => acc + (curr.likesCount || 0), 0) || 0,
     views: "2.8k"
   };
 
