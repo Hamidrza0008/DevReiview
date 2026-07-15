@@ -35,6 +35,7 @@ export default function MyProjects() {
       const res = await getMyProjects();
       if (res && res.projects) {
         setProjects(res.projects);
+        console.log(res)
 
       }
     } catch (error) {

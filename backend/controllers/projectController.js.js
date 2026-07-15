@@ -53,20 +53,46 @@ const getMyProjects = async (req, res) => {
 
         const userId = req.user.id;
 
-        const updatedProjects = projects.map((project) => {
+        // const updatedProjects = projects.map((project) => {
 
-            const likesCount = project.likes.length;
+        //     const likesCount = project.likes.length;
 
-            const isLiked = project.likes.some(
-                (id) => id.toString() === userId
-            );
+        //     const isLiked = project.likes.some(
+        //         (id) => id.toString() === userId
+        //     );
 
-            return {
-                ...project.toObject(),
-                likesCount,
-                isLiked,
-            };
-        });
+        //     return {
+        //         ...project.toObject(),
+        //         likesCount,
+        //         isLiked,
+        //     };
+        // });
+
+         const updatedProject = await Promise.all(
+            projects.map(async (proj) => {
+
+                const reviews = await Reviews.find({
+                    project: proj._id
+                });
+
+                const likesCount = proj.likes.length;
+                const isLiked = proj.likes.some((id) => id.toString() === userId);
+
+                const reviewsCount = reviews.length;
+                const totalRating = reviews.reduce((acc, curr) => acc + curr.rating, 0);
+                const averageRating = reviewsCount > 0 ? Number((totalRating / reviewsCount).toFixed(1)) : 0;
+
+                return {
+                    ...proj.toObject(),
+                    likesCount,
+                    isLiked,
+                    reviewsCount,
+                    averageRating
+                }
+            })
+
+
+        )
         return res.status(200).json({
             success: true,
             projects: updatedProjects,

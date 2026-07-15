@@ -31,7 +31,6 @@ const reviewSchema = new mongoose.Schema({
         default: false,
     }
 
-
 } , {
     timestamps:true
 });
