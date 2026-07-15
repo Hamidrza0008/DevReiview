@@ -149,11 +149,11 @@ export default function CreateProjects() {
       await createProject(projectPayload);
       setSubmitStatus("success");
       
-      // Publish hone ke baad sab kuch properly clear karna hai (Image bhi)
       setFormData(INITIAL_FORM_DATA);
       setTechStack([]);
       setThumbnail(null);
-      setPreview(""); // Yahan pe preview image bhi khali ho jayegi
+      setPreview(""); 
+      router.push("/projects/explore")
       
     } catch (error) {
       console.error("Project banate time error aagya:", error);
