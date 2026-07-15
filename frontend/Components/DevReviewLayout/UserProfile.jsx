@@ -16,6 +16,8 @@ import { toggleLikes } from "@/services/toggleLikesApi";
 export default function UserProfile() {
   const router = useRouter();
   const { username } = useParams();
+  
+  const authUser = { _id: "current-user-id" };
 
   const [user, setUser] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -30,10 +32,9 @@ export default function UserProfile() {
     profileView: 0,
   });
 
-  // fetch user profile and associated projects
   useEffect(() => {
-    let isMounted = true;
-
+    const abortController = new AbortController();
+    
     const fetchProfileData = async () => {
       setLoading(true);
       setError(null);
@@ -44,7 +45,7 @@ export default function UserProfile() {
           getProjectByUsername(username)
         ]);
 
-        if (isMounted) {
+        if (!abortController.signal.aborted) {
           if (!userRes?.user) {
             setError("User not found.");
             return;
@@ -61,35 +62,40 @@ export default function UserProfile() {
           setProjects(projectsRes?.projects || []);
         }
       } catch (err) {
-        if (isMounted) setError("Failed to load profile data.");
+        if (!abortController.signal.aborted) {
+          setError("Failed to load profile data.");
+        }
       } finally {
-        if (isMounted) setLoading(false);
+        if (!abortController.signal.aborted) {
+          setLoading(false);
+        }
       }
     };
 
-    if (username) fetchProfileData();
+    if (username) {
+      fetchProfileData();
+    }
 
     return () => {
-      isMounted = false;
+      abortController.abort();
     };
   }, [username]);
 
-  // optimistic update for perceived speed
   const handleLikeButton = async (e, projectId) => {
     e.stopPropagation();
 
-    // store previous state to revert if api fails
     const previousProjects = [...projects];
 
-    // instantly update UI
     setProjects(current =>
       current.map(p => {
         if (p._id === projectId) {
-          const isLiked = p.isLiked;
+          const hasLiked = p.isLiked || (p.likes && p.likes.includes(authUser?._id));
           return {
             ...p,
-            isLiked: !isLiked,
-            likes: isLiked ? p.likes.slice(0, -1) : [...(p.likes || []), "temp-like"]
+            isLiked: !hasLiked,
+            likes: hasLiked 
+              ? (p.likes || []).filter(id => id !== authUser?._id && id !== "temp-like")
+              : [...(p.likes || []), authUser?._id || "temp-like"]
           };
         }
         return p;
@@ -98,17 +104,13 @@ export default function UserProfile() {
 
     try {
       await toggleLikes(projectId);
-      // background sync to ensure data accuracy
       const freshProjects = await getProjectByUsername(username);
       setProjects(freshProjects.projects);
     } catch (err) {
-      // revert on failure
       setProjects(previousProjects);
     }
   };
 
-  console.log(projects)
-  // mockup data for sidebar
   const rightSidebarData = {
     location: "San Francisco, CA",
     joinedDate: "Joined March 2024",
@@ -130,7 +132,6 @@ export default function UserProfile() {
     { type: "review", text: "Approved pull request #231 in DevReview", time: "1 day ago" }
   ];
 
-  // framer variants for staggered lists
   const containerVariants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.05 } }
@@ -141,7 +142,6 @@ export default function UserProfile() {
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 250, damping: 25 } }
   };
 
-  // handle loading and error states cleanly
   if (loading || error) {
     return (
       <div className="p-4 md:p-8 bg-[#F8FAFC] min-h-screen max-w-7xl mx-auto space-y-8">
@@ -162,7 +162,6 @@ export default function UserProfile() {
             </button>
           </motion.div>
         ) : (
-          /* layout-matched skeleton */
           <div className="animate-pulse space-y-8">
             <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[32px] p-8 h-64 shadow-sm flex items-center gap-8">
               <div className="w-28 h-28 rounded-full bg-[#F1F5F9]" />
@@ -195,18 +194,15 @@ export default function UserProfile() {
       animate={{ opacity: 1 }}
       className="p-4 md:p-8 bg-[#F8FAFC] min-h-screen text-[#111827] max-w-7xl mx-auto space-y-8 antialiased relative selection:bg-[#2563EB]/20 selection:text-[#2563EB] pb-24"
     >
-      {/* background textures */}
       <div className="absolute inset-0 bg-[radial-gradient(#E5E7EB_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none z-0" />
       <div className="absolute top-20 left-1/3 w-[500px] h-[500px] bg-gradient-to-tr from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
-      {/* header card */}
       <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[32px] p-8 md:p-10 shadow-sm relative overflow-hidden z-10">
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center relative z-10">
           <div className="lg:col-span-2 flex flex-col sm:flex-row items-center sm:items-start gap-8 text-center sm:text-left">
 
-            {/* avatar */}
             <div className="relative group shrink-0">
               <div className="absolute -inset-2 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-full blur-md opacity-20 group-hover:opacity-40 transition duration-500" />
               <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-[#FFFFFF] relative z-10 shadow-md bg-[#F1F5F9]">
@@ -218,7 +214,6 @@ export default function UserProfile() {
               </div>
             </div>
 
-            {/* user info */}
             <div className="space-y-4 flex-1">
               <div>
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
@@ -265,7 +260,6 @@ export default function UserProfile() {
             </div>
           </div>
 
-          {/* metrics layout */}
           <div className="flex flex-col gap-4 h-full justify-between lg:border-l lg:border-[#F1F5F9] lg:pl-10">
             <div className="grid grid-cols-2 gap-4 w-full">
               {[
@@ -293,7 +287,6 @@ export default function UserProfile() {
         </div>
       </div>
 
-      {/* tab navigation */}
       <div className="border-b border-[#E5E7EB] flex items-center space-x-8 z-10 relative overflow-x-auto no-scrollbar pt-4">
         {[
           { id: "projects", label: "Repositories", icon: Layers },
@@ -323,14 +316,11 @@ export default function UserProfile() {
         })}
       </div>
 
-      {/* main content split */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 z-10 relative">
 
-        {/* left column content */}
         <div className="lg:col-span-2 space-y-6">
           <AnimatePresence mode="wait">
 
-            {/* projects tab */}
             {activeTab === "projects" && (
               <motion.div
                 key="projects-tab"
@@ -369,7 +359,6 @@ export default function UserProfile() {
                         onClick={() => router.push(`/projects/${project._id}`)}
                         className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[24px] flex flex-col justify-between overflow-hidden group shadow-sm hover:shadow-xl hover:shadow-[#2563EB]/5 hover:border-[#2563EB]/30 cursor-pointer transition-all duration-300"
                       >
-                        {/* simulated browser chrome header */}
                         <div className="h-44 bg-[#F8FAFC] border-b border-[#E5E7EB] relative flex flex-col overflow-hidden">
                           <div className="flex items-center justify-between px-4 py-2.5 bg-[#FFFFFF] border-b border-[#E5E7EB] shrink-0 z-10">
                             <div className="flex items-center space-x-1.5">
@@ -397,7 +386,6 @@ export default function UserProfile() {
                           </div>
                         </div>
 
-                        {/* card body */}
                         <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-1.5">
                             <h3 className="font-bold text-lg text-[#111827] group-hover:text-[#2563EB] transition-colors line-clamp-1">
@@ -422,16 +410,16 @@ export default function UserProfile() {
                                 <motion.span
                                   whileTap={{ scale: 0.9 }}
                                   onClick={(e) => handleLikeButton(e, project._id)}
-                                  className={`flex items-center space-x-1.5 cursor-pointer transition-colors ${project.isLiked ? "text-red-500" : "text-gray-500 hover:text-red-500"
+                                  className={`flex items-center space-x-1.5 cursor-pointer transition-colors ${project.isLiked || (project.likes && project.likes.includes(authUser?._id)) ? "text-[#EF4444]" : "text-[#6B7280] hover:text-[#EF4444]"
                                     }`}
                                 >
                                   <Heart
-                                    className={`w-4 h-4 ${project.isLiked ? "fill-current" : ""
+                                    className={`w-4 h-4 ${project.isLiked || (project.likes && project.likes.includes(authUser?._id)) ? "fill-current" : ""
                                       }`}
                                   />
 
-                                  {project.likes?.length > 0 && (
-                                    <span>{project.likes.length}</span>
+                                  {(project.likes?.length > 0 || project.isLiked) && (
+                                    <span>{project.likes?.length || 0}</span>
                                   )}
                                 </motion.span>
                                 <span className="flex items-center space-x-1.5">
@@ -453,7 +441,6 @@ export default function UserProfile() {
               </motion.div>
             )}
 
-            {/* about tab */}
             {activeTab === "about" && (
               <motion.div
                 key="about-tab"
@@ -482,7 +469,6 @@ export default function UserProfile() {
               </motion.div>
             )}
 
-            {/* activity tab */}
             {activeTab === "activity" && (
               <motion.div
                 key="activity-tab"
@@ -508,7 +494,6 @@ export default function UserProfile() {
           </AnimatePresence>
         </div>
 
-        {/* right sidebar elements */}
         <div className="space-y-6">
           <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[24px] p-6 space-y-5 shadow-sm">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#6B7280]">Profile Details</h3>
