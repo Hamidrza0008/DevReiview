@@ -135,6 +135,8 @@ export default function ExploreUsers() {
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 250, damping: 25 } }
   };
 
+  console.log(users)
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#111827] px-4 py-8 md:py-14 md:px-8 max-w-7xl mx-auto space-y-10 antialiased relative selection:bg-[#2563EB]/20 selection:text-[#2563EB]">
       
@@ -450,15 +452,15 @@ export default function ExploreUsers() {
                       <div className="grid grid-cols-3 gap-2 bg-[#F8FAFC] border border-[#F1F5F9] rounded-xl p-3 text-center mb-4">
                         <div className="space-y-0.5">
                           <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Repos</span>
-                          <span className="text-sm font-bold text-[#111827]">{stats.projects}</span>
+                          <span className="text-sm font-bold text-[#111827]">{dev.totalProjects}</span>
                         </div>
                         <div className="space-y-0.5 border-l border-r border-[#E5E7EB]">
                           <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Reviews</span>
-                          <span className="text-sm font-bold text-[#111827]">{stats.reviews}</span>
+                          <span className="text-sm font-bold text-[#111827]">{dev.totalReviews}</span>
                         </div>
                         <div className="space-y-0.5">
                           <span className="text-[10px] font-bold text-[#6B7280] uppercase tracking-wider block">Likes</span>
-                          <span className="text-sm font-bold text-[#111827]">{stats.likes}</span>
+                          <span className="text-sm font-bold text-[#111827]">{dev.totalLikes}</span>
                         </div>
                       </div>
 
