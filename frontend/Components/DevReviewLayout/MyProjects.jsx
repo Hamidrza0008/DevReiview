@@ -254,11 +254,11 @@ export default function MyProjects() {
                   </span>
                   <span className="flex items-center space-x-1 cursor-pointer group/msg transition-colors">
                     <MessageSquare className="w-3.5 h-3.5 text-[#6B7280] group-hover/msg:text-[#2563EB] transition-colors" />
-                    <span className="text-[#111827] font-semibold">{project.reviews || 0}</span>
+                    <span className="text-[#111827] font-semibold">{project.reviewsCount || 0}</span>
                   </span>
                   <span className="flex items-center space-x-1 text-[#6B7280]/60 select-none">
                     <Eye className="w-3.5 h-3.5" />
-                    <span>{Math.floor(((project.likes.length || 0) * 4) + ((project.reviews || 0) * 3) + 12)}</span>
+                    <span>{Math.floor(((project.likes.length || 0) * 4) + ((project.reviewsCount || 0) * 3) + 12)}</span>
                   </span>
                 </div>
 

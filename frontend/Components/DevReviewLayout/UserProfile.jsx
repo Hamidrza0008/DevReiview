@@ -22,7 +22,7 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("projects");
-  
+
   const [stats, setStats] = useState({
     totalLikes: 0,
     totalProjects: 0,
@@ -37,7 +37,7 @@ export default function UserProfile() {
     const fetchProfileData = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         const [userRes, projectsRes] = await Promise.all([
           getUserProfile(username),
@@ -57,7 +57,7 @@ export default function UserProfile() {
             totalReviews: userRes.totalReviews || 0,
             profileView: userRes.user.views || 0,
           });
-          
+
           setProjects(projectsRes?.projects || []);
         }
       } catch (err) {
@@ -77,12 +77,12 @@ export default function UserProfile() {
   // optimistic update for perceived speed
   const handleLikeButton = async (e, projectId) => {
     e.stopPropagation();
-    
+
     // store previous state to revert if api fails
     const previousProjects = [...projects];
-    
+
     // instantly update UI
-    setProjects(current => 
+    setProjects(current =>
       current.map(p => {
         if (p._id === projectId) {
           const isLiked = p.isLiked;
@@ -107,6 +107,7 @@ export default function UserProfile() {
     }
   };
 
+  console.log(projects)
   // mockup data for sidebar
   const rightSidebarData = {
     location: "San Francisco, CA",
@@ -153,7 +154,7 @@ export default function UserProfile() {
             <AlertCircle className="w-10 h-10 text-[#EF4444] mx-auto mb-4" />
             <h3 className="text-lg font-bold text-[#991B1B] mb-2">{error}</h3>
             <p className="text-sm text-[#B91C1C] mb-6">The profile you are looking for might have been removed or is temporarily unavailable.</p>
-            <button 
+            <button
               onClick={() => router.push('/')}
               className="bg-[#EF4444] text-[#FFFFFF] px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#DC2626] transition-colors"
             >
@@ -204,7 +205,7 @@ export default function UserProfile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center relative z-10">
           <div className="lg:col-span-2 flex flex-col sm:flex-row items-center sm:items-start gap-8 text-center sm:text-left">
-            
+
             {/* avatar */}
             <div className="relative group shrink-0">
               <div className="absolute -inset-2 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] rounded-full blur-md opacity-20 group-hover:opacity-40 transition duration-500" />
@@ -305,11 +306,10 @@ export default function UserProfile() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-all relative whitespace-nowrap outline-none ${
-                isActive
+              className={`flex items-center gap-2 pb-4 text-sm font-semibold border-b-2 transition-all relative whitespace-nowrap outline-none ${isActive
                   ? "border-[#2563EB] text-[#2563EB]"
                   : "border-transparent text-[#6B7280] hover:text-[#111827]"
-              }`}
+                }`}
             >
               <Icon className="w-4 h-4" />
               {tab.label}
@@ -329,7 +329,7 @@ export default function UserProfile() {
         {/* left column content */}
         <div className="lg:col-span-2 space-y-6">
           <AnimatePresence mode="wait">
-            
+
             {/* projects tab */}
             {activeTab === "projects" && (
               <motion.div
@@ -355,7 +355,7 @@ export default function UserProfile() {
                     </p>
                   </div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     variants={containerVariants}
                     initial="hidden"
                     animate="show"
@@ -382,7 +382,7 @@ export default function UserProfile() {
                             </div>
                             <div className="w-10"></div>
                           </div>
-                          
+
                           <div className="flex-1 relative flex items-center justify-center bg-[#F1F5F9]">
                             {project.thumbnail ? (
                               <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
@@ -419,16 +419,23 @@ export default function UserProfile() {
 
                             <div className="pt-4 border-t border-[#F1F5F9] flex justify-between items-center text-xs font-semibold text-[#6B7280]">
                               <div className="flex space-x-4">
-                                <motion.span 
+                                <motion.span
                                   whileTap={{ scale: 0.9 }}
-                                  onClick={(e) => handleLikeButton(e, project._id)} 
-                                  className="flex items-center space-x-1.5 hover:text-[#EF4444] cursor-pointer transition-colors"
+                                  onClick={(e) => handleLikeButton(e, project._id)}
+                                  className={`flex items-center space-x-1.5 cursor-pointer transition-colors ${project.isLiked ? "text-red-500" : "text-gray-500 hover:text-red-500"
+                                    }`}
                                 >
-                                  <Heart className={`w-4 h-4 ${project.isLiked ? 'fill-[#EF4444] text-[#EF4444]' : ''}`} /> 
-                                  <span className={project.isLiked ? 'text-[#EF4444]' : ''}>{project.likes?.length || 0}</span>
+                                  <Heart
+                                    className={`w-4 h-4 ${project.isLiked ? "fill-current" : ""
+                                      }`}
+                                  />
+
+                                  {project.likes?.length > 0 && (
+                                    <span>{project.likes.length}</span>
+                                  )}
                                 </motion.span>
                                 <span className="flex items-center space-x-1.5">
-                                  <MessageSquare className="w-4 h-4" /> 
+                                  <MessageSquare className="w-4 h-4" />
                                   <span>{project.reviewsCount || 0}</span>
                                 </span>
                               </div>
@@ -461,12 +468,12 @@ export default function UserProfile() {
                     {user.bio || "No biography details published by this user yet."}
                   </p>
                 </div>
-                
+
                 <div className="pt-4 border-t border-[#F1F5F9]">
                   <h4 className="text-xs font-bold text-[#111827] uppercase tracking-wider mb-3">Core Expertise</h4>
                   <div className="flex flex-wrap gap-2">
                     {user.skills?.length > 0 ? user.skills.map((skill, idx) => (
-                       <span key={idx} className="bg-[#F8FAFC] border border-[#E5E7EB] text-[#111827] px-3 py-1.5 rounded-lg text-xs font-semibold">{skill}</span>
+                      <span key={idx} className="bg-[#F8FAFC] border border-[#E5E7EB] text-[#111827] px-3 py-1.5 rounded-lg text-xs font-semibold">{skill}</span>
                     )) : (
                       <span className="text-sm text-[#6B7280] italic">No skills listed.</span>
                     )}

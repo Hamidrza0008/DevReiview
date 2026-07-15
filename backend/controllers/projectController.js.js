@@ -68,7 +68,7 @@ const getMyProjects = async (req, res) => {
         //     };
         // });
 
-         const updatedProjects = await Promise.all(
+        const updatedProjects = await Promise.all(
             projects.map(async (proj) => {
 
                 const reviews = await Reviews.find({
@@ -403,36 +403,74 @@ const toggleLikes = async (req, res) => {
         });
     }
 }
-
 const getProjectByUsername = async (req, res) => {
     try {
         const { username } = req.params;
+        const loggedInUserId = req.user.id;
+
+        // Find profile owner
         const user = await Users.findOne({ username }).select("-password");
+
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: "User Not Found",
-            })
+            });
         }
 
-        const projects = await Projects.find({ owner: user._id });
+        // Get all projects of profile owner
+        const projects = await Projects.find({
+            owner: user._id,
+        }).sort({ createdAt: -1 });
 
+        const updatedProjects = await Promise.all(
+            projects.map(async (proj) => {
+                const reviews = await Reviews.find({
+                    project: proj._id,
+                });
+
+                const likesCount = proj.likes.length;
+
+                const isLiked = proj.likes.some(
+                    (id) => id.toString() === loggedInUserId
+                );
+
+                const reviewsCount = reviews.length;
+
+                const totalRating = reviews.reduce(
+                    (acc, curr) => acc + curr.rating,
+                    0
+                );
+
+                const averageRating =
+                    reviewsCount > 0
+                        ? Number((totalRating / reviewsCount).toFixed(1))
+                        : 0;
+
+                return {
+                    ...proj.toObject(),
+                    likesCount,
+                    isLiked,
+                    reviewsCount,
+                    averageRating,
+                };
+            })
+        );
 
         return res.status(200).json({
             success: true,
-            message: "Projects Recieved",
-            projects
-        })
+            message: "Projects Retrieved Successfully",
+            projects: updatedProjects,
+        });
     } catch (error) {
         console.log(error);
 
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
         });
     }
-}
-
+};
 
 const toggleSaveProject = async (req, res) => {
     try {
