@@ -17,34 +17,43 @@ export default function ResetPassword() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (newpassword !== confirmPassword) {
+      setError("Passwords do not match. Please verify your new access credentials.");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await resetPassword({
         email,
         otp,
         newpassword
-      })
+      });
       console.log(res);
       if (res.success) {
         setIsSuccess(true);
         setTimeout(() => {
           router.push("/auth/login");
         }, 1500);
+      } else {
+        setError(res.message || "Failed to reset password. Please check your OTP and try again.");
       }
 
     } catch (error) {
       console.log(error);
+      setError("An unexpected network error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
-
   };
 
   return (
-    
     <div className="min-h-screen bg-[#F8FAFC] flex text-[#111827] font-sans antialiased relative overflow-hidden">
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#3B82F6]/10 rounded-full blur-3xl" />
@@ -88,6 +97,27 @@ export default function ResetPassword() {
         >
           <h2 className="text-2xl font-bold text-[#111827] mb-1">Override Node Access</h2>
           <p className="text-sm text-[#6B7280] mb-6">Enter transmission OTP and overwrite target parameter keys.</p>
+
+          <AnimatePresence mode="wait">
+            {error && !isSuccess && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -8 }}
+                animate={{ opacity: 1, height: "auto", y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -8 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="overflow-hidden mb-5"
+              >
+                <div className="flex items-start space-x-3 bg-red-50 border border-red-200 p-3.5 rounded-xl text-red-700">
+                  <svg className="w-5 h-5 mt-0.5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div className="flex-1 text-sm font-semibold tracking-wide leading-relaxed">
+                    {error}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <AnimatePresence mode="wait">
             {!isSuccess ? (

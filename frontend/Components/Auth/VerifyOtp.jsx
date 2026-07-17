@@ -1,47 +1,46 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useSearchParams, useRouter } from "next/navigation";
 import { verifyOTP } from '@/services/authApis';
 
 export default function VerifyOtp() {
-
     const [otp, setOtp] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
     const router = useRouter();
     const searchParams = useSearchParams();
 
     const email = searchParams.get("email");
-    console.log(email)
+    console.log(email);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+        setError("");
 
         try {
-            const res =await verifyOTP({
+            const res = await verifyOTP({
                 email,
                 otp
-            })
+            });
 
-            console.log(res)
+            console.log(res);
 
-            if(res.success){
+            if (res.success) {
                 router.push("/auth/login");
+            } else {
+                setError(res.message || "Invalid verification code. Please try again.");
             }
         } catch (error) {
-            console.log(error)
-        }finally{
+            console.log(error);
+            setError("An unexpected network error occurred. Please try again.");
+        } finally {
             setIsLoading(false);
         }
-
-    }
-
-
-
-
+    };
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -103,12 +102,33 @@ export default function VerifyOtp() {
                     <h2 className="text-2xl font-bold text-[#111827] mb-1">Verify Credentials</h2>
                     <p className="text-sm text-[#6B7280] mb-6">Input the 6-digit verification code sent to your workspace.</p>
 
-                    <form className="space-y-5 " onSubmit={handleSubmit}>
+                    <AnimatePresence mode="wait">
+                        {error && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, y: -8 }}
+                                animate={{ opacity: 1, height: "auto", y: 0 }}
+                                exit={{ opacity: 0, height: 0, y: -8 }}
+                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                className="overflow-hidden mb-5"
+                            >
+                                <div className="flex items-start space-x-3 bg-red-50 border border-red-200 p-3.5 rounded-xl text-red-700">
+                                    <svg className="w-5 h-5 mt-0.5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <div className="flex-1 text-sm font-semibold tracking-wide leading-relaxed">
+                                        {error}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <form className="space-y-5" onSubmit={handleSubmit}>
                         <div>
                             <label className="block text-xs font-bold text-[#111827] uppercase tracking-wider mb-2">Secure OTP Token</label>
                             <input
                                 value={otp}
-                                onChange={(e)=>setOtp(e.target.value)}
+                                onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ""))}
                                 type="text"
                                 required
                                 maxLength={6}
@@ -119,9 +139,34 @@ export default function VerifyOtp() {
 
                         <button
                             type="submit"
+                            disabled={isLoading}
                             className="relative w-full py-3 px-4 bg-[#2563EB] hover:bg-[#3B82F6] text-white font-bold text-sm rounded-lg transition-colors duration-150 flex items-center justify-center overflow-hidden"
                         >
-                            <span>Authorize Account Token</span>
+                            <AnimatePresence mode="wait">
+                                {isLoading ? (
+                                    <motion.div
+                                        key="loader"
+                                        initial={{ y: 10, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        exit={{ y: -10, opacity: 0 }}
+                                        transition={{ duration: 0.12 }}
+                                        className="flex items-center space-x-2"
+                                    >
+                                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        <span>Authorizing Token...</span>
+                                    </motion.div>
+                                ) : (
+                                    <motion.span
+                                        key="text"
+                                        initial={{ y: -10, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        exit={{ y: 10, opacity: 0 }}
+                                        transition={{ duration: 0.12 }}
+                                    >
+                                        Authorize Account Token
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
                         </button>
                     </form>
 
