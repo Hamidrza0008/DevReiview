@@ -7,7 +7,7 @@ import {
   Plus, Heart, MessageSquare, ExternalLink, GitBranch,
   Globe, Mail, CheckCircle2, Eye, Star, MapPin,
   Calendar, Award, Bookmark, Layers, User, Activity, Zap,
-  AlertCircle, Code2, ArrowUpRight
+  AlertCircle, Code2, ArrowUpRight, ArrowLeft
 } from "lucide-react";
 import { getUserProfile } from "@/services/usersApi";
 import { getProjectByUsername } from "@/services/getProjectsByUsernameApi";
@@ -145,6 +145,14 @@ export default function UserProfile() {
   if (loading || error) {
     return (
       <div className="p-4 md:p-8 bg-[#F8FAFC] min-h-screen max-w-7xl mx-auto space-y-8">
+        <button
+          onClick={() => router.back()}
+          className="relative z-10 flex items-center gap-2 text-sm font-semibold text-[#6B7280] hover:text-[#111827] transition-colors w-fit"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
+
         {error ? (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -196,6 +204,14 @@ export default function UserProfile() {
     >
       <div className="absolute inset-0 bg-[radial-gradient(#E5E7EB_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none z-0" />
       <div className="absolute top-20 left-1/3 w-[500px] h-[500px] bg-gradient-to-tr from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-[120px] pointer-events-none z-0" />
+
+      <button
+        onClick={() => router.back()}
+        className="relative z-10 flex items-center gap-2 text-sm font-semibold text-[#6B7280] hover:text-[#111827] transition-colors w-fit"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back
+      </button>
 
       <div className="bg-[#FFFFFF] border border-[#E5E7EB] rounded-[32px] p-8 md:p-10 shadow-sm relative overflow-hidden z-10">
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-[#2563EB]/5 to-[#3B82F6]/5 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
