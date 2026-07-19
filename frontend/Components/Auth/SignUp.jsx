@@ -163,24 +163,24 @@ export default function SignUp() {
       </div>
 
       {/* Right Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10 overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 relative z-10 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="w-full max-w-md bg-surface rounded-2xl border border-line p-8 sm:p-10 shadow-2xs my-auto"
+          className="w-full max-w-md bg-surface rounded-2xl border border-line p-5 sm:p-7 shadow-2xs my-auto"
         >
           <button
             type="button"
             onClick={() => router.push("/")}
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-accent transition-colors mb-6"
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-accent transition-colors mb-3"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
           </button>
 
-          <h2 className="text-2xl font-bold text-ink mb-1">Join Community</h2>
-          <p className="text-sm text-muted mb-6">Create your profile workspace setup to initiate sharing.</p>
+          <h2 className="text-xl font-bold text-ink mb-0.5">Join Community</h2>
+          <p className="text-xs text-muted mb-4">Create your profile workspace setup to initiate sharing.</p>
 
           <AnimatePresence mode="wait">
             {error && (
@@ -189,9 +189,9 @@ export default function SignUp() {
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: -8 }}
                 transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                className="overflow-hidden mb-5"
+                className="overflow-hidden mb-3"
               >
-                <div className="flex items-start space-x-3 bg-danger/10 border border-danger/30 p-3.5 rounded-xl text-danger">
+                <div className="flex items-start space-x-3 bg-danger/10 border border-danger/30 p-3 rounded-xl text-danger">
                   <svg className="w-5 h-5 mt-0.5 shrink-0 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
@@ -203,32 +203,35 @@ export default function SignUp() {
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1.5">Name</label>
-              <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Hamid Rza" className="w-full px-4 py-2.5 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1.5">Handle Username</label>
-              <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="HamidRza0008" className="w-full px-4 py-2.5 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1.5">Developer Communications Email</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@domain.com" className="w-full px-4 py-2.5 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">Name</label>
+                <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Hamid Rza" className="w-full px-3.5 py-2 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">Username</label>
+                <input type="text" required value={username} onChange={(e) => setUsername(e.target.value)} placeholder="HamidRza0008" className="w-full px-3.5 py-2 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+              </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1.5">Secure Password</label>
-              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full px-4 py-2.5 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+              <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">Email</label>
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@domain.com" className="w-full px-3.5 py-2 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1.5">Confirm Credentials Match</label>
-              <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="w-full px-4 py-2.5 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">Password</label>
+                <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="w-full px-3.5 py-2 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-ink uppercase tracking-wider mb-1">Confirm</label>
+                <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" className="w-full px-3.5 py-2 bg-page border border-line rounded-lg text-sm text-ink focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/5 transition-all" />
+              </div>
             </div>
 
-            <div className="flex items-start pt-1">
+            <div className="flex items-start">
               <input id="terms-check" type="checkbox" required checked={agreeTerms} onChange={(e) => setAgreeTerms(e.target.checked)} className="w-4 h-4 mt-0.5 rounded text-accent border-line focus:ring-accent/20" />
               <label htmlFor="terms-check" className="ml-2 text-xs text-muted font-medium cursor-pointer hover:text-ink transition-colors">I authorize access terms and agree to code review policies.</label>
             </div>
@@ -237,7 +240,7 @@ export default function SignUp() {
               whileTap={{ scale: 0.99 }}
               type="submit"
               disabled={isLoading}
-              className="relative w-full py-3 px-4 bg-accent hover:brightness-110 text-accent-ink font-bold text-sm rounded-lg transition-colors flex items-center justify-center overflow-hidden shadow-xs"
+              className="relative w-full py-2.5 px-4 bg-accent hover:brightness-110 text-accent-ink font-bold text-sm rounded-lg transition-colors flex items-center justify-center overflow-hidden shadow-xs"
             >
               <AnimatePresence mode="wait">
                 {isLoading ? (
@@ -267,7 +270,7 @@ export default function SignUp() {
             </motion.button>
           </form>
 
-          <p className="text-center text-sm text-muted mt-6">Already verified? <a href="/auth/login" className="font-bold text-accent hover:underline">Log In</a></p>
+          <p className="text-center text-xs text-muted mt-4">Already verified? <a href="/auth/login" className="font-bold text-accent hover:underline">Log In</a></p>
         </motion.div>
       </div>
     </div>
