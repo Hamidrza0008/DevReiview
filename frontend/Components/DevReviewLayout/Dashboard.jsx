@@ -165,10 +165,10 @@ export default function Dashboard() {
                     <div className="relative shrink-0">
                       <div className="absolute -inset-0.5 bg-linear-to-r from-accent to-accent-2 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300" />
                       <img
-                        src={user?.profileImage || "/default-avatar.png"}
+                        src={user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=2F6F4E&color=fff`}
                         alt="Avatar"
                         className="w-16 h-16 rounded-2xl object-cover border-2 border-surface relative z-10 shadow-sm"
-                        onError={(e) => { e.currentTarget.src = "/default-avatar.png"; }}
+                        onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=2F6F4E&color=fff`; }}
                       />
                       <span className="absolute -bottom-1 -right-1 bg-accent text-accent-ink text-[9px] font-extrabold px-1 py-0.2 rounded-md tracking-wider shadow-sm z-20">
                         DEV
