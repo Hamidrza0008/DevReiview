@@ -346,12 +346,12 @@ export default function MyProfile() {
               <div className="flex flex-col gap-4 h-full justify-between lg:border-l lg:border-surface-2 lg:pl-10">
                 <div className="grid grid-cols-3 gap-4 w-full">
                   {[
-                    { label: "Repositories", val: stats.projectsCount },
-                    { label: "Code Reviews", val: stats.reviews },
+                    { label: "Repos", val: stats.projectsCount },
+                    { label: "Reviews", val: stats.reviews },
                     { label: "Likes", val: stats.likes }
                   ].map((st, idx) => (
-                    <div key={idx} className="bg-page border border-line rounded-2xl p-4 hover:border-accent/30 transition-all duration-300 group shadow-sm text-center lg:text-left">
-                      <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">{st.label}</span>
+                    <div key={idx} className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/30 transition-all duration-300 group shadow-sm text-center lg:text-left">
+                      <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
                       <span className="text-2xl font-bold text-ink group-hover:text-accent transition-colors">{st.val}</span>
                     </div>
                   ))}

@@ -293,7 +293,7 @@ export default function ExploreUsers() {
                   className="bg-surface/90 backdrop-blur-sm border border-line rounded-2xl p-4 shadow-sm hover:border-accent-2/60 hover:shadow-xl hover:shadow-accent/15 transition-all duration-300 flex flex-col items-center lg:items-start text-center lg:text-left group cursor-default"
                 >
                   <div className="flex items-center gap-1.5 mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted group-hover:text-accent transition-colors">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted group-hover:text-accent transition-colors wrap-break-word">
                       {stat.label}
                     </span>
                     <div className="text-accent bg-accent/5 rounded p-1 group-hover:scale-125 group-hover:bg-accent/10 transition-transform">

@@ -11,7 +11,9 @@
       "Bash(node -e ' *)",
       "Bash(node mobile_audit_auth.js \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNWFmOGM2M2VjNjAyYjgxNDVjMDQzOCIsImlhdCI6MTc4NDUzOTcxNywiZXhwIjoxNzg0NTQzMzE3fQ.hEW9hiu4_6gH5CotSut9A_6BRU0F93KTM4oZv4H3R94\")",
       "Bash(curl -s -o /dev/null -w \"landing: %{http_code}\\\\n\" http://localhost:3000/)",
-      "Bash(curl -s -o /dev/null -w \"create: %{http_code}\\\\n\" http://localhost:3000/projects/create)"
+      "Bash(curl -s -o /dev/null -w \"create: %{http_code}\\\\n\" http://localhost:3000/projects/create)",
+      "Bash(curl -s -o /dev/null -w \"profile/my: %{http_code}\\\\n\" http://localhost:3000/profile/my)",
+      "Bash(curl -s -o /dev/null -w \"users/explore: %{http_code}\\\\n\" http://localhost:3000/users/explore)"
     ]
   }
 }

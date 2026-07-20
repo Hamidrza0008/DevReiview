@@ -316,9 +316,9 @@ export default function UserProfile() {
                   key={idx}
                   whileHover={{ y: -4, scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                  className="bg-page border border-line rounded-2xl p-4 hover:border-accent/40 hover:bg-accent-soft/50 hover:shadow-md hover:shadow-accent/10 transition-all duration-300 group shadow-sm cursor-default"
+                  className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/40 hover:bg-accent-soft/50 hover:shadow-md hover:shadow-accent/10 transition-all duration-300 group shadow-sm cursor-default"
                 >
-                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">{st.label}</span>
+                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
                   <span className="text-2xl font-bold text-ink group-hover:text-accent transition-colors">{st.val}</span>
                 </motion.div>
               ))}
