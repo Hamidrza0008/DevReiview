@@ -406,8 +406,8 @@ export default function ExploreUsers() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search developers, username or skills..."
-                className="w-full pl-14 pr-4 py-4 bg-surface/90 backdrop-blur-md border border-line rounded-2xl text-base font-semibold text-ink placeholder-muted shadow-sm hover:shadow-md focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 transition-all"
+                placeholder="Search developers, skills..."
+                className="w-full pl-14 pr-4 py-4 bg-surface/90 backdrop-blur-md border border-line rounded-2xl text-sm sm:text-base font-semibold text-ink placeholder-muted shadow-sm hover:shadow-md focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 transition-all"
               />
             </div>
 

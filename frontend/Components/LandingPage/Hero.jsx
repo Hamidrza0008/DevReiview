@@ -2,10 +2,19 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { PrimaryButton, SecondaryButton } from './atoms';
 
 export default function Hero() {
+  const router = useRouter();
+  const { user } = useAuth();
   const springConfig = { type: 'spring', stiffness: 100, damping: 20 };
+
+  // Both destinations require an account, so send logged-out visitors
+  // to sign up first instead of dropping them on a page that will 401.
+  const goExploreProjects = () => router.push(user ? '/projects/explore' : '/auth/signup');
+  const goUploadProject = () => router.push(user ? '/projects/create' : '/auth/signup');
 
   return (
     <section className="relative w-full min-h-screen bg-page px-6 md:px-16 lg:px-24 pt-20 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center overflow-hidden select-none z-10">
@@ -78,13 +87,13 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full sm:w-auto">
           <motion.div className="w-full sm:w-auto group relative" whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
             <div className="absolute -inset-0.5 bg-linear-to-r from-accent to-accent-2 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-500" />
-            <PrimaryButton className="relative w-full !px-8 !py-3.5 text-sm rounded-lg shadow-md">
+            <PrimaryButton onClick={goExploreProjects} className="relative w-full !px-8 !py-3.5 text-sm rounded-lg shadow-md">
               Explore Projects
             </PrimaryButton>
           </motion.div>
 
           <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
-            <SecondaryButton className="w-full !px-8 !py-3.5 text-sm backdrop-blur-md">
+            <SecondaryButton onClick={goUploadProject} className="w-full !px-8 !py-3.5 text-sm backdrop-blur-md">
               Upload Project
             </SecondaryButton>
           </motion.div>

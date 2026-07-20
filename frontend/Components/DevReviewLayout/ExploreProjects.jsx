@@ -451,8 +451,8 @@ export default function ExploreProjects() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by keywords, tech stack, or framework..."
-              className="flex-1 bg-transparent pl-2 pr-4 py-3.5 focus:outline-none text-base font-semibold text-ink placeholder-muted"
+              placeholder="Search projects, tech stack..."
+              className="flex-1 min-w-0 bg-transparent pl-2 pr-4 py-3.5 focus:outline-none text-sm sm:text-base font-semibold text-ink placeholder-muted"
             />
           </div>
         </section>

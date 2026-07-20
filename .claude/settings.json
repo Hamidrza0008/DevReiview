@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c//**)",
+      "Bash(npm ls *)",
+      "Read(//c/Users/INFINIX/.cache/**)",
+      "Read(//c/Users/INFINIX/AppData/Local/ms-playwright/**)",
+      "Bash(timeout 60 npx --yes playwright --version)",
+      "Bash(timeout 90 npx playwright install chromium)",
+      "Bash(node mobile_audit.js)",
+      "Bash(node -e ' *)",
+      "Bash(node mobile_audit_auth.js \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNWFmOGM2M2VjNjAyYjgxNDVjMDQzOCIsImlhdCI6MTc4NDUzOTcxNywiZXhwIjoxNzg0NTQzMzE3fQ.hEW9hiu4_6gH5CotSut9A_6BRU0F93KTM4oZv4H3R94\")",
+      "Bash(curl -s -o /dev/null -w \"landing: %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"create: %{http_code}\\\\n\" http://localhost:3000/projects/create)"
+    ]
+  }
+}
