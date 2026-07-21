@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -245,7 +246,7 @@ export default function UserProfile() {
         }
       `}</style>
 
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      <div className="hidden md:block fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(var(--color-line)_1px,transparent_1px)] bg-size-[24px_24px] opacity-40" />
         <motion.div
           animate={{ x: [0, 60, 0], y: [0, -40, 0], scale: [1, 1.15, 1] }}
@@ -281,10 +282,12 @@ export default function UserProfile() {
             <div className="relative group shrink-0">
               <div className="absolute -inset-2 bg-linear-to-r from-accent to-accent-2 rounded-full blur-md opacity-20 group-hover:opacity-50 transition duration-500" />
               <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-surface relative z-10 shadow-md bg-surface-2 group-hover:shadow-lg group-hover:shadow-accent/20 transition-shadow duration-500">
-                <img
+                <Image
                   src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=F1F5F9&color=111827`}
                   alt={user.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  fill
+                  sizes="112px"
+                  className="object-cover group-hover:scale-105 transition duration-500"
                 />
               </div>
               {(user.isVerified !== false) && (
@@ -493,7 +496,13 @@ export default function UserProfile() {
 
                           <div className="flex-1 relative flex items-center justify-center bg-surface-2">
                             {project.thumbnail ? (
-                              <img src={project.thumbnail} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                              <Image
+                                src={project.thumbnail}
+                                alt={project.title}
+                                fill
+                                sizes="(max-width: 640px) 100vw, 50vw"
+                                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                              />
                             ) : (
                               <Code2 className="w-8 h-8 text-muted opacity-40" />
                             )}

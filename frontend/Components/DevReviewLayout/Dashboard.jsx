@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { getMyProjects } from "@/services/getMyProjectsApi";
 import { useAuth } from "@/context/AuthContext";
@@ -166,9 +167,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-5 z-10">
                     <div className="relative shrink-0">
                       <div className="absolute -inset-0.5 bg-linear-to-r from-accent to-accent-2 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-300" />
-                      <img
+                      <Image
                         src={user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=2F6F4E&color=fff`}
                         alt="Avatar"
+                        width={64}
+                        height={64}
                         className="w-16 h-16 rounded-2xl object-cover border-2 border-surface relative z-10 shadow-sm"
                         onError={(e) => { e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=2F6F4E&color=fff`; }}
                       />
@@ -307,11 +310,13 @@ export default function Dashboard() {
                                   className="bg-surface border border-line rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-accent/40 flex flex-col justify-between group cursor-pointer transition-all duration-300"
                                 >
                                   <div className="relative aspect-video w-full bg-page border-b border-line overflow-hidden">
-                                    <img
+                                    <Image
                                       onClick={() => router.push(`/projects/${project._id}`)}
                                       src={project.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80"}
                                       alt={project.title}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      fill
+                                      sizes="(max-width: 768px) 100vw, 50vw"
+                                      className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                   </div>
 

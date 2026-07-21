@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Plus, Heart, MessageSquare, ExternalLink, GitBranch, Layers, FolderGit2, Search, SlidersHorizontal, Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -149,10 +150,12 @@ export default function MyProjects() {
                   {/* Body Canvas Wrapper */}
                   <div onClick={() => router.push(`/projects/${project._id}`)} className="flex-1 w-full relative overflow-hidden bg-page cursor-pointer flex items-center justify-center">
                     {hasThumbnail ? (
-                      <img
+                      <Image
                         src={project.thumbnail}
                         alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                        className="object-cover group-hover:scale-102 transition-transform duration-500"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}

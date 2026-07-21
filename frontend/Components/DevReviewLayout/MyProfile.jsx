@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -236,7 +237,7 @@ export default function MyProfile() {
             initial={{ opacity: 0, y: -20, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: -20, x: "-50%" }}
-            className={`fixed top-6 left-1/2 z-[100] px-5 py-3 rounded-2xl shadow-lg border flex items-center gap-2 text-sm font-semibold backdrop-blur-md ${
+            className={`fixed top-6 left-1/2 z-[100] px-5 py-3 rounded-2xl shadow-lg border flex items-center gap-2 text-sm font-semibold md:backdrop-blur-md ${
               toast.type === "success" 
                 ? "bg-ok/10 border-ok/20 text-ink" 
                 : "bg-danger/10 border-danger/20 text-ink"
@@ -272,10 +273,12 @@ export default function MyProfile() {
                 <div className="relative group shrink-0">
                   <div className="absolute -inset-2 bg-linear-to-tr from-accent to-accent-2 rounded-full blur-md opacity-30 group-hover:opacity-50 transition duration-500" />
                   <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-surface relative z-10 shadow-lg bg-surface-2">
-                    <img
+                    <Image
                       src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=F1F5F9&color=111827`}
                       alt={user.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                      fill
+                      sizes="112px"
+                      className="object-cover group-hover:scale-105 transition duration-500"
                     />
                   </div>
                 </div>
@@ -632,7 +635,13 @@ export default function MyProfile() {
                         {/* thumbnail area */}
                         <div className="h-44 bg-surface-2 border-b border-line relative flex flex-col overflow-hidden">
                           {project.thumbnail ? (
-                            <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" src={project.thumbnail} alt={project.title} />
+                            <Image
+                              fill
+                              sizes="(max-width: 768px) 100vw, 50vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                              src={project.thumbnail}
+                              alt={project.title}
+                            />
                           ) : (
                             <div className="flex items-center justify-center h-full text-muted">
                               <Code2 className="w-8 h-8 opacity-40" />

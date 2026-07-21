@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
@@ -301,7 +302,7 @@ export default function SingleProject() {
             initial={{ opacity: 0, y: -20, x: "-50%" }}
             animate={{ opacity: 1, y: 0, x: "-50%" }}
             exit={{ opacity: 0, y: -20, x: "-50%" }}
-            className={`fixed top-6 left-1/2 z-[100] px-5 py-3 rounded-2xl shadow-xl border flex items-center gap-2 text-sm font-bold backdrop-blur-md ${
+            className={`fixed top-6 left-1/2 z-[100] px-5 py-3 rounded-2xl shadow-xl border flex items-center gap-2 text-sm font-bold md:backdrop-blur-md ${
               toast.type === "success" ? "bg-accent-soft/95 border-accent/30 text-accent" :
               toast.type === "warning" ? "bg-star/10 border-star/30 text-star" :
               "bg-danger/10 border-danger/30 text-danger"
@@ -370,7 +371,7 @@ export default function SingleProject() {
                     className="bg-surface border-2 border-surface-2 hover:border-accent/30 rounded-[28px] overflow-hidden shadow-xl shadow-accent/5 relative aspect-video group flex flex-col justify-between transition-colors duration-300"
                   >
                     
-                    <div className="flex items-center justify-between px-5 py-3 bg-surface/90 backdrop-blur-md border-b border-surface-2 shrink-0 z-10">
+                    <div className="flex items-center justify-between px-5 py-3 bg-surface/90 md:backdrop-blur-md border-b border-surface-2 shrink-0 z-10">
                       <div className="flex items-center space-x-2">
                         <span className="w-3 h-3 rounded-full bg-like shadow-sm" />
                         <span className="w-3 h-3 rounded-full bg-star shadow-sm" />
@@ -385,10 +386,12 @@ export default function SingleProject() {
 
                     <div className="flex-1 relative overflow-hidden bg-linear-to-br from-accent-soft/50 to-surface-2 flex items-center justify-center">
                       {isThumbnailValid ? (
-                        <img
+                        <Image
                           src={project.thumbnail}
                           alt={project.title}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 60vw"
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
                         />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center p-6 text-accent-2">
@@ -438,9 +441,11 @@ export default function SingleProject() {
                       onClick={() => router.push(`/users/${project.owner?.username}`)}
                       className="flex items-center space-x-3 p-3.5 bg-page border border-line rounded-2xl cursor-pointer hover:border-accent/40 hover:bg-accent-soft/40 transition-colors group"
                     >
-                      <img
+                      <Image
                         src={project.owner?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(project.owner?.name || 'U')}&background=E5E7EB&color=111827`}
                         alt={project.owner?.username}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded-full object-cover border-2 border-surface shadow-sm"
                       />
                       <div className="min-w-0 flex-1">
@@ -749,9 +754,11 @@ export default function SingleProject() {
                         className="p-5 bg-surface border-2 border-surface-2 hover:border-accent/30 rounded-2xl shadow-sm relative group transition-colors"
                       >
                         <div className="flex items-start space-x-4">
-                          <img
+                          <Image
                             src={review.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user?.name || 'U')}&background=F1F5F9&color=111827`}
                             alt="Reviewer"
+                            width={40}
+                            height={40}
                             className="w-10 h-10 rounded-full object-cover border-2 border-line shrink-0"
                           />
                           <div className="flex-1 min-w-0 space-y-2">

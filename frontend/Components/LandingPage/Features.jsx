@@ -121,7 +121,7 @@ export default function Features() {
               </div>
 
               {/* Feature Content (Glassmorphism Card) */}
-              <div className="p-6 bg-surface/70 backdrop-blur-xl border border-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_10px_40px_rgba(47,111,78,0.08)] group-hover:-translate-y-1 group-hover:border-accent/30 transition-all duration-300 w-full min-h-[170px] relative overflow-hidden">
+              <div className="p-6 bg-surface/70 md:backdrop-blur-xl border border-surface rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] group-hover:shadow-[0_10px_40px_rgba(47,111,78,0.08)] group-hover:-translate-y-1 group-hover:border-accent/30 transition-all duration-300 w-full min-h-[170px] relative overflow-hidden">
 
                 {/* Subtle top border highlight on hover */}
                 <div className="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-accent to-accent-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

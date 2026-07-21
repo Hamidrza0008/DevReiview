@@ -80,7 +80,7 @@ export default function HowItWorks() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-xs font-bold uppercase tracking-widest text-accent bg-accent-soft border border-accent/20 backdrop-blur-md px-4 py-1.5 rounded-full shadow-sm">
+            <span className="text-xs font-bold uppercase tracking-widest text-accent bg-accent-soft border border-accent/20 md:backdrop-blur-md px-4 py-1.5 rounded-full shadow-sm">
               Workflow
             </span>
             <h2 className="text-3xl md:text-5xl font-extrabold text-ink mt-5 tracking-tight">
@@ -105,7 +105,7 @@ export default function HowItWorks() {
               {/* Step Card Element */}
               <motion.div
                 variants={cardVariants}
-                className="group flex flex-col items-center text-center p-8 bg-surface/80 backdrop-blur-xl border border-surface rounded-[2rem] shadow-[0_8px_30px_rgba(47,111,78,0.06)] hover:shadow-[0_20px_40px_rgba(47,111,78,0.12)] hover:-translate-y-2 hover:border-accent/30 transition-all duration-500 relative z-10 w-full lg:w-[280px] min-h-[280px] overflow-hidden cursor-default"
+                className="group flex flex-col items-center text-center p-8 bg-surface/80 md:backdrop-blur-xl border border-surface rounded-[2rem] shadow-[0_8px_30px_rgba(47,111,78,0.06)] hover:shadow-[0_20px_40px_rgba(47,111,78,0.12)] hover:-translate-y-2 hover:border-accent/30 transition-all duration-500 relative z-10 w-full lg:w-[280px] min-h-[280px] overflow-hidden cursor-default"
               >
                 {/* Subtle top border highlight on hover */}
                 <div className="absolute top-0 left-0 w-full h-[3px] bg-linear-to-r from-accent to-accent-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

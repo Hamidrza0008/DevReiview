@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, Star,
@@ -237,8 +238,8 @@ export default function ExploreUsers() {
         }
       `}</style>
 
-      {/* --- CONTINUOUS BACKGROUND LIGHTS & ANIMATIONS --- */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+      {/* --- CONTINUOUS BACKGROUND LIGHTS & ANIMATIONS --- (disabled on mobile) */}
+      <div className="hidden md:block fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Top Left Animated Blob */}
         <motion.div
           animate={{ x: [0, 100, 0], y: [0, -50, 0], scale: [1, 1.2, 1] }}
@@ -272,7 +273,7 @@ export default function ExploreUsers() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -80, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-0 inset-x-0 bg-surface/80 backdrop-blur-xl border-b border-line z-50 py-3 shadow-lg shadow-accent/5 px-4 sm:px-6"
+            className="fixed top-0 inset-x-0 bg-surface/80 md:backdrop-blur-xl border-b border-line z-50 py-3 shadow-lg shadow-accent/5 px-4 sm:px-6"
           >
             <div className="max-w-4xl mx-auto w-full flex items-center bg-surface-2 border border-line rounded-2xl p-1.5 shadow-sm transition-all focus-within:ring-4 focus-within:ring-accent/15 focus-within:border-accent">
               <div className="pl-3 pr-2 text-accent">
@@ -332,7 +333,7 @@ export default function ExploreUsers() {
                   key={idx}
                   whileHover={{ y: -5, scale: 1.03 }}
                   transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                  className="bg-surface/90 backdrop-blur-sm border border-line rounded-2xl p-4 shadow-sm hover:border-accent-2/60 hover:shadow-xl hover:shadow-accent/15 transition-all duration-300 flex flex-col items-center lg:items-start text-center lg:text-left group cursor-default"
+                  className="bg-surface/90 md:backdrop-blur-sm border border-line rounded-2xl p-4 shadow-sm hover:border-accent-2/60 hover:shadow-xl hover:shadow-accent/15 transition-all duration-300 flex flex-col items-center lg:items-start text-center lg:text-left group cursor-default"
                 >
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-muted group-hover:text-accent transition-colors wrap-break-word">
@@ -449,7 +450,7 @@ export default function ExploreUsers() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search developers, skills..."
-                className="w-full pl-14 pr-4 py-4 bg-surface/90 backdrop-blur-md border border-line rounded-2xl text-sm sm:text-base font-semibold text-ink placeholder-muted shadow-sm hover:shadow-md focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 transition-all"
+                className="w-full pl-14 pr-4 py-4 bg-surface/90 md:backdrop-blur-md border border-line rounded-2xl text-sm sm:text-base font-semibold text-ink placeholder-muted shadow-sm hover:shadow-md focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 transition-all"
               />
             </div>
 
@@ -457,7 +458,7 @@ export default function ExploreUsers() {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 bg-surface/90 backdrop-blur-md border border-line hover:bg-page hover:border-accent/40 hover:text-accent text-sm font-bold px-6 py-4 rounded-2xl text-muted shadow-sm transition-all cursor-pointer"
+                className="flex items-center gap-2 bg-surface/90 md:backdrop-blur-md border border-line hover:bg-page hover:border-accent/40 hover:text-accent text-sm font-bold px-6 py-4 rounded-2xl text-muted shadow-sm transition-all cursor-pointer"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span>Filters</span>
@@ -466,7 +467,7 @@ export default function ExploreUsers() {
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-surface/90 backdrop-blur-md border border-line text-sm font-bold pl-5 pr-10 py-4 rounded-2xl text-muted shadow-sm focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 hover:border-accent/40 transition-all cursor-pointer appearance-none min-w-[140px]"
+                  className="bg-surface/90 md:backdrop-blur-md border border-line text-sm font-bold pl-5 pr-10 py-4 rounded-2xl text-muted shadow-sm focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 hover:border-accent/40 transition-all cursor-pointer appearance-none min-w-[140px]"
                 >
                   <option value="Trending">Trending</option>
                   <option value="Newest">Newest</option>
@@ -495,7 +496,7 @@ export default function ExploreUsers() {
                 className={`relative text-xs px-5 py-2.5 rounded-xl font-bold tracking-wide transition-all duration-300 outline-none border cursor-pointer ${
                   isActive
                     ? "text-accent-ink border-transparent shadow-md shadow-accent/25"
-                    : "bg-surface/80 backdrop-blur-sm border-line text-muted hover:bg-surface hover:text-accent hover:border-accent/30"
+                    : "bg-surface/80 md:backdrop-blur-sm border-line text-muted hover:bg-surface hover:text-accent hover:border-accent/30"
                 }`}
               >
                 {isActive && (
@@ -564,7 +565,7 @@ export default function ExploreUsers() {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               >
                 {Array.from({ length: 8 }).map((_, idx) => (
-                  <div key={idx} className="bg-surface/90 backdrop-blur-sm border border-line rounded-[28px] h-[480px] shadow-sm flex flex-col overflow-hidden">
+                  <div key={idx} className="bg-surface/90 md:backdrop-blur-sm border border-line rounded-[28px] h-[480px] shadow-sm flex flex-col overflow-hidden">
                     <Shimmer className="h-20 w-full rounded-none" />
                     <div className="px-6 flex-1 flex flex-col relative">
                       <Shimmer className="w-20 h-20 rounded-full border-4 border-surface -mt-10 mb-4 mx-auto" />
@@ -596,7 +597,7 @@ export default function ExploreUsers() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-24 bg-surface/80 backdrop-blur-md rounded-[32px] border border-dashed border-line shadow-sm max-w-2xl mx-auto mt-8"
+                className="text-center py-24 bg-surface/80 md:backdrop-blur-md rounded-[32px] border border-dashed border-line shadow-sm max-w-2xl mx-auto mt-8"
               >
                 <div className="w-16 h-16 bg-page rounded-2xl flex items-center justify-center mx-auto mb-5 border border-line">
                   <Search className="w-7 h-7 text-accent" />
@@ -636,7 +637,7 @@ export default function ExploreUsers() {
                       variants={itemVariants}
                       whileHover={{ y: -8, transition: { duration: 0.2 } }}
                       // STRICT FORMATTING: flex-col with explicit height and mt-auto guarantees alignment
-                      className="card-glow group bg-surface/95 backdrop-blur-sm border border-line hover:border-transparent rounded-[24px] flex flex-col transition-all duration-300 relative shadow-sm hover:shadow-2xl hover:shadow-accent/20 h-[480px] overflow-hidden"
+                      className="card-glow group bg-surface/95 md:backdrop-blur-sm border border-line hover:border-transparent rounded-[24px] flex flex-col transition-all duration-300 relative shadow-sm hover:shadow-2xl hover:shadow-accent/20 h-[480px] overflow-hidden"
                     >
                       {/* Top Banner */}
                       <div className="h-20 bg-gradient-to-b from-accent to-accent-2 relative overflow-hidden transition-colors">
@@ -650,10 +651,12 @@ export default function ExploreUsers() {
                       <div className="px-5 flex-1 flex flex-col relative z-10">
                         {/* Avatar */}
                         <div className="relative mx-auto w-20 h-20 rounded-full overflow-hidden border-[5px] border-surface shadow-md -mt-10 mb-3 bg-surface group-hover:shadow-lg group-hover:shadow-accent/20 transition-shadow">
-                          <img
+                          <Image
                             src={dev.profileImage || defaultAvatar}
                             alt={`${dev.name}'s profile`}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            fill
+                            sizes="80px"
+                            className="object-cover group-hover:scale-110 transition-transform duration-500"
                             onError={(e) => {
                               e.currentTarget.src = defaultAvatar;
                             }}

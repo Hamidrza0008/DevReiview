@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -303,7 +304,7 @@ export default function ExploreProjects() {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -80, opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-0 inset-x-0 bg-surface/80 backdrop-blur-xl border-b border-line z-50 py-3 shadow-sm px-6"
+            className="fixed top-0 inset-x-0 bg-surface/80 md:backdrop-blur-xl border-b border-line z-50 py-3 shadow-sm px-6"
           >
             <div className="max-w-4xl mx-auto w-full flex items-center bg-page border border-line rounded-2xl p-1.5 shadow-sm transition-all focus-within:ring-4 focus-within:ring-accent/10 focus-within:border-accent">
               <div className="pl-3 pr-2 text-accent">
@@ -352,7 +353,7 @@ export default function ExploreProjects() {
               {statCards.map((stat, idx) => (
                 <div
                   key={idx}
-                  className="bg-surface/60 border border-line rounded-2xl p-4 shadow-sm backdrop-blur-md hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 group"
+                  className="bg-surface/60 border border-line rounded-2xl p-4 shadow-sm md:backdrop-blur-md hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 group"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted group-hover:text-ink transition-colors">
@@ -382,7 +383,7 @@ export default function ExploreProjects() {
             <motion.div
               animate={{ y: [-10, 10, -10], rotateX: [2, -2, 2], rotateY: [-2, 2, -2] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="w-full max-w-[420px] bg-surface/90 border border-surface rounded-3xl shadow-2xl shadow-accent/10 p-6 space-y-5 backdrop-blur-xl relative z-10"
+              className="w-full max-w-[420px] bg-surface/90 border border-surface rounded-3xl shadow-2xl shadow-accent/10 p-6 space-y-5 md:backdrop-blur-xl relative z-10"
               style={{ transformStyle: "preserve-3d" }}
             >
               <div className="flex items-center justify-between pb-4 border-b border-line">
@@ -567,7 +568,7 @@ export default function ExploreProjects() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="text-center py-24 bg-surface/80 backdrop-blur-sm rounded-[32px] border-2 border-dashed border-line shadow-sm max-w-2xl mx-auto mt-8"
+                className="text-center py-24 bg-surface/80 md:backdrop-blur-sm rounded-[32px] border-2 border-dashed border-line shadow-sm max-w-2xl mx-auto mt-8"
               >
                 <div className="w-16 h-16 bg-accent-soft rounded-2xl flex items-center justify-center mx-auto mb-5 border border-accent/20">
                   <Code className="w-7 h-7 text-accent" />
@@ -613,7 +614,7 @@ export default function ExploreProjects() {
                           onClick={() => router.push(`/projects/${project._id}`)}
                           className="relative h-48 w-full overflow-hidden cursor-pointer border-b border-line bg-page group/thumb"
                         >
-                          <div className="absolute top-0 inset-x-0 h-9 bg-surface/90 backdrop-blur-md border-b border-line flex items-center justify-between px-4 z-30 transition-colors group-hover/thumb:bg-surface">
+                          <div className="absolute top-0 inset-x-0 h-9 bg-surface/90 md:backdrop-blur-md border-b border-line flex items-center justify-between px-4 z-30 transition-colors group-hover/thumb:bg-surface">
                             <div className="flex items-center space-x-1.5">
                               <div className="w-3 h-3 rounded-full bg-like" />
                               <div className="w-3 h-3 rounded-full bg-star" />
@@ -646,11 +647,12 @@ export default function ExploreProjects() {
                           </div>
 
                           {project.thumbnail ? (
-                            <img
+                            <Image
                               src={project.thumbnail}
                               alt={project.title}
-                              loading="lazy"
-                              className="w-full h-full object-cover pt-9 transition-transform duration-700 ease-out group-hover/thumb:scale-110"
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              className="object-cover pt-9 transition-transform duration-700 ease-out group-hover/thumb:scale-110"
                             />
                           ) : (
                             <div className="w-full h-full pt-9 flex flex-col items-center justify-center bg-linear-to-br from-accent-soft to-accent-2/10 text-accent-2 p-4 transition-transform duration-700 group-hover/thumb:scale-105">
@@ -671,9 +673,11 @@ export default function ExploreProjects() {
                             >
                               <div className="relative">
                                 {project.owner.profileImage ? (
-                                  <img
+                                  <Image
                                     src={project.owner.profileImage}
                                     alt={project.owner.username}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-full object-cover border-2 border-surface shadow-sm group-hover/owner:border-accent/30 transition-colors"
                                   />
                                 ) : (

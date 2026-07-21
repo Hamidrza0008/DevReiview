@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 
@@ -44,10 +45,12 @@ export default function FinalCTA() {
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             className="relative w-72 h-56 md:w-80 md:h-64 flex items-center justify-center"
           >
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80"
               alt="Isometric Code Showcase Visual"
-              className="w-full h-full object-contain rounded-2xl mix-blend-screen brightness-125 select-none"
+              fill
+              sizes="320px"
+              className="object-contain rounded-2xl mix-blend-screen brightness-125 select-none"
             />
 
             {/* Glowing Backdrop behind the main mock object */}
@@ -58,7 +61,7 @@ export default function FinalCTA() {
           <motion.div
             animate={{ y: [0, 6, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-            className="absolute left-4 top-12 p-2 px-3 border border-white/10 rounded-xl bg-white/5 backdrop-blur-md shadow-lg font-mono text-xs text-accent-ink/80 hidden sm:block"
+            className="absolute left-4 top-12 p-2 px-3 border border-white/10 rounded-xl bg-white/5 md:backdrop-blur-md shadow-lg font-mono text-xs text-accent-ink/80 hidden sm:block"
           >
             &lt;/&gt;
           </motion.div>
@@ -67,7 +70,7 @@ export default function FinalCTA() {
           <motion.div
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute right-4 bottom-12 p-2.5 border border-white/10 rounded-xl bg-white/5 backdrop-blur-md shadow-lg text-xs text-accent-ink/80 hidden sm:block"
+            className="absolute right-4 bottom-12 p-2.5 border border-white/10 rounded-xl bg-white/5 md:backdrop-blur-md shadow-lg text-xs text-accent-ink/80 hidden sm:block"
           >
             🛡️
           </motion.div>

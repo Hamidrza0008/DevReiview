@@ -1,5 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Bookmark, ArrowRight, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation'; // Routing ke liye
@@ -83,10 +84,12 @@ export default function SavedProjects() {
               {/* Project Thumbnail */}
               <div className="h-48 w-full bg-surface-2 overflow-hidden relative">
                 {project.thumbnail ? (
-                  <img 
-                    src={project.thumbnail} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover"
+                  <Image
+                    src={project.thumbnail}
+                    alt={project.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-muted">
@@ -123,9 +126,11 @@ export default function SavedProjects() {
                 {/* Footer: Owner Info & Action Button */}
                 <div className="flex items-center justify-between mt-auto">
                   <div className="flex items-center space-x-2">
-                    <img 
-                      src={project.owner?.profileImage || 'https://via.placeholder.com/40'} 
-                      alt={project.owner?.name} 
+                    <Image
+                      src={project.owner?.profileImage || 'https://via.placeholder.com/40'}
+                      alt={project.owner?.name}
+                      width={32}
+                      height={32}
                       className="w-8 h-8 rounded-full object-cover"
                     />
                     <span className="text-sm font-medium text-ink truncate w-24" title={project.owner?.name}>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { TechBadge } from './atoms';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -39,13 +40,15 @@ export default function FeaturedProjects() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
         <div className="bg-surface border border-line rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:border-accent/30 transition-all duration-300 transform hover:-translate-y-1.5 group cursor-pointer flex flex-col">
           <div className="h-48 bg-ink border-b border-line relative overflow-hidden flex items-center justify-center">
-            <img
+            <Image
               src={showcase.imageUrl}
               alt={`${showcase.title} Preview`}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04] opacity-85 group-hover:opacity-100"
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.04] opacity-85 group-hover:opacity-100"
             />
             <div className="absolute inset-0 bg-linear-to-t from-ink/80 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute top-3 right-3 w-7 h-7 border border-white/10 rounded-lg bg-ink/60 backdrop-blur-md flex items-center justify-center font-mono text-[9px] text-accent-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+            <div className="absolute top-3 right-3 w-7 h-7 border border-white/10 rounded-lg bg-ink/60 md:backdrop-blur-md flex items-center justify-center font-mono text-[9px] text-accent-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
               &lt;/&gt;
             </div>
           </div>

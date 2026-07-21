@@ -19,8 +19,8 @@ export default function Hero() {
   return (
     <section className="relative w-full min-h-screen bg-page px-6 md:px-16 lg:px-24 pt-20 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center overflow-hidden select-none z-10">
 
-      {/* Ambient animated background */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      {/* Ambient animated background (disabled on mobile — heavy blur + continuous animation is expensive on low-end GPUs) */}
+      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
 
         {/* Animated Moving Grid */}
         <motion.div
@@ -60,7 +60,7 @@ export default function Hero() {
         {/* Honest early-stage tagline instead of fake social proof */}
         <motion.div
           whileHover={{ scale: 1.05 }}
-          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface/80 border border-line backdrop-blur-md text-xs text-muted font-medium shadow-sm"
+          className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface/80 border border-line md:backdrop-blur-md text-xs text-muted font-medium shadow-sm"
         >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ok opacity-75" />
@@ -93,7 +93,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div className="w-full sm:w-auto" whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} transition={springConfig}>
-            <SecondaryButton onClick={goUploadProject} className="w-full !px-8 !py-3.5 text-sm backdrop-blur-md">
+            <SecondaryButton onClick={goUploadProject} className="w-full !px-8 !py-3.5 text-sm md:backdrop-blur-md">
               Upload Project
             </SecondaryButton>
           </motion.div>
@@ -134,7 +134,7 @@ export default function Hero() {
             whileHover={{ rotateY: 0, rotateX: 0, scale: 1.02, transition: { duration: 0.4 } }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformStyle: 'preserve-3d' }}
-            className="w-full bg-surface/70 backdrop-blur-2xl rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.08)] border border-surface p-5 flex flex-col gap-4 relative group"
+            className="w-full bg-surface/70 md:backdrop-blur-2xl rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.08)] border border-surface p-5 flex flex-col gap-4 relative group"
           >
             <div className="flex items-center justify-between border-b border-line pb-3">
               <div className="flex items-center gap-3">
@@ -191,7 +191,7 @@ export default function Hero() {
           <motion.div
             animate={{ y: [0, -10, 0], rotate: [0, 2, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -top-6 -right-4 md:right-[-20px] bg-surface/90 backdrop-blur-xl border border-surface shadow-[0_15px_35px_rgba(0,0,0,0.06)] px-4 py-2 rounded-full flex items-center gap-2 z-20"
+            className="absolute -top-6 -right-4 md:right-[-20px] bg-surface/90 md:backdrop-blur-xl border border-surface shadow-[0_15px_35px_rgba(0,0,0,0.06)] px-4 py-2 rounded-full flex items-center gap-2 z-20"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-ok shadow-[0_0_8px_rgba(47,111,78,0.5)]" />
             <span className="text-[11px] font-bold text-ink tracking-tight">Project Verified</span>
@@ -201,7 +201,7 @@ export default function Hero() {
           <motion.div
             animate={{ y: [0, 10, 0], rotate: [0, -2, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-10 -left-6 md:-left-16 max-w-[240px] bg-surface/90 backdrop-blur-xl border border-surface shadow-[0_20px_40px_rgba(0,0,0,0.08)] p-4 rounded-xl hidden md:flex items-start gap-3 z-20"
+            className="absolute bottom-10 -left-6 md:-left-16 max-w-[240px] bg-surface/90 md:backdrop-blur-xl border border-surface shadow-[0_20px_40px_rgba(0,0,0,0.08)] p-4 rounded-xl hidden md:flex items-start gap-3 z-20"
           >
             <div className="w-8 h-8 rounded-full bg-page border border-line shrink-0 flex items-center justify-center text-[11px] font-bold text-muted">RS</div>
             <div className="flex flex-col gap-1">
@@ -220,7 +220,7 @@ export default function Hero() {
           <motion.div
             animate={{ scale: [1, 1.05, 1], y: [0, -5, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute -bottom-8 right-10 bg-surface/90 backdrop-blur-xl border border-surface shadow-[0_20px_40px_rgba(0,0,0,0.08)] px-5 py-3 rounded-xl hidden sm:flex flex-col gap-1.5 z-20 min-w-[150px]"
+            className="absolute -bottom-8 right-10 bg-surface/90 md:backdrop-blur-xl border border-surface shadow-[0_20px_40px_rgba(0,0,0,0.08)] px-5 py-3 rounded-xl hidden sm:flex flex-col gap-1.5 z-20 min-w-[150px]"
           >
             <span className="text-[10px] text-muted font-semibold uppercase tracking-wider">Views Summary</span>
             <div className="flex items-center justify-between gap-4">

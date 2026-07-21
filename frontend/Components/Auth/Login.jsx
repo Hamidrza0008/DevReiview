@@ -140,7 +140,7 @@ export default function Login() {
             <p className="text-accent-ink/80 text-lg font-normal">Continue your journey with developers who build amazing things.</p>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="relative bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+          <motion.div variants={itemVariants} className="relative bg-white/10 md:backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
               <div className="flex space-x-2">
                 <span className="w-3 h-3 bg-like rounded-full" />

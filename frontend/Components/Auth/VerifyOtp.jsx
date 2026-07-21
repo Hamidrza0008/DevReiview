@@ -75,7 +75,7 @@ export default function VerifyOtp() {
                         <p className="text-accent-ink/80 text-lg">One quick step to confirm it's really you before you get started.</p>
                     </motion.div>
 
-                    <motion.div variants={itemVariants} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                    <motion.div variants={itemVariants} className="bg-white/10 md:backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
                         <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5">
                             <h3 className="text-xs font-bold tracking-wider font-mono">Security Checkpoint</h3>
                             <div className="flex items-center space-x-1.5">

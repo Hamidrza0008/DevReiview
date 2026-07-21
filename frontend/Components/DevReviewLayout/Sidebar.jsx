@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -77,8 +78,8 @@ function NavList({ onNavigate }) {
             onClick={() => { router.push(item.path); onNavigate?.(); }}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 group relative overflow-hidden ${
               isActive
-                ? "font-bold shadow-sm border border-accent/15 bg-surface/80 backdrop-blur-sm"
-                : "text-muted hover:bg-surface/80 backdrop-blur-sm hover:text-ink hover:shadow-sm border border-transparent"
+                ? "font-bold shadow-sm border border-accent/15 bg-surface/80 md:backdrop-blur-sm"
+                : "text-muted hover:bg-surface/80 md:backdrop-blur-sm hover:text-ink hover:shadow-sm border border-transparent"
             }`}
           >
             {isActive && (
@@ -127,12 +128,14 @@ function NavList({ onNavigate }) {
 function ProfileFooter() {
   const { user, logout } = useAuth();
   return (
-    <div className="p-4 border-t border-line bg-surface/60 backdrop-blur-xl flex items-center justify-between gap-2 group/profile relative z-10">
+    <div className="p-4 border-t border-line bg-surface/60 md:backdrop-blur-xl flex items-center justify-between gap-2 group/profile relative z-10">
       <div className="flex items-center gap-3 min-w-0 transition-transform duration-200 group-hover/profile:translate-x-0.5">
         <div className="relative shrink-0">
-          <img
+          <Image
             src={user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=2F6F4E&color=fff`}
             alt="Profile avatar"
+            width={36}
+            height={36}
             className="w-9 h-9 rounded-full object-cover ring-2 ring-surface shadow-sm border border-line transition-all duration-300 group-hover/profile:ring-accent-2/50"
           />
           <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-ok rounded-full ring-2 ring-surface shadow-[0_0_8px_rgba(47,111,78,0.5)] animate-pulse" />
@@ -165,7 +168,7 @@ export default function Sidebar() {
   return (
     <>
       {/* ---- MOBILE TOP BAR ---- */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 flex items-center justify-between px-4 bg-page/90 backdrop-blur-xl border-b border-line">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 flex items-center justify-between px-4 bg-page/90 md:backdrop-blur-xl border-b border-line">
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/dashboard")}
@@ -250,7 +253,7 @@ export default function Sidebar() {
       </AnimatePresence>
 
       {/* ---- DESKTOP SIDEBAR ---- */}
-      <aside className="w-64 bg-page/80 border-r border-line fixed top-0 bottom-0 left-0 z-30 flex-col justify-between hidden md:flex shadow-[4px_0_24px_rgba(0,0,0,0.02)] backdrop-blur-2xl">
+      <aside className="w-64 bg-page/80 border-r border-line fixed top-0 bottom-0 left-0 z-30 flex-col justify-between hidden md:flex shadow-[4px_0_24px_rgba(0,0,0,0.02)] md:backdrop-blur-2xl">
 
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <motion.div
@@ -266,7 +269,7 @@ export default function Sidebar() {
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
-          <div className="h-16 flex items-center justify-between px-6 border-b border-line bg-surface/40 backdrop-blur-md sticky top-0 z-20">
+          <div className="h-16 flex items-center justify-between px-6 border-b border-line bg-surface/40 md:backdrop-blur-md sticky top-0 z-20">
             <div
               className="flex items-center gap-2.5 cursor-pointer group"
               onClick={() => router.push("/dashboard")}
