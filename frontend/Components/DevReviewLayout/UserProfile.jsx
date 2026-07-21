@@ -5,13 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Heart, MessageSquare, ExternalLink, GitBranch,
-  Globe, Mail, CheckCircle2,
+  Globe, Mail, CheckCircle2, UserCheck, UserPlus,
   Calendar, Layers, User, Activity,
   AlertCircle, Code2, ArrowUpRight, ArrowLeft
 } from "lucide-react";
 import { getUserProfile } from "@/services/usersApi";
 import { getProjectByUsername } from "@/services/getProjectsByUsernameApi";
 import { toggleLikes } from "@/services/toggleLikesApi";
+import { toggleFollow } from "@/services/followApi";
 import { useAuth } from "@/context/AuthContext";
 
 export default function UserProfile() {
@@ -30,6 +31,11 @@ export default function UserProfile() {
     totalProjects: 0,
     totalReviews: 0,
   });
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [followingCount, setFollowingCount] = useState(0);
+  const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -56,6 +62,9 @@ export default function UserProfile() {
             totalProjects: userRes.totalProjects || 0,
             totalReviews: userRes.totalReviews || 0,
           });
+          setIsFollowing(userRes.isFollowing || false);
+          setFollowersCount(userRes.followersCount || 0);
+          setFollowingCount(userRes.followingCount || 0);
 
           setProjects(projectsRes?.projects || []);
         }
@@ -106,6 +115,33 @@ export default function UserProfile() {
       setProjects(freshProjects.projects);
     } catch (err) {
       setProjects(previousProjects);
+    }
+  };
+
+  const handleFollowToggle = async () => {
+    if (!authUser) {
+      router.push("/auth/login");
+      return;
+    }
+    if (followLoading) return;
+
+    const previousIsFollowing = isFollowing;
+    const previousFollowersCount = followersCount;
+
+    setFollowLoading(true);
+    setIsFollowing(!previousIsFollowing);
+    setFollowersCount(previousIsFollowing ? previousFollowersCount - 1 : previousFollowersCount + 1);
+
+    try {
+      const res = await toggleFollow(username);
+      if (!res?.success) throw new Error("Follow request failed");
+      setIsFollowing(res.isFollowing);
+      setFollowersCount(res.followersCount);
+    } catch (err) {
+      setIsFollowing(previousIsFollowing);
+      setFollowersCount(previousFollowersCount);
+    } finally {
+      setFollowLoading(false);
     }
   };
 
@@ -324,15 +360,41 @@ export default function UserProfile() {
               ))}
             </div>
 
-            <div className="w-full pt-2">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-linear-to-r from-accent to-accent-2 hover:from-accent hover:to-accent text-accent-ink py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-md shadow-accent/25 text-sm transition-all cursor-pointer"
-              >
-                <span>Follow Developer</span>
-              </motion.button>
+            <div className="grid grid-cols-2 gap-4 w-full">
+              {[
+                { label: "Followers", val: followersCount },
+                { label: "Following", val: followingCount }
+              ].map((st, idx) => (
+                <motion.div
+                  key={idx}
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                  className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/40 hover:bg-accent-soft/50 hover:shadow-md hover:shadow-accent/10 transition-all duration-300 group shadow-sm cursor-default"
+                >
+                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
+                  <span className="text-2xl font-bold text-ink group-hover:text-accent transition-colors">{st.val}</span>
+                </motion.div>
+              ))}
             </div>
+
+            {authUser?._id !== user?._id && (
+              <div className="w-full pt-2">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  disabled={followLoading}
+                  onClick={handleFollowToggle}
+                  className={`w-full py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-md text-sm transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${
+                    isFollowing
+                      ? "bg-surface border border-line text-ink hover:border-danger/40 hover:text-danger shadow-none"
+                      : "bg-linear-to-r from-accent to-accent-2 hover:from-accent hover:to-accent text-accent-ink shadow-accent/25"
+                  }`}
+                >
+                  {isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
+                  <span>{isFollowing ? "Following" : "Follow Developer"}</span>
+                </motion.button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -13,7 +13,13 @@
       "Bash(curl -s -o /dev/null -w \"landing: %{http_code}\\\\n\" http://localhost:3000/)",
       "Bash(curl -s -o /dev/null -w \"create: %{http_code}\\\\n\" http://localhost:3000/projects/create)",
       "Bash(curl -s -o /dev/null -w \"profile/my: %{http_code}\\\\n\" http://localhost:3000/profile/my)",
-      "Bash(curl -s -o /dev/null -w \"users/explore: %{http_code}\\\\n\" http://localhost:3000/users/explore)"
+      "Bash(curl -s -o /dev/null -w \"users/explore: %{http_code}\\\\n\" http://localhost:3000/users/explore)",
+      "Bash(node -e \"require\\('./models/Users.js'\\); console.log\\('Users model ok'\\)\")",
+      "Bash(node --check middleware/auth.middleware.js)",
+      "Bash(node --check controllers/userController.js)",
+      "Bash(node --check routes/user.routes.js)",
+      "Bash(node --check services/followApi.js)",
+      "Bash(node -e \"console.log\\(JSON.stringify\\(require\\('./frontend/package.json'\\).scripts, null, 2\\)\\)\")"
     ]
   }
 }

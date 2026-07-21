@@ -28,13 +28,125 @@ const getUserProfile = async (req, res) => {
             })
         }
 
+        const isFollowing = req.user
+            ? user.followers.some((id) => id.toString() === req.user.id)
+            : false;
+
         return res.status(200).json({
             success: true,
             user,
             totalProjects: projects.length,
             totalLikes,
             totalReviews,
+            followersCount: user.followers.length,
+            followingCount: user.following.length,
+            isFollowing,
         })
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+const toggleFollow = async (req, res) => {
+    try {
+        const { username } = req.params;
+        const currentUserId = req.user.id;
+
+        const targetUser = await Users.findOne({ username });
+        if (!targetUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        if (targetUser._id.toString() === currentUserId) {
+            return res.status(400).json({
+                success: false,
+                message: "You cannot follow yourself",
+            });
+        }
+
+        const currentUser = await Users.findById(currentUserId);
+
+        const alreadyFollowing = targetUser.followers.some(
+            (id) => id.toString() === currentUserId
+        );
+
+        if (alreadyFollowing) {
+            targetUser.followers = targetUser.followers.filter(
+                (id) => id.toString() !== currentUserId
+            );
+            currentUser.following = currentUser.following.filter(
+                (id) => id.toString() !== targetUser._id.toString()
+            );
+        } else {
+            targetUser.followers.push(currentUserId);
+            currentUser.following.push(targetUser._id);
+        }
+
+        await targetUser.save();
+        await currentUser.save();
+
+        return res.status(200).json({
+            success: true,
+            isFollowing: !alreadyFollowing,
+            followersCount: targetUser.followers.length,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+const getFollowers = async (req, res) => {
+    try {
+        const { username } = req.params;
+
+        const user = await Users.findOne({ username }).populate(
+            "followers",
+            "name username profileImage bio"
+        );
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            followers: user.followers,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+        })
+    }
+}
+
+const getFollowing = async (req, res) => {
+    try {
+        const { username } = req.params;
+
+        const user = await Users.findOne({ username }).populate(
+            "following",
+            "name username profileImage bio"
+        );
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            following: user.following,
+        });
     } catch (error) {
         res.status(500).json({
             message: error.message
@@ -48,7 +160,7 @@ const getAllUsers = async (req, res) => {
 
         const users = await Users.find({
             _id: { $ne: req.user.id }
-        }).select("name username bio profileImage skills githubUrl portfolioUrl");
+        }).select("name username bio profileImage skills githubUrl portfolioUrl followers");
 
         const usersWithStats = await Promise.all(
             users.map(async (user) => {
@@ -66,11 +178,19 @@ const getAllUsers = async (req, res) => {
                     project: { $in: projectIds }
                 });
 
+                const isFollowing = user.followers.some(
+                    (id) => id.toString() === req.user.id
+                );
+
+                const { followers, ...userObj } = user.toObject();
+
                 return {
-                    ...user.toObject(),
+                    ...userObj,
                     totalProjects: projects.length,
                     totalLikes,
                     totalReviews,
+                    followersCount: followers.length,
+                    isFollowing,
                 };
             })
         );
@@ -84,4 +204,4 @@ const getAllUsers = async (req, res) => {
     }
 }
 
-module.exports = { getUserProfile, getAllUsers }
+module.exports = { getUserProfile, getAllUsers, toggleFollow, getFollowers, getFollowing }

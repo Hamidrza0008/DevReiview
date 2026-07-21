@@ -27,4 +27,18 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+const optionalAuth = (req, res, next) => {
+  try {
+    const token = req.cookies?.token;
+
+    if (token) {
+      req.user = jwt.verify(token, process.env.JWT_SECRET);
+    }
+  } catch (error) {
+    // invalid/expired token — treat the request as a guest
+  }
+  next();
+};
+
 module.exports = authMiddleware;
+module.exports.optionalAuth = optionalAuth;

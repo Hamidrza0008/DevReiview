@@ -19,6 +19,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { getAllUsers } from "@/services/usersApi";
+import { toggleFollow as followUnfollowUser } from "@/services/followApi";
 import { useRouter } from "next/navigation";
 
 const CATEGORIES = [
@@ -47,7 +48,7 @@ export default function ExploreUsers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("All");
   const [sortBy, setSortBy] = useState("Trending");
-  const [followingState, setFollowingState] = useState({});
+  const [followLoadingIds, setFollowLoadingIds] = useState({});
   const [isPinned, setIsPinned] = useState(false);
   
   const router = useRouter();
@@ -127,11 +128,52 @@ export default function ExploreUsers() {
     ];
   }, [users]);
 
-  const toggleFollow = (id) => {
-    setFollowingState((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+  const handleFollowToggle = async (devId, devUsername) => {
+    if (followLoadingIds[devId]) return;
+
+    const target = users.find((u) => u._id === devId);
+    if (!target) return;
+
+    const previousIsFollowing = target.isFollowing || false;
+    const previousFollowersCount = target.followersCount || 0;
+
+    setFollowLoadingIds((prev) => ({ ...prev, [devId]: true }));
+    setUsers((prev) =>
+      prev.map((u) =>
+        u._id === devId
+          ? {
+              ...u,
+              isFollowing: !previousIsFollowing,
+              followersCount: previousIsFollowing
+                ? previousFollowersCount - 1
+                : previousFollowersCount + 1
+            }
+          : u
+      )
+    );
+
+    try {
+      const res = await followUnfollowUser(devUsername);
+      if (!res?.success) throw new Error("Follow request failed");
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === devId
+            ? { ...u, isFollowing: res.isFollowing, followersCount: res.followersCount }
+            : u
+        )
+      );
+    } catch (err) {
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === devId
+            ? { ...u, isFollowing: previousIsFollowing, followersCount: previousFollowersCount }
+            : u
+        )
+      );
+    } finally {
+      setFollowLoadingIds((prev) => ({ ...prev, [devId]: false }));
+    }
   };
 
   const containerVariants = {
@@ -584,7 +626,7 @@ export default function ExploreUsers() {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               >
                 {filteredDevelopers.map((dev) => {
-                  const isFollowing = followingState[dev._id] || false;
+                  const isFollowing = dev.isFollowing || false;
                   const devSkills = dev.skills || [];
                   const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(dev.name || 'User')}&background=F1F5F9&color=111827&bold=true`;
 
@@ -658,8 +700,13 @@ export default function ExploreUsers() {
                               )}
                             </div>
                           </div>
+
+                          <div className="flex items-center justify-center gap-1 text-[11px] font-semibold text-muted">
+                            <Users2 className="w-3 h-3" />
+                            <span>{(dev.followersCount || 0).toLocaleString()} followers</span>
+                          </div>
                         </div>
-                        
+
                         {/* Bio */}
                         <p className="text-[13px] text-muted font-medium leading-relaxed line-clamp-2 min-h-[40px] mb-5 text-center px-2">
                           {dev.bio || "Software engineer passionate about building scalable, production-ready applications."}
@@ -710,8 +757,9 @@ export default function ExploreUsers() {
                             <motion.button
                               whileHover={{ scale: 1.03 }}
                               whileTap={{ scale: 0.95 }}
-                              onClick={() => toggleFollow(dev._id)}
-                              className={`w-full py-2.5 px-2 rounded-xl text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm ${
+                              disabled={followLoadingIds[dev._id]}
+                              onClick={() => handleFollowToggle(dev._id, dev.username)}
+                              className={`w-full py-2.5 px-2 rounded-xl text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm disabled:opacity-70 disabled:cursor-not-allowed ${
                                 isFollowing
                                   ? "bg-accent text-accent-ink hover:brightness-90 shadow-accent/25"
                                   : "bg-gradient-to-r from-accent to-accent-2 text-accent-ink hover:from-accent hover:to-accent shadow-accent/25"
