@@ -86,7 +86,9 @@ export default function MyProfile() {
   const stats = {
     projectsCount: myProjects?.length || user?.projects?.length || 0,
     reviews: myProjects.reduce((acc , curr) => acc + (curr.reviewsCount || 0) , 0) || 0,
-    likes: myProjects.reduce((acc, curr) => acc + (curr.likesCount || 0), 0) || 0
+    likes: myProjects.reduce((acc, curr) => acc + (curr.likesCount || 0), 0) || 0,
+    followers: user?.followers?.length || 0,
+    following: user?.following?.length || 0
   };
 
   const joinedDate = user?.createdAt
@@ -349,6 +351,18 @@ export default function MyProfile() {
                     { label: "Repos", val: stats.projectsCount },
                     { label: "Reviews", val: stats.reviews },
                     { label: "Likes", val: stats.likes }
+                  ].map((st, idx) => (
+                    <div key={idx} className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/30 transition-all duration-300 group shadow-sm text-center lg:text-left">
+                      <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
+                      <span className="text-2xl font-bold text-ink group-hover:text-accent transition-colors">{st.val}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 w-full">
+                  {[
+                    { label: "Followers", val: stats.followers },
+                    { label: "Following", val: stats.following }
                   ].map((st, idx) => (
                     <div key={idx} className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/30 transition-all duration-300 group shadow-sm text-center lg:text-left">
                       <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
