@@ -344,57 +344,37 @@ export default function UserProfile() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 h-full justify-between lg:border-l lg:border-surface-2 lg:pl-10">
-            <div className="grid grid-cols-3 gap-4 w-full">
+          <div className="flex flex-col gap-5 h-full justify-center lg:border-l lg:border-surface-2 lg:pl-10">
+            <div className="flex items-center justify-center lg:justify-start lg:flex-wrap lg:gap-1">
               {[
-                { label: "Projects", val: stats.totalProjects },
-                { label: "Reviews", val: stats.totalReviews },
-                { label: "Likes", val: stats.totalLikes }
+                { label: "posts", val: stats.totalProjects },
+                { label: "reviews", val: stats.totalReviews },
+                { label: "likes", val: stats.totalLikes },
+                { label: "followers", val: followersCount },
+                { label: "following", val: followingCount }
               ].map((st, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                  className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/40 hover:bg-accent-soft/50 hover:shadow-md hover:shadow-accent/10 transition-all duration-300 group shadow-sm cursor-default"
-                >
-                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
-                  <span className="text-2xl font-bold text-ink group-hover:text-accent transition-colors">{st.val}</span>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 w-full">
-              {[
-                { label: "Followers", val: followersCount },
-                { label: "Following", val: followingCount }
-              ].map((st, idx) => (
-                <motion.div
-                  key={idx}
-                  whileHover={{ y: -4, scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 18 }}
-                  className="bg-page border border-line rounded-2xl p-2.5 sm:p-4 hover:border-accent/40 hover:bg-accent-soft/50 hover:shadow-md hover:shadow-accent/10 transition-all duration-300 group shadow-sm cursor-default"
-                >
-                  <span className="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1 wrap-break-word">{st.label}</span>
-                  <span className="text-2xl font-bold text-ink group-hover:text-accent transition-colors">{st.val}</span>
-                </motion.div>
+                <div key={idx} className={`flex flex-col items-center lg:items-start group cursor-default px-4 sm:px-5 lg:px-6 py-2 ${idx < 4 ? "border-r border-muted/30" : ""}`}>
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink group-hover:text-accent transition-colors">{st.val}</span>
+                  <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-muted lowercase">{st.label}</span>
+                </div>
               ))}
             </div>
 
             {authUser?._id !== user?._id && (
-              <div className="w-full pt-2">
+              <div className="w-full">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={followLoading}
                   onClick={handleFollowToggle}
-                  className={`w-full py-3 rounded-2xl font-bold flex items-center justify-center space-x-2 shadow-md text-sm transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${
+                  className={`w-full py-2.5 lg:py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-md text-sm transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${
                     isFollowing
                       ? "bg-surface border border-line text-ink hover:border-danger/40 hover:text-danger shadow-none"
                       : "bg-linear-to-r from-accent to-accent-2 hover:from-accent hover:to-accent text-accent-ink shadow-accent/25"
                   }`}
                 >
                   {isFollowing ? <UserCheck className="w-4 h-4" /> : <UserPlus className="w-4 h-4" />}
-                  <span>{isFollowing ? "Following" : "Follow Developer"}</span>
+                  <span>{isFollowing ? "Following" : "Follow"}</span>
                 </motion.button>
               </div>
             )}
