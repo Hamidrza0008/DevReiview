@@ -115,16 +115,15 @@ export default function Dashboard() {
                   <div className="h-10 bg-surface-2 rounded-xl w-full md:w-36 shrink-0" />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="bg-surface border border-line rounded-2xl p-5 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="h-3 bg-surface-2 rounded w-20" />
-                        <div className="w-8 h-8 bg-surface-2 rounded-xl" />
+                <div className="bg-surface border border-line rounded-2xl px-6 py-5">
+                  <div className="grid grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="flex flex-col items-center gap-2">
+                        <div className="h-8 bg-surface-2 rounded w-12"></div>
+                        <div className="h-3 bg-surface-2 rounded w-16"></div>
                       </div>
-                      <div className="h-8 bg-surface-2 rounded-lg w-16" />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
@@ -209,59 +208,35 @@ export default function Dashboard() {
 
                 <motion.div
                   variants={itemVariants}
-                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                  className="bg-surface border border-line rounded-2xl px-4 sm:px-6 py-4 shadow-2xs"
                 >
-                  {[
-                    { title: "Total Projects", value: data.stats?.totalProjects || 0, label: "Deployed", icon: FolderGit2, colorVar: "accent" },
-                    { title: "Project Likes", value: data.stats?.totalLikes || 0, label: "Appreciations", icon: ThumbsUp, colorVar: "like" },
-                    { title: "Reviews Received", value: data.stats?.totalReceivedReviews || 0, label: "Feedback", icon: MessageSquare, colorVar: "info" },
-                    { title: "Reviews Given", value: data.stats?.totalGivenReviews || 0, label: "Community", icon: Star, colorVar: "star" },
-                    { title: "Followers", value: user?.followers?.length || 0, label: "Following you", icon: Users, colorVar: "accent-2" },
-                    { title: "Following", value: user?.following?.length || 0, label: "You follow", icon: UserPlus, colorVar: "accent" },
-                  ].map((card, i) => {
-                    const IconComponent = card.icon;
-                    return (
-                      <motion.div
-                        key={i}
-                        whileHover={{ y: -3 }}
-                        className="bg-surface border border-line rounded-2xl p-5 shadow-2xs group relative overflow-hidden transition-all duration-300 hover:border-accent/30"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-bold text-muted uppercase tracking-wider">{card.title}</span>
-                          <div
-                            className="p-2 rounded-xl transition-all duration-300 group-hover:scale-105 border"
-                            style={{
-                              color: `var(--color-${card.colorVar})`,
-                              backgroundColor: `color-mix(in srgb, var(--color-${card.colorVar}) 12%, transparent)`,
-                              borderColor: `color-mix(in srgb, var(--color-${card.colorVar}) 25%, transparent)`
-                            }}
-                          >
-                            <IconComponent className="w-4 h-4" />
-                          </div>
-                        </div>
-                        <div className="mt-4 flex items-baseline gap-2">
-                          <span className="text-2xl font-bold tracking-tight text-ink font-sans tabular-nums">
-                            {card.value}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-muted mt-1 font-medium flex items-center gap-1">
-                          <ArrowUpRight className="w-3 h-3 text-muted" /> {card.label}
-                        </p>
-                      </motion.div>
-                    );
-                  })}
+                  <div className="grid grid-cols-3 gap-x-4 gap-y-4">
+                    {[
+                      { label: "projects", val: data.stats?.totalProjects || 0 },
+                      { label: "likes", val: data.stats?.totalLikes || 0 },
+                      { label: "reviews", val: data.stats?.totalReceivedReviews || 0 },
+                      { label: "given", val: data.stats?.totalGivenReviews || 0 },
+                      { label: "followers", val: user?.followers?.length || 0 },
+                      { label: "following", val: user?.following?.length || 0 }
+                    ].map((st, idx) => (
+                      <div key={idx} className="flex flex-col items-center group cursor-default">
+                        <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink group-hover:text-accent transition-colors tabular-nums">{st.val}</span>
+                        <span className="text-[11px] sm:text-xs font-semibold text-muted lowercase">{st.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </motion.div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                  <motion.div variants={itemVariants} className="lg:col-span-2 space-y-5">
-                    <div className="flex items-center gap-6 border-b border-line pb-px">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-start">
+                  <motion.div variants={itemVariants} className="lg:col-span-2 space-y-4 sm:space-y-5">
+                    <div className="flex items-center gap-4 sm:gap-6 border-b border-line pb-px overflow-x-auto no-scrollbar">
                       {["My Projects", "Feedback Received"].map((tab) => {
                         const isActive = activeTab === tab;
                         return (
                           <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`pb-3 text-xs font-bold uppercase tracking-wider transition-all relative outline-none ${isActive ? "text-accent" : "text-muted hover:text-ink"
+                            className={`pb-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all relative outline-none whitespace-nowrap ${isActive ? "text-accent" : "text-muted hover:text-ink"
                               }`}
                           >
                             <span>{tab}</span>
@@ -286,23 +261,23 @@ export default function Dashboard() {
                           className="space-y-4"
                         >
                           {projects.length === 0 ? (
-                            <div className="bg-surface border border-line rounded-2xl p-10 text-center space-y-4 shadow-2xs">
-                              <div className="w-14 h-14 bg-page border border-line rounded-2xl flex items-center justify-center mx-auto text-muted">
-                                <FileCode className="w-6 h-6" />
+                            <div className="bg-surface border border-line rounded-2xl p-6 sm:p-10 text-center space-y-4 shadow-2xs">
+                              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-page border border-line rounded-2xl flex items-center justify-center mx-auto text-muted">
+                                <FileCode className="w-5 h-5 sm:w-6 sm:h-6" />
                               </div>
                               <div className="space-y-1">
-                                <h3 className="font-bold text-base text-ink">No projects indexed yet</h3>
-                                <p className="text-sm text-muted max-w-sm mx-auto">Upload your first project to start tracking likes and receiving reviews from the community.</p>
+                                <h3 className="font-bold text-sm sm:text-base text-ink">No projects indexed yet</h3>
+                                <p className="text-xs sm:text-sm text-muted max-w-sm mx-auto">Upload your first project to start tracking likes and receiving reviews from the community.</p>
                               </div>
                               <button
                                 onClick={() => router.push('/projects/create')}
-                                className="mt-4 bg-ink hover:brightness-125 text-page text-xs font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
+                                className="mt-3 sm:mt-4 bg-ink hover:brightness-125 text-page text-xs font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl transition-all shadow-sm"
                               >
                                 Upload Project
                               </button>
                             </div>
                           ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5">
                               {projects.map((project, idx) => (
                                 <motion.div
                                   key={project._id || idx}
@@ -315,39 +290,39 @@ export default function Dashboard() {
                                       src={project.thumbnail || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80"}
                                       alt={project.title}
                                       fill
-                                      sizes="(max-width: 768px) 100vw, 50vw"
+                                      sizes="(max-width: 640px) 100vw, 50vw"
                                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                                     />
                                   </div>
 
-                                  <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
+                                  <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between space-y-3 sm:space-y-4">
                                     <div className="space-y-1">
                                       <h3
                                         onClick={() => router.push(`/projects/${project._id}`)}
-                                        className="font-bold text-sm text-ink group-hover:text-accent transition-colors flex items-center gap-1.5"
+                                        className="font-bold text-xs sm:text-sm text-ink group-hover:text-accent transition-colors flex items-center gap-1.5"
                                       >
-                                        <span>{project.title}</span>
-                                        <ExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-muted" />
+                                        <span className="truncate">{project.title}</span>
+                                        <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-muted shrink-0" />
                                       </h3>
-                                      <div className="flex flex-wrap gap-1.5 pt-1.5">
+                                      <div className="flex flex-wrap gap-1 sm:gap-1.5 pt-1 sm:pt-1.5">
                                         {project.techStack?.slice(0,3).map((tech, tIdx) => (
-                                          <span key={tIdx} className="text-[10px] font-medium bg-surface-2 text-muted px-2 py-0.5 rounded-md">
+                                          <span key={tIdx} className="text-[9px] sm:text-[10px] font-medium bg-surface-2 text-muted px-1.5 sm:px-2 py-0.5 rounded-md">
                                             {tech}
                                           </span>
                                         ))}
                                         {project.techStack?.length > 3 && (
-                                          <span className="text-[10px] font-medium bg-surface-2 text-muted px-2 py-0.5 rounded-md">+{project.techStack.length - 3}</span>
+                                          <span className="text-[9px] sm:text-[10px] font-medium bg-surface-2 text-muted px-1.5 sm:px-2 py-0.5 rounded-md">+{project.techStack.length - 3}</span>
                                         )}
                                       </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-3 border-t border-line text-[11px] font-semibold text-muted">
-                                      <div className="flex items-center gap-4">
-                                        <span className="flex items-center gap-1.5 hover:text-like transition-colors">
-                                          <ThumbsUp className="w-3.5 h-3.5 text-like/80" /> {project.likes?.length || 0}
+                                    <div className="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-line text-[10px] sm:text-[11px] font-semibold text-muted">
+                                      <div className="flex items-center gap-3 sm:gap-4">
+                                        <span className="flex items-center gap-1 sm:gap-1.5 hover:text-like transition-colors">
+                                          <ThumbsUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-like/80" /> {project.likes?.length || 0}
                                         </span>
-                                        <span className="flex items-center gap-1.5 hover:text-accent transition-colors">
-                                          <MessageSquare className="w-3.5 h-3.5 text-accent/80" /> {project.reviews?.length || 0}
+                                        <span className="flex items-center gap-1 sm:gap-1.5 hover:text-accent transition-colors">
+                                          <MessageSquare className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent/80" /> {project.reviews?.length || 0}
                                         </span>
                                       </div>
                                     </div>
@@ -367,36 +342,36 @@ export default function Dashboard() {
                         >
                           {data.receivedReviews && data.receivedReviews.length > 0 ? (
                             data.receivedReviews.map((feedback, fIdx) => (
-                              <div key={feedback._id || fIdx} className="bg-surface border border-line rounded-2xl p-5 shadow-2xs space-y-3 transition-all hover:border-accent/20 hover:shadow-sm">
-                                <div className="flex justify-between items-start gap-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-full bg-linear-to-tr from-accent/10 to-accent-2/10 border border-line flex items-center justify-center text-sm font-bold text-accent">
+                              <div key={feedback._id || fIdx} className="bg-surface border border-line rounded-2xl p-4 sm:p-5 shadow-2xs space-y-2.5 sm:space-y-3 transition-all hover:border-accent/20 hover:shadow-sm">
+                                <div className="flex justify-between items-start gap-3">
+                                  <div className="flex items-center gap-2.5 sm:gap-3">
+                                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-linear-to-tr from-accent/10 to-accent-2/10 border border-line flex items-center justify-center text-xs sm:text-sm font-bold text-accent shrink-0">
                                       {feedback.user?.name ? feedback.user.name.substring(0, 2).toUpperCase() : "US"}
                                     </div>
-                                    <div>
-                                      <h4 className="font-bold text-sm text-ink">{feedback.user?.name || "Community Member"}</h4>
-                                      <p className="text-[11px] text-muted font-medium mt-0.5">
+                                    <div className="min-w-0">
+                                      <h4 className="font-bold text-xs sm:text-sm text-ink truncate">{feedback.user?.name || "Community Member"}</h4>
+                                      <p className="text-[10px] sm:text-[11px] text-muted font-medium mt-0.5 truncate">
                                         Reviewed <span className="text-accent hover:underline cursor-pointer">{feedback.project?.title || "Project"}</span>
                                       </p>
                                     </div>
                                   </div>
                                 </div>
 
-                                <div className="flex gap-1 pt-1">
+                                <div className="flex gap-0.5 sm:gap-1">
                                   {[...Array(5)].map((_, sIdx) => (
-                                    <Star key={sIdx} className={`w-3.5 h-3.5 ${sIdx < feedback.rating ? "text-star fill-star" : "text-line"}`} />
+                                    <Star key={sIdx} className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${sIdx < feedback.rating ? "text-star fill-star" : "text-line"}`} />
                                   ))}
                                 </div>
-                                <p className="text-sm text-muted leading-relaxed font-normal bg-page p-3 rounded-xl border border-line">
+                                <p className="text-xs sm:text-sm text-muted leading-relaxed font-normal bg-page p-2.5 sm:p-3 rounded-xl border border-line">
                                   "{feedback.review}"
                                 </p>
                               </div>
                             ))
                           ) : (
-                            <div className="bg-surface border border-line rounded-2xl p-10 text-center space-y-3 shadow-2xs">
-                              <AlertCircle className="w-10 h-10 text-muted mx-auto mb-2" />
-                              <h3 className="font-bold text-ink">No feedback received</h3>
-                              <p className="text-sm text-muted">Share your projects to get reviews and ratings from other developers.</p>
+                            <div className="bg-surface border border-line rounded-2xl p-6 sm:p-10 text-center space-y-3 shadow-2xs">
+                              <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 text-muted mx-auto mb-2" />
+                              <h3 className="font-bold text-sm sm:text-ink">No feedback received</h3>
+                              <p className="text-xs sm:text-sm text-muted">Share your projects to get reviews and ratings from other developers.</p>
                             </div>
                           )}
                         </motion.div>

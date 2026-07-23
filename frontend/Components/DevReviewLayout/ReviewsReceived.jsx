@@ -50,16 +50,22 @@ export default function ReviewsDashboard() {
 
   if (loading) {
     return (
-      <div className="p-8 bg-page min-h-screen space-y-6 animate-pulse">
-        <div className="h-10 bg-line rounded w-1/3 mb-2"></div>
-        <div className="h-4 bg-line rounded w-1/4 mb-8"></div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => <div key={i} className="h-28 bg-surface rounded-xl border border-line"></div>)}
+      <div className="p-4 md:p-8 bg-page min-h-screen space-y-6 animate-pulse">
+        <div className="h-8 md:h-10 bg-line rounded w-1/3 mb-2"></div>
+        <div className="h-4 bg-line rounded w-1/4 mb-6"></div>
+        <div className="bg-surface border border-line rounded-2xl px-6 py-5 mb-8">
+          <div className="grid grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="flex flex-col items-center gap-2">
+                <div className="h-8 bg-line rounded w-12"></div>
+                <div className="h-3 bg-line rounded w-16"></div>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="h-40 bg-surface rounded-xl border border-line"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="h-96 bg-surface rounded-xl border border-line"></div>
-          <div className="h-96 bg-surface rounded-xl border border-line"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-64 bg-surface rounded-xl border border-line"></div>
+          <div className="h-64 bg-surface rounded-xl border border-line"></div>
         </div>
       </div>
     );
@@ -75,24 +81,21 @@ export default function ReviewsDashboard() {
           <p className="text-muted mt-2">Track your project likes, reviews received, and feedback given.</p>
         </motion.div>
 
-        {/* Stats Grid */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-          {[
-            { label: "Total Projects", val: data.stats.totalProjects, icon: <Folder className="text-info w-5 h-5" />, bg: "bg-info/10" },
-            { label: "Total Likes", val: data.stats.totalLikes, icon: <Heart className="text-like w-5 h-5" />, bg: "bg-like/10" },
-            { label: "Reviews Received", val: data.stats.totalReceivedReviews, icon: <ArrowDownLeft className="text-accent w-5 h-5" />, bg: "bg-accent-soft" },
-            { label: "Reviews Given", val: data.stats.totalGivenReviews, icon: <ArrowUpRight className="text-star w-5 h-5" />, bg: "bg-star/10" }
-          ].map((item, idx) => (
-            <div key={idx} className="bg-surface border border-line p-5 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300 flex items-center justify-between group">
-              <div>
-                <p className="text-xs font-bold text-muted uppercase tracking-wider">{item.label}</p>
-                <p className="text-2xl font-black mt-1 text-ink group-hover:scale-105 transition-transform origin-left">{item.val}</p>
+        {/* Stats - Instagram style compact */}
+        <motion.div variants={itemVariants} className="bg-surface border border-line rounded-2xl px-4 sm:px-6 py-4 shadow-sm mb-10">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+            {[
+              { label: "projects", val: data.stats.totalProjects },
+              { label: "likes", val: data.stats.totalLikes },
+              { label: "reviews received", val: data.stats.totalReceivedReviews },
+              { label: "reviews given", val: data.stats.totalGivenReviews }
+            ].map((st, idx) => (
+              <div key={idx} className="flex flex-col items-center group cursor-default">
+                <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink group-hover:text-accent transition-colors tabular-nums">{st.val}</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-muted lowercase">{st.label}</span>
               </div>
-              <div className={`p-3 rounded-xl ${item.bg}`}>
-                {item.icon}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </motion.div>
 
         {/* Project Likes Section */}

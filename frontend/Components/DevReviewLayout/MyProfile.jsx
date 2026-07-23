@@ -348,27 +348,36 @@ export default function MyProfile() {
               </div>
 
               {/* metrics overview - Instagram style compact */}
-              <div className="flex flex-col gap-5 h-full justify-center lg:border-l lg:border-surface-2 lg:pl-10">
-                <div className="flex items-center justify-center lg:justify-start lg:flex-wrap lg:gap-1">
+              <div className="flex flex-col gap-4 h-full justify-center lg:border-l lg:border-surface-2 lg:pl-10">
+                <div className="grid grid-cols-3 gap-x-4 gap-y-3">
                   {[
                     { label: "posts", val: stats.projectsCount },
                     { label: "reviews", val: stats.reviews },
-                    { label: "likes", val: stats.likes },
+                    { label: "likes", val: stats.likes }
+                  ].map((st, idx) => (
+                    <div key={idx} className="flex flex-col items-center lg:items-start group cursor-default">
+                      <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink group-hover:text-accent transition-colors tabular-nums">{st.val}</span>
+                      <span className="text-[11px] sm:text-xs font-semibold text-muted lowercase">{st.label}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  {[
                     { label: "followers", val: stats.followers },
                     { label: "following", val: stats.following }
                   ].map((st, idx) => (
-                    <div key={idx} className={`flex flex-col items-center lg:items-start group cursor-default px-4 sm:px-5 lg:px-6 py-2 ${idx < 4 ? "border-r border-muted/30" : ""}`}>
-                      <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink group-hover:text-accent transition-colors">{st.val}</span>
-                      <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-muted lowercase">{st.label}</span>
+                    <div key={idx} className="flex flex-col items-center lg:items-start group cursor-default">
+                      <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-ink group-hover:text-accent transition-colors tabular-nums">{st.val}</span>
+                      <span className="text-[11px] sm:text-xs font-semibold text-muted lowercase">{st.label}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="w-full">
+                <div className="w-full pt-1">
                   <motion.button
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsEditing(true)}
-                    className="w-full border border-line text-ink bg-surface hover:bg-page hover:border-accent/40 hover:text-accent py-2.5 lg:py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-sm text-sm transition-all"
+                    className="w-full border border-line text-ink bg-surface hover:bg-page hover:border-accent/40 hover:text-accent py-2.5 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-sm text-sm transition-all"
                   >
                     <Edit3 className="w-4 h-4" />
                     <span>Edit Profile</span>
